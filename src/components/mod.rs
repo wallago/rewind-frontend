@@ -17,4 +17,4 @@ pub mod board;
 
 pub mod list;
 
-mod task;
+pub mod task;
