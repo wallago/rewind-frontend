@@ -15,28 +15,24 @@ module.exports = {
       },
       colors: {
         surface: {
-          light: "#d8f3dc",
-          dark: "#240046",
+          light: "#dad7cd",
+          dark: "#0c1821",
         },
         text: {
-          light: "#081c15",
-          dark: "#e0aaff",
-        },
-        accent: {
-          light: "#52b788",
-          dark: "#7b2cbf",
+          light: "#344e41",
+          dark: "#ccc9dc",
         },
         border: {
-          light: "#95d5b2",
-          dark: "#5a189a",
+          light: "#588157",
+          dark: "#324a5f",
         },
         muted: {
-          light: "#b7e4c7",
-          dark: "#3c096c",
+          light: "#a3b18a",
+          dark: "#1b2a41",
         },
         error: {
-          light: "#6e1423",
-          dark: "#6e1423",
+          light: "#9d0208",
+          dark: "#f28482",
         },
       },
     },
