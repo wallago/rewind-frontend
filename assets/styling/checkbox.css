@@ -10,7 +10,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 1.05rem;
-  color: oklch(55.1% 0.027 264.364);
   opacity: 0;
   user-select: none;
   transition: opacity 0.2s ease-in-out;
