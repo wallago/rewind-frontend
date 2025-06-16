@@ -1,2 +1,4 @@
-pub mod model;
+mod model;
+pub use model::Board;
+
 pub mod row;

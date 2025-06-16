@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 
 use crate::components::{
-    board::model::Board,
+    board::Board,
     icons::{More, arrow},
     list::{
-        model::List,
+        List,
         row::{ListRow, ListRowSkeleton, ListRowTitle},
     },
 };
@@ -28,9 +28,9 @@ pub fn BoardRow(board: Board) -> Element {
     rsx!(
         li {
             key: "{board.uuid}",
-            class: "text-sm border-t-2 border-border-light dark:border-border-dark pb-2 pt-2",
+            class: "text-sm border-t-2 border-border-light dark:border-border-dark py-2",
             div {
-                class: "grid grid-cols-4 gap-4",
+                class: "grid grid-cols-4 gap-2",
                 p { "{board.name}" }
                 p { "{board.description.as_deref().unwrap_or(\"-\")}" }
                 match lists.read().as_ref() {
@@ -52,8 +52,11 @@ pub fn BoardRow(board: Board) -> Element {
                             }
                         }
                         button {
-                            class: "justify-self-end mr-4 hover:bg-border-light dark:hover:bg-border-dark",
-                            More {}
+                            class: "justify-self-end mr-4 h-6 w-8 border-text-light dark:border-text-dark hover:border-2 hover:bg-border-light dark:hover:bg-border-dark",
+                            div {
+                                class: "flex justify-center items-center w-full h-full",
+                                More {}
+                            }
                         }
                         if *is_open.read() {
                             ul {
