@@ -1,4 +1,4 @@
-use components::{Navbar, get_dom_token_list};
+use components::{Footer, Navbar, get_dom_token_list};
 use dioxus::prelude::*;
 use views::Home;
 
@@ -11,7 +11,7 @@ struct DarkMode(bool);
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
-    #[layout(Navbar)]
+    #[layout(MainLayout)]
         #[route("/")]
         Home {},
 }
@@ -43,8 +43,20 @@ fn App() -> Element {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
         div {
-            class: "dark:bg-zinc-900 bg-amber-50 dark:text-slate-200 text-slate-600 min-h-screen",
+            class: "font-frida dark:bg-surface-dark bg-surface-light dark:text-text-dark text-text-light min-h-screen",
             Router::<Route> {}
         }
+    }
+}
+
+#[component]
+pub fn MainLayout() -> Element {
+    rsx! {
+        Navbar {}
+        div {
+            class: "flex-grow",
+            Outlet::<Route> {}
+        }
+        Footer {}
     }
 }
