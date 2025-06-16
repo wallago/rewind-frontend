@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 use crate::components::{
     board::{
-        model::Board,
+        Board,
         row::{BoardRow, BoardRowSkeleton, BoardRowTitle},
     },
     icons::arrow,
