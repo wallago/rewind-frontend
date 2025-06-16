@@ -1,54 +1,64 @@
 use dioxus::prelude::*;
 
-#[derive(serde::Deserialize, Debug, Clone)]
-struct Board {
-    uuid: String,
-    name: String,
-    description: Option<String>,
-}
+use crate::components::{
+    board::{
+        model::Board,
+        row::{BoardRow, BoardRowSkeleton, BoardRowTitle},
+    },
+    icons::arrow,
+};
+
+static API: &str = "http://0.0.0.0:8081/api";
 
 #[component]
 pub fn Home() -> Element {
-    let api = "http://0.0.0.0:8081/api";
     let boards = use_resource(move || async move {
-        let response = reqwest::get(format!("{api}/boards",)).await.ok()?;
+        let response = reqwest::get(format!("{API}/boards",)).await.ok()?;
         response.json::<Vec<Board>>().await.ok()
     });
 
     rsx! {
         div {
-            class: "px-4 py-3 mx-8 my-4 border",
+            class: "px-4 py-3 mx-52 my-8 border-2 border-border-light dark:border-border-dark",
             p {
                 class: "text-xl font-bold",
-                "Welcom in your task manager!"
+                "Welcom to your task manager!"
             }
-            p { "Here's a list of your tasks for this month." }
-            match boards.read().as_ref() {
-                Some(Some(board_list)) => rsx!(
-                    ul {
-                        class: "space-y-2",
-                        {board_list.iter().map(|board|  {
-                            rsx!(
-                                li {
-                                    key: board.uuid,
-                                    class: "p-2 bg-gray-100 rounded",
-                                    div {
-                                        class: "grid grid-cols-3 gap-4",
-                                            p { {board.name.clone()} },
-                                            p { {board.uuid.clone()} },
-                                            p { {board.description.clone()} },
-                                        }
+            p {
+                class: "mb-8",
+                "Here's a list of your tasks for this month."
+            }
+            div {
+                class: "bg-muted-light dark:bg-muted-dark px-4 py-2 mx-8 text-sm my-6",
+                BoardRowTitle {}
+                match boards.read().as_ref() {
+                    Some(Some(board_items)) => rsx!(
+                        ul {
+                            class: "mt-1",
+                            if board_items.is_empty() {
+                                li { "no boards found." }
+                            } else {
+                                Fragment {
+                                    for board in board_items {
+                                        BoardRow { board: board.clone() }
                                     }
-                                )
-                            })}
-                    }
-                    div {
-                        class: "bg-blue p-4 rounded-lg",
-                        "If you can see this styled, Tailwind is working!"
-                    }
-                ),
-                Some(None) => rsx!(p { "Failed to load tasks." }),
-                None => rsx!(p { "Loading..." }),
+                                }
+                            }
+                        }
+                    ),
+                    Some(None) => rsx!(p {
+                        class: "text-error-light dark:text-error-dark",
+                        "failed to fetch"
+                    }),
+                    None => rsx!(
+                        ul {
+                            class: "space-y-2 animate-pulse",
+                            for i in 0..3 {
+                                BoardRowSkeleton { i }
+                            }
+                        }
+                    ),
+                }
             }
         }
     }
