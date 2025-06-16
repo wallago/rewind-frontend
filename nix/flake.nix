@@ -23,7 +23,10 @@
           shellHook = ''
             echo "
             🐚 Rust dev shell ready!
-            Run: cargo build / cargo test / etc."
+            Run: dx serve"
+
+            echo "For tailwindcss changes!  
+            Run: tailwindcss -i ./tailwind.css -o ./assets/tailwind.css --watch"
           '';
         };
       });
