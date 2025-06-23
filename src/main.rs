@@ -1,6 +1,6 @@
 use components::{Footer, Navbar, get_dom_token_list};
 use dioxus::prelude::*;
-use views::{Boards, Lists};
+use views::{Boards, Lists, Tasks};
 
 mod components;
 mod views;
@@ -14,8 +14,10 @@ enum Route {
     #[layout(MainLayout)]
         #[route("/")]
         Boards {},
-        #[route("/lists/:uuid")]
+        #[route("/board/:uuid")]
         Lists { uuid: String },
+        #[route("/list/:uuid")]
+        Tasks { uuid: String },
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");

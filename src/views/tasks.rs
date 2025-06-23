@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn Tasks() -> Element {
-    rsx! {}
+pub fn Tasks(uuid: String) -> Element {
+    rsx! { h2 { "List: {uuid}" } }
 }
