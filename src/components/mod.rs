@@ -9,12 +9,16 @@ pub use theme_toggle::ThemeToggle;
 pub use theme_toggle::get_dom_token_list;
 
 mod checkbox;
-pub use checkbox::Checkbox;
+// pub use checkbox::Checkbox;
 
 mod button;
 pub use button::Button;
 
-pub mod modal;
+mod input;
+pub use input::Input;
+
+mod dialog;
+pub use dialog::Board as DialogBoard;
 
 pub mod icons;
 

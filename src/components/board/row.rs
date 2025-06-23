@@ -1,14 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::{
-    Button,
-    board::Board,
-    icons::{More, arrow},
-    list::{
-        List,
-        row::{ListRow, ListRowSkeleton, ListRowTitle},
-    },
-};
+use crate::components::{Button, DialogBoard, board::Board};
 
 #[component]
 pub fn BoardRow(board: Board) -> Element {
@@ -26,7 +18,8 @@ pub fn BoardRow(board: Board) -> Element {
 }
 
 #[component]
-pub fn BoardRowTitle() -> Element {
+pub fn BoardRowTitle(refetch_signal: Signal<u32>) -> Element {
+    let mut is_open = use_signal(|| false);
     rsx!(
         div {
             class: "grid grid-cols-4 gap-4 font-bold",
@@ -37,9 +30,13 @@ pub fn BoardRowTitle() -> Element {
                 class: "flex justify-between",
                 div {}
                 Button {
+                    onclick: move |_| is_open.set(true),
                     "add board"
                 }
             },
+            if (is_open)() {
+                DialogBoard { is_open, refetch_signal }
+            }
         }
     )
 }
