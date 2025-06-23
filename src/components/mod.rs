@@ -15,10 +15,10 @@ mod button;
 pub use button::Button;
 
 mod input;
-pub use input::Input;
+pub use input::{Input, InputProps};
 
 mod dialog;
-pub use dialog::Board as DialogBoard;
+pub use dialog::Dialog;
 
 pub mod icons;
 
