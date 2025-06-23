@@ -5,7 +5,7 @@ module.exports = {
   content: ["./src/**/*.{rs,html,css}", "./dist/**/*.html"],
   variants: {
     extend: {
-      backgroundColor: ["dark", "hover", "dark:hover"],
+      backgroundColor: ["dark", "hover", "dark:hover", "active", "dark:active"],
     },
   },
   theme: {
@@ -17,6 +17,10 @@ module.exports = {
         surface: {
           light: "#dad7cd",
           dark: "#0c1821",
+        },
+        "surface-variant": {
+          light: "#c4c1b9",
+          dark: "#242f37",
         },
         text: {
           light: "#344e41",
