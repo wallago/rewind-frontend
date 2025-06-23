@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn Board() -> Element {
+pub fn Lists() -> Element {
     rsx! {}
 }

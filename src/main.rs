@@ -1,6 +1,6 @@
-use components::{Footer, Navbar, get_dom_token_list, modal};
+use components::{Footer, Navbar, get_dom_token_list};
 use dioxus::prelude::*;
-use views::Home;
+use views::Boards;
 
 mod components;
 mod views;
@@ -13,7 +13,7 @@ struct DarkMode(bool);
 enum Route {
     #[layout(MainLayout)]
         #[route("/")]
-        Home {},
+        Boards {},
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -25,10 +25,6 @@ fn main() {
 
 #[component]
 fn App() -> Element {
-    use_context_provider(|| modal::ModalState {
-        is_open: Signal::new(false),
-    });
-
     use_context_provider(|| {
         let dom_token_list = get_dom_token_list();
         if let Some(dom_token_list) = dom_token_list {
@@ -43,17 +39,18 @@ fn App() -> Element {
         }
     });
 
-    let modal_state = use_context::<modal::ModalState>();
-
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
         div {
-            class: "font-frida dark:bg-surface-dark bg-surface-light dark:text-text-dark text-text-light min-h-screen",
+            class: "
+                relative min-h-screen 
+                font-frida 
+                dark:bg-surface-dark bg-surface-light 
+                dark:text-text-dark text-text-light 
+            ",
+                // min-h-screen min-w-screen
             Router::<Route> {}
-            if (modal_state.is_open)() {
-                modal::Modal {}
-            }
         }
     }
 }

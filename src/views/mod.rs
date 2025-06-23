@@ -1,8 +1,8 @@
-mod board;
-pub use board::Board;
-
-mod home;
-pub use home::Home;
+mod lists;
+// pub use lists::Lists;
 
 mod boards;
 pub use boards::Boards;
+
+mod tasks;
+// pub use tasks::Tasks;
