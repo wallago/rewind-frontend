@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 
 #[derive(PartialEq, Clone, Props)]
 pub struct InputProps {
-    name: String,
-    value: Signal<String>,
+    pub name: String,
+    pub value: Signal<String>,
 }
 
 #[component]
