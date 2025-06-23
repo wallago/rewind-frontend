@@ -3,9 +3,8 @@ use futures_timer::Delay;
 use reqwest::Error;
 use serde::Serialize;
 
-use crate::components::board::Board;
-
-static API: &str = "http://0.0.0.0:8081/api";
+use super::API;
+use crate::views::Board;
 
 pub fn get_boards(refetch_signal: Signal<u32>) -> Resource<Option<Vec<Board>>> {
     use_resource(move || {
