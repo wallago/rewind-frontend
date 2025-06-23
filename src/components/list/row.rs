@@ -1,5 +1,5 @@
 use crate::components::{
-    icons::{More, arrow},
+    icons::{ArrowBottom, More},
     list::List,
     task::{
         Task,
@@ -44,7 +44,7 @@ pub fn ListRow(list: List) -> Element {
                                     class: "ml-1 transition-transform duration-200",
                                     class: if *is_open.read() { "rotate-180" } else { "rotate-0" },
                                     onclick: move |_| is_open.toggle(),
-                                    arrow::Bottom {}
+                                    ArrowBottom {}
                                 }
                             }
                         }
