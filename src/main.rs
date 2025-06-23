@@ -1,6 +1,6 @@
 use components::{Footer, Navbar, get_dom_token_list};
 use dioxus::prelude::*;
-use views::Boards;
+use views::{Boards, Lists};
 
 mod components;
 mod views;
@@ -14,6 +14,8 @@ enum Route {
     #[layout(MainLayout)]
         #[route("/")]
         Boards {},
+        #[route("/lists/:uuid")]
+        Lists { uuid: String },
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -49,7 +51,6 @@ fn App() -> Element {
                 dark:bg-surface-dark bg-surface-light 
                 dark:text-text-dark text-text-light 
             ",
-                // min-h-screen min-w-screen
             Router::<Route> {}
         }
     }

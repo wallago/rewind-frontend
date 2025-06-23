@@ -1,5 +1,5 @@
 mod lists;
-// pub use lists::Lists;
+pub use lists::Lists;
 
 mod boards;
 pub use boards::Boards;
