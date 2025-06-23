@@ -8,12 +8,16 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
-dioxus = { version = "0.6.0", features = ["router", "web"] }
+dioxus = { version = "0.6.0", features = ["router"] }
+dioxus-lib = "0.6.2"
+dioxus-material = "0.3.0"
 dotenvy = "0.15.7"
+futures-timer = "3.0.3"
 reqwest = { version = "0.12.20", features = ["json"] }
 serde = { version = "1.0.219", features = ["derive"] }
 tracing = "0.1.41"
 wasm-bindgen = "0.2.100"
+wasm-bindgen-futures = "0.4.50"
 web-sys = { version = "0.3.77", features = ["DomTokenList"] }
 
 [features]
