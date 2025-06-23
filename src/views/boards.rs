@@ -23,7 +23,11 @@ pub fn Boards() -> Element {
                     "Here's a list of your tasks for this month."
                 }
                 div {
-                    class: "bg-muted-light dark:bg-muted-dark px-4 py-2 mx-8 text-sm my-6",
+                    class: "
+                        bg-muted-light dark:bg-muted-dark 
+                        mx-8 my-6 
+                        text-sm
+                    ",
                     BoardRowTitle { refetch_signal }
                     match boards.read().as_ref() {
                         Some(Some(board_items)) => rsx!(
@@ -34,7 +38,7 @@ pub fn Boards() -> Element {
                                 } else {
                                     Fragment {
                                         for board in board_items {
-                                            BoardRow { board: board.clone() }
+                                            BoardRow { board: board.clone(), refetch_signal }
                                         }
                                     }
                                 }
