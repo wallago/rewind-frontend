@@ -17,6 +17,7 @@
         };
       in {
         devShells.default = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [ pkg-config openssl ];
           buildInputs = with pkgs;
             [ dioxus-cli binaryen wasm-bindgen-cli tailwindcss watchman ]
             ++ [ rust ];
