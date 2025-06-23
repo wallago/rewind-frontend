@@ -10,6 +10,9 @@ module.exports = {
   },
   theme: {
     extend: {
+      captionSide: {
+        bottom: "bottom",
+      },
       fontFamily: {
         frida: ['"Frida Code"', "monospace"],
       },
@@ -17,10 +20,6 @@ module.exports = {
         surface: {
           light: "#dad7cd",
           dark: "#0c1821",
-        },
-        "surface-variant": {
-          light: "#c4c1b9",
-          dark: "#242f37",
         },
         text: {
           light: "#344e41",
