@@ -18,9 +18,9 @@ pub fn Button(props: ClickableProps) -> Element {
         font-medium text-xs
         bg-surface-light dark:bg-surface-dark
         border-2 border-border-light dark:border-border-dark
-        hover:bg-surface-variant-light dark:hover:bg-surface-variant-dark
+        hover:bg-surface-light/50 dark:hover:bg-surface-dark/50
         active:bg-border-light dark:active:bg-border-dark
-        transition duration-400
+        transition-colors duration-200
     ";
 
     let onclick = {

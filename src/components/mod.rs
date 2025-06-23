@@ -22,10 +22,6 @@ pub use dialog::Dialog;
 
 pub mod icons;
 
-pub mod board;
-
-pub mod list;
-
-pub mod task;
-
 pub mod fetch;
+
+pub mod table;
