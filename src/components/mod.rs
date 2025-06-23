@@ -1,27 +1,18 @@
 mod navbar;
 pub use navbar::Navbar;
-
 mod footer;
 pub use footer::Footer;
-
 mod theme_toggle;
-pub use theme_toggle::ThemeToggle;
-pub use theme_toggle::get_dom_token_list;
-
+pub use theme_toggle::{ThemeToggle, get_dom_token_list};
 mod checkbox;
 // pub use checkbox::Checkbox;
-
 mod button;
 pub use button::Button;
-
 mod input;
 pub use input::{Input, InputProps};
-
 mod dialog;
 pub use dialog::Dialog;
-
-pub mod icons;
-
 pub mod fetch;
-
+pub mod icons;
+pub mod layout;
 pub mod table;
