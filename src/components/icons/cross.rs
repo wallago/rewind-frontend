@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn Bottom(props: super::IconProps) -> Element {
+pub fn Cross(props: super::IconProps) -> Element {
     rsx! {
         svg {
             xmlns: "http://www.w3.org/2000/svg",
@@ -10,7 +10,7 @@ pub fn Bottom(props: super::IconProps) -> Element {
             width: props.size,
             class: "fill-text-light dark:fill-text-dark",
             path {
-                d: "M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"
+                d: "m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
             }
         }
     }
