@@ -590,6 +590,14 @@ video {
   grid-column: span 4 / span 4;
 }
 
+.m-2 {
+  margin: 0.5rem;
+}
+
+.m-4 {
+  margin: 1rem;
+}
+
 .mx-4 {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -615,6 +623,11 @@ video {
   margin-bottom: 2rem;
 }
 
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -633,6 +646,18 @@ video {
 
 .mt-1 {
   margin-top: 0.25rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.mb-0 {
+  margin-bottom: 0px;
 }
 
 .flex {
@@ -695,6 +720,14 @@ video {
   width: 100%;
 }
 
+.w-32 {
+  width: 8rem;
+}
+
+.w-20 {
+  width: 5rem;
+}
+
 .flex-grow {
   flex-grow: 1;
 }
@@ -739,6 +772,22 @@ video {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
+.place-items-center {
+  place-items: center;
+}
+
+.place-items-stretch {
+  place-items: stretch;
+}
+
+.content-center {
+  align-content: center;
+}
+
+.content-end {
+  align-content: flex-end;
+}
+
 .items-center {
   align-items: center;
 }
@@ -769,12 +818,22 @@ video {
   margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
+.self-end {
+  align-self: flex-end;
+}
+
 .self-center {
   align-self: center;
 }
 
 .justify-self-end {
   justify-self: end;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rounded {
@@ -844,6 +903,21 @@ video {
   padding-bottom: 0.75rem;
 }
 
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.px-0 {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .pr-4 {
   padding-right: 1rem;
 }
@@ -858,6 +932,10 @@ video {
 
 .pt-6 {
   padding-top: 1.5rem;
+}
+
+.pt-3 {
+  padding-top: 0.75rem;
 }
 
 .font-frida {
@@ -944,6 +1022,11 @@ video {
   background-color: rgb(196 193 185 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-border-light:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(88 129 87 / var(--tw-bg-opacity, 1));
+}
+
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -1002,6 +1085,11 @@ video {
 .dark\:hover\:bg-surface-variant-dark:hover:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(36 47 55 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:hover\:bg-border-dark:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(50 74 95 / var(--tw-bg-opacity, 1));
 }
 
 .dark\:active\:bg-border-dark:active:is(.dark *) {
