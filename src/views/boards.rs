@@ -7,6 +7,7 @@ use crate::{
     components::{
         Button, Dialog, InputProps, fetch,
         icons::{Add, Cross, Settings},
+        layout::Body,
         table::*,
     },
 };
@@ -27,8 +28,7 @@ pub fn Boards() -> Element {
     let new_desc = use_signal(|| "".to_string());
 
     rsx! (
-        div {
-            class: "mx-[5%] px-4 py-3 my-8 border-2 border-border-light dark:border-border-dark",
+         Body {
             p {
                 class: "text-xl font-bold pb-6",
                 "Welcom to your task manager!"
@@ -75,19 +75,8 @@ pub fn Boards() -> Element {
                                             let delete_uuid = uuid.clone();
                                             rsx!(TableRow {
                                                 class: "cursor-pointer",
-                                                // onclick: move |_| {
-                                                //     if !(is_open_delete)() && !(is_open_update)() {
-                                                //         Some(move |_| {
-                                                //             navigator().push(Route::Lists { uuid: uuid.clone() });
-                                                //         })
-                                                //     } else {
-                                                //         None
-                                                //     },
-                                                //     // navigator().push(Route::Lists { uuid: uuid.clone() });
-                                                // },
                                                 onclick: move |_| {
                                                     if !(is_open_delete)() && !(is_open_update)() {
-                                                        tracing::info!("xxx");
                                                         navigator().push(Route::Lists { uuid: uuid.clone() });
                                                     }
                                                 },
