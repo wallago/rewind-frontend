@@ -4,7 +4,6 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn Navbar() -> Element {
-    let mut dark_mode = use_context::<Signal<DarkMode>>();
     rsx! {
         div {
             class: "flex justify-between pt-6 px-4",
