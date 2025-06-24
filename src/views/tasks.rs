@@ -45,6 +45,7 @@ pub fn Tasks(uuid: String) -> Element {
                         }
                         TableHead { "Name" }
                         TableHead { "Description" }
+                        TableHead { "Status" }
                         TableHead {
                             class: Some("text-right".to_string()),
                             DialogAdd { uuid, refetch_signal }
@@ -57,29 +58,26 @@ pub fn Tasks(uuid: String) -> Element {
                         Some(Some(tasks)) => {
                                 if tasks.is_empty() {
                                     rsx!(TableRow { TableCell {
-                                        colspan: Some(4),
+                                        colspan: Some(5),
                                         "No tasks found"
                                     } })
                                 } else {
                                     let tasks = tasks.clone();
                                     rsx!(
                                         {tasks.iter().map(|task| {
-                                            let uuid = task.uuid.clone();
                                             let name = task.name.clone();
                                             let desc = task.description.clone().unwrap_or_default();
+                                            let status = task.status.clone();
+                                            // select and move <3
                                             rsx!(TableRow {
-                                                class: "cursor-pointer hover:bg-muted-light dark:hover:bg-muted-dark",
-                                                // onclick: move |e: MouseEvent| {
-                                                //     e.stop_propagation();
-                                                //     navigator().push(Route::Tasks { uuid: uuid.clone() });
-                                                // },
-
+                                                class: "hover:bg-muted-light dark:hover:bg-muted-dark",
                                                 TableCell {
                                                     class: Some("font-medium".to_string()),
                                                     {task.uuid.clone()}
                                                 }
                                                 TableCell { {name} }
                                                 TableCell { {desc} }
+                                                TableCell { {status} }
                                                 TableCell {
                                                     class: Some("flex justify-end gap-2".to_string()),
                                                     DialogUpdate { refetch_signal, task: task.clone() }
@@ -91,7 +89,7 @@ pub fn Tasks(uuid: String) -> Element {
                             }
                         },
                         _ => rsx!(TableRow { TableCell {
-                            colspan: Some(4),
+                            colspan: Some(5),
                             "Loading..."
                         } }),
                     }
