@@ -37,7 +37,7 @@ pub fn ThemeToggle() -> Element {
 
     rsx! {
         button {
-            class: "self-center w-5 h-5 hover:bg-muted-light dark:hover:bg-muted-dark",
+            class: "self-center w-6 h-6 hover:bg-muted-light dark:hover:bg-muted-dark",
             onclick: move |_| {
                 dark_mode.write().0 = !dark_mode().0;
             },

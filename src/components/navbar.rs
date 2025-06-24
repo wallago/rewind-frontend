@@ -11,7 +11,7 @@ pub fn Navbar() -> Element {
                 class:"flex justify-between pt-6 px-4",
                 id: "navbar",
                 div {
-                    class: "font-semibold text-sm hover:bg-muted-light dark:hover:bg-muted-dark p-1",
+                    class: "font-semibold text-lg hover:bg-muted-light dark:hover:bg-muted-dark p-1",
                     Link {
                         to: Route::Boards {},
                         "Boards"

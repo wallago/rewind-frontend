@@ -48,32 +48,32 @@ pub async fn add_list(list: NewList) -> Result<List, Error> {
     Ok(list)
 }
 
-// pub async fn delete_board(uuid: &str) -> Result<bool, Error> {
-//     let client = reqwest::Client::new();
-//     let response = client.delete(format!("{API}/boards/{uuid}")).send().await?;
-//     if response.status().is_success() {
-//         Ok(true)
-//     } else {
-//         Ok(false)
-//     }
-// }
+pub async fn delete_list(uuid: &str) -> Result<bool, Error> {
+    let client = reqwest::Client::new();
+    let response = client.delete(format!("{API}/lists/{uuid}")).send().await?;
+    if response.status().is_success() {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
 
-// #[derive(Serialize, Clone)]
-// pub struct UpdateBoard {
-//     pub name: Option<String>,
-//     pub description: Option<String>,
-// }
+#[derive(Serialize, Clone)]
+pub struct UpdateList {
+    pub name: Option<String>,
+    pub description: Option<String>,
+}
 
-// pub async fn update_board(uuid: &str, board: UpdateBoard) -> Result<bool, Error> {
-//     let client = reqwest::Client::new();
-//     let response = client
-//         .put(format!("{API}/boards/{uuid}"))
-//         .json(&board)
-//         .send()
-//         .await?;
-//     if response.status().is_success() {
-//         Ok(true)
-//     } else {
-//         Ok(false)
-//     }
-// }
+pub async fn update_list(uuid: &str, list: UpdateList) -> Result<bool, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .put(format!("{API}/lists/{uuid}"))
+        .json(&list)
+        .send()
+        .await?;
+    if response.status().is_success() {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}

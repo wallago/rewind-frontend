@@ -1,45 +1,62 @@
 use dioxus::prelude::*;
 
 #[derive(PartialEq, Clone, Props)]
-pub struct ClickableProps {
+pub struct ButtonProps {
     children: Element,
     #[props(optional)]
     class: Option<String>,
     #[props(optional)]
     onclick: Option<EventHandler<MouseEvent>>,
+    #[props(optional)]
+    r#type: Option<String>,
+    #[props(optional)]
+    pub disabled: Option<bool>,
+    #[props(optional)]
+    pub variant: Option<String>,
 }
 
 #[component]
-pub fn Button(props: ClickableProps) -> Element {
-    let mut active = use_signal(|| false);
-    let default_classes = "
-        button-darken-effect
-        p-1
-        font-medium text-xs
-        bg-surface-light dark:bg-surface-dark
-        border-2 border-border-light dark:border-border-dark
-        hover:bg-surface-light/50 dark:hover:bg-surface-dark/50
-        active:bg-border-light dark:active:bg-border-dark
-        transition-colors duration-200
-    ";
-
-    let onclick = {
-        move |evt| {
-            active.set(true);
-            if let Some(on_user_click) = &props.onclick {
-                on_user_click.call(evt);
-            }
+pub fn Button(props: ButtonProps) -> Element {
+    let variant_class = match props.variant.as_deref() {
+        Some("outline") => {
+            "
+            border-2 border-border-light dark:border-border-dark
+            bg-surface-light dark:bg-surface-dark 
+            text-text-light dark:text-text-dark 
+            fill-text-light dark:fill-text-dark
+            hover:bg-surface-light/80 dark:hover:bg-surface-dark/80
+            active:bg-surface-light/50 dark:active:bg-surface-dark/50
+            "
+        }
+        // Some("ghost") => "hover:bg-accent hover:text-accent-foreground",
+        // Some("destructive") => "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        _ => {
+            "
+            bg-text-light dark:bg-text-dark 
+            text-surface-light dark:text-surface-dark 
+            fill-surface-light dark:fill-surface-dark
+            hover:bg-text-light/80 dark:hover:bg-text-dark/80
+            active:bg-text-light/50 dark:active:bg-text-dark/50
+            "
         }
     };
+
+    let base_class = "p-1 font-medium text-sm transition-colors duration-200";
     rsx!(
         button {
-            onclick: onclick,
             class: format!(
                 "{} {} {}",
-                props.class.clone().unwrap_or_default(),
-                default_classes,
-                if *active.read() { " active" } else { "" }
+                base_class,
+                variant_class,
+                props.class.clone().unwrap_or_default()
             ),
+            r#type: props.r#type.clone().unwrap_or("button".into()),
+            disabled: props.disabled.unwrap_or(false),
+            onclick: move |e: MouseEvent| {
+                if let Some(handler) = &props.onclick {
+                    handler.call(e);
+                }
+            },
             {props.children}
         }
     )

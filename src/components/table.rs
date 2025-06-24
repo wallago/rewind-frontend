@@ -47,10 +47,15 @@ pub fn TableHeader(props: TableProps) -> Element {
 pub fn TableRow(props: TableProps) -> Element {
     rsx!(
         tr {
-            onclick: props.onclick.clone().unwrap_or_default(),
+            onclick: move |e: MouseEvent| {
+                e.stop_propagation();
+                if let Some(handler) = &props.onclick {
+                    handler.call(e);
+                }
+            },
+
             class: format!("
                        border-b-2 border-border-light dark:border-border-dark 
-                       hover:bg-muted-light
                        {}", props.class.unwrap_or_default()),
             {props.children}
         }

@@ -8,7 +8,6 @@ pub fn Bottom(props: super::IconProps) -> Element {
             height: props.size.clone(),
             view_box: "0 -960 960 960",
             width: props.size,
-            class: "fill-text-light dark:fill-text-dark",
             path {
                 d: "M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"
             }

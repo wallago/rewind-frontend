@@ -8,7 +8,6 @@ pub fn Cross(props: super::IconProps) -> Element {
             height: props.size.clone(),
             view_box: "0 -960 960 960",
             width: props.size,
-            class: "fill-text-light dark:fill-text-dark",
             path {
                 d: "m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
             }

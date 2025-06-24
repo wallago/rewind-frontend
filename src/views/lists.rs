@@ -5,7 +5,9 @@ use wasm_bindgen_futures::spawn_local;
 use crate::{
     Route,
     components::{
-        Button, Dialog, InputProps, fetch,
+        Button, Input, Label,
+        dialog::*,
+        fetch,
         icons::{Add, Cross, Settings},
         layout::Body,
         table::*,
@@ -22,13 +24,11 @@ pub struct List {
 
 #[component]
 pub fn Lists(uuid: String) -> Element {
-    let mut refetch_signal = use_signal(|| 0);
+    let refetch_signal = use_signal(|| 0);
     let lists = fetch::lists::get_lists(uuid.clone(), refetch_signal);
-    let mut is_open_add = use_signal(|| false);
-    let new_name = use_signal(|| "".to_string());
-    let new_desc = use_signal(|| "".to_string());
-    rsx! {
-        Body {
+
+    rsx! (
+         Body {
             p {
                 class: "text-sm font-semibold pb-6",
                 "Board: {uuid}"
@@ -45,19 +45,19 @@ pub fn Lists(uuid: String) -> Element {
                         TableHead { "Description" }
                         TableHead {
                             class: Some("text-right".to_string()),
-                            Button {
-                                class: "hover:bg-muted-light dark:hover:bg-muted-dark",
-                                onclick: move |_| is_open_add.set(true),
-                                Add { size: "14px"}
-                            }
+                            DialogAdd { uuid, refetch_signal }
                         }
                     }
                 }
+
                 TableBody {
                     match lists() {
                         Some(Some(lists)) => {
                                 if lists.is_empty() {
-                                    rsx!(TableRow { TableCell { "No lists found" } })
+                                    rsx!(TableRow { TableCell {
+                                        colspan: Some(4),
+                                        "No lists found"
+                                    } })
                                 } else {
                                     let lists = lists.clone();
                                     rsx!(
@@ -65,19 +65,11 @@ pub fn Lists(uuid: String) -> Element {
                                             let uuid = list.uuid.clone();
                                             let name = list.name.clone();
                                             let desc = list.description.clone().unwrap_or_default();
-                                            let current_name = use_signal(|| name.clone());
-                                            let current_desc = use_signal(|| desc.clone());
-                                            let mut is_open_delete = use_signal(|| false);
-                                            let mut is_open_update = use_signal(|| false);
-
-                                            let update_uuid = uuid.clone();
-                                            let delete_uuid = uuid.clone();
                                             rsx!(TableRow {
-                                                class: "cursor-pointer",
-                                                onclick: move |_| {
-                                                    if !(is_open_delete)() && !(is_open_update)() {
-                                                        navigator().push(Route::Tasks { uuid: uuid.clone() });
-                                                    }
+                                                class: "cursor-pointer hover:bg-muted-light dark:hover:bg-muted-dark",
+                                                onclick: move |e: MouseEvent| {
+                                                    e.stop_propagation();
+                                                    navigator().push(Route::Tasks { uuid: uuid.clone() });
                                                 },
 
                                                 TableCell {
@@ -87,120 +79,137 @@ pub fn Lists(uuid: String) -> Element {
                                                 TableCell { {name} }
                                                 TableCell { {desc} }
                                                 TableCell {
-                                                    class: Some("text-right".to_string()),
-                                                    Button {
-                                                        onclick: move |evt: MouseEvent| {
-                                                            evt.stop_propagation();
-                                                            is_open_update.set(true)
-                                                        },
-                                                        class: "mr-2",
-                                                        Settings { size: "14px".to_string() }
-                                                    }
-                                                    Button {
-                                                        onclick: move |evt: MouseEvent| {
-                                                            evt.stop_propagation();
-                                                            is_open_delete.set(true)
-                                                        },
-                                                        Cross { size: "14px".to_string() }
-                                                    }
-                                                    if (is_open_update)() {
-                                                        Dialog {
-                                                            is_open:is_open_update,
-                                                            title: format!("Update List {}", list.uuid),
-                                                            inputs: Some([
-                                                                InputProps { name: String::from("name"), value: current_name},
-                                                                InputProps { name: String::from("desc"), value: current_desc},
-                                                            ].to_vec()),
-                                                            // onclick: Some(EventHandler::new(move |_| {
-                                                            //     let uuid = update_uuid.clone();
-                                                            //     spawn_local(async move {
-                                                            //         let list = fetch::lists::UpdateBoard {
-                                                            //             name: Some(current_name()),
-                                                            //             description: Some(current_desc()),
-                                                            //         };
-
-                                                            //         match fetch::lists::update_board(&uuid ,board).await {
-                                                            //             Ok(true) => refetch_signal.set( refetch_signal() + 1),
-                                                            //             Ok(false) => tracing::error!("Update board failed"),
-                                                            //             Err(err) => tracing::error!("Update board failed with: {err}")
-                                                            //         }
-                                                            //     });
-                                                            // })),
-                                                            div {
-                                                                class:"
-                                                                    h-1 w-full
-                                                                    bg-border-light dark:bg-border-dark
-                                                                    " 
-                                                            }
-
-                                                        }
-                                                    }
-                                                    if (is_open_delete)() {
-                                                        Dialog {
-                                                            is_open:is_open_delete,
-                                                            title: format!("Delete List {}", list.uuid),
-                                                            // onclick: Some(EventHandler::new(move |_| {
-                                                            //     let uuid = delete_uuid.clone();
-                                                            //     spawn_local(async move {
-                                                            //         match fetch::lists::delete_board(&uuid).await {
-                                                            //             Ok(true) => refetch_signal.set( refetch_signal() + 1),
-                                                            //             Ok(false) => tracing::error!("Delete board failed"),
-                                                            //             Err(err) => tracing::error!("Delete board failed with: {err}")
-                                                            //         }
-                                                            //     });
-                                                            // })),
-                                                            div {
-                                                                class:"
-                                                                    h-1 w-full
-                                                                    bg-border-light dark:bg-border-dark
-                                                                    " 
-                                                            }
-
-                                                        }
-                                                    }
-
+                                                    class: Some("flex justify-end gap-2".to_string()),
+                                                    DialogUpdate { refetch_signal, list: list.clone() }
+                                                    DialogDelete { refetch_signal,  list: list.clone() }
                                                 }
                                             })
                                         })}
                                 )
                             }
                         },
-                        _ => rsx!(TableRow { TableCell { "Loading..." } }),
+                        _ => rsx!(TableRow { TableCell {
+                            colspan: Some(4),
+                            "Loading..."
+                        } }),
                     }
                 }
             }
         }
-        if (is_open_add)() {
-            Dialog {
-                is_open:is_open_add,
-                title: "Add List",
-                inputs: Some([
-                    InputProps { name: String::from("name"), value: new_name},
-                    InputProps { name: String::from("desc"), value: new_desc},
-                ].to_vec()),
-                onclick: Some(EventHandler::new(move |_| {
-                    let uuid = uuid.clone();
-                    spawn_local(async move {
-                        let list = fetch::lists::NewList {
-                            name: new_name(),
-                            description: Some(new_desc()),
-                            board_uuid: uuid,
-                        };
+    )
+}
 
-                        match fetch::lists::add_list(list).await {
-                            Ok(_) => refetch_signal.set( refetch_signal() + 1),
-                            Err(err) => tracing::error!("Add list failed with: {err}"),
-                        }
-                    });
-                })),
-                div {
-                    class:"
-                        h-1 w-full
-                        bg-border-light dark:bg-border-dark
-                    " 
+#[component]
+pub fn DialogAdd(uuid: String, refetch_signal: Signal<u32>) -> Element {
+    let name = use_signal(|| "X".to_string());
+    let description = use_signal(|| "".to_string());
+
+    rsx!(DialogForm {
+        title: String::from("Add List"),
+        description: Some(String::from("Create a new list.")),
+        submit: Some(EventHandler::new(move |_| {
+            let uuid = uuid.clone();
+            spawn_local(async move {
+                let list = fetch::lists::NewList {
+                    name: name(),
+                    description: Some(description()),
+                    board_uuid: uuid,
+                };
+
+                match fetch::lists::add_list(list).await {
+                    Ok(_) => refetch_signal.set(refetch_signal() + 1),
+                    Err(err) => tracing::error!("Add list failed with: {err}"),
                 }
-
+            });
+        })),
+        trigger: rsx!(Button {
+            Add { size: "14px"}
+        }),
+        form: rsx!(
+            div {
+                class: "grid gap-3",
+                Label { "Name" }
+                Input {
+                    name: "name",
+                    value: name
+                }
             }
-        }
-    }
+            div {
+                class: "grid gap-3",
+                Label { "Description" }
+                Input {
+                    class: "",
+                    name: "description",
+                    value:description
+                }
+            }
+        )
+    })
+}
+
+#[component]
+pub fn DialogUpdate(refetch_signal: Signal<u32>, list: List) -> Element {
+    let name = use_signal(|| list.name);
+    let description = use_signal(|| list.description.unwrap_or_default());
+
+    rsx!(DialogForm {
+        title: String::from("Update List"),
+        description: Some(String::from("Edit your list.")),
+        submit: Some(EventHandler::new(move |_| {
+            let uuid = list.uuid.clone();
+            spawn_local(async move {
+                let list = fetch::lists::UpdateList {
+                    name: Some(name()),
+                    description: Some(description()),
+                };
+
+                match fetch::lists::update_list(&uuid, list).await {
+                    Ok(_) => refetch_signal.set(refetch_signal() + 1),
+                    Err(err) => tracing::error!("Update list failed with: {err}"),
+                }
+            });
+        })),
+        trigger: rsx!(Button {
+            Settings { size: "14px"}
+        }),
+        form: rsx!(
+            div {
+                class: "grid gap-3",
+                Label { "Name" }
+                Input {
+                    name: "name",
+                    value: name
+                }
+            }
+            div {
+                class: "grid gap-3",
+                Label { "Description" }
+                Input {
+                    class: "",
+                    name: "description",
+                    value:description
+                }
+            }
+        )
+    })
+}
+
+#[component]
+pub fn DialogDelete(refetch_signal: Signal<u32>, list: List) -> Element {
+    rsx!(DialogSimple {
+        title: String::from("Delete List"),
+        description: Some(String::from("Erase your list.")),
+        submit: Some(EventHandler::new(move |_| {
+            let uuid = list.uuid.clone();
+            spawn_local(async move {
+                match fetch::lists::delete_list(&uuid).await {
+                    Ok(_) => refetch_signal.set(refetch_signal() + 1),
+                    Err(err) => tracing::error!("Update list failed with: {err}"),
+                }
+            });
+        })),
+        trigger: rsx!(Button {
+            Cross { size: "14px"}
+        }),
+    })
 }
