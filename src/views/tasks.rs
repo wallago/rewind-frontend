@@ -2,16 +2,13 @@ use dioxus::prelude::*;
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 
-use crate::{
-    Route,
-    components::{
-        Button, Input, Label,
-        dialog::*,
-        fetch,
-        icons::{Add, Cross, Settings},
-        layout::Body,
-        table::*,
-    },
+use crate::components::{
+    Button, Input, Label,
+    dialog::*,
+    fetch,
+    icons::{Add, Cross, Settings},
+    layout::Body,
+    table::*,
 };
 
 #[derive(Deserialize, Debug, Clone, PartialEq)]
@@ -22,11 +19,12 @@ pub struct Task {
     description: Option<String>,
     position: i32,
     status: String,
+    priority: String,
 }
 
 #[component]
 pub fn Tasks(uuid: String) -> Element {
-    let refetch_signal = use_signal(|| 0);
+    let mut refetch_signal = use_signal(|| 0);
     let tasks = fetch::tasks::get_tasks(uuid.clone(), refetch_signal);
 
     rsx! (
@@ -48,7 +46,7 @@ pub fn Tasks(uuid: String) -> Element {
                         TableHead { "Status" }
                         TableHead {
                             class: Some("text-right".to_string()),
-                            DialogAdd { uuid, refetch_signal }
+                            DialogAdd { uuid, refetch_signal, tasks }
                         }
                     }
                 }
@@ -63,14 +61,33 @@ pub fn Tasks(uuid: String) -> Element {
                                     } })
                                 } else {
                                     let tasks = tasks.clone();
+                                    let mut dragging_task_uuid = use_signal(|| None::<String>);
                                     rsx!(
                                         {tasks.iter().map(|task| {
                                             let name = task.name.clone();
                                             let desc = task.description.clone().unwrap_or_default();
                                             let status = task.status.clone();
-                                            // select and move <3
+
+                                            let dragged_uuid_from = task.uuid.clone();
+                                            let dragged_uuid_to = task.uuid.clone();
                                             rsx!(TableRow {
                                                 class: "hover:bg-muted-light dark:hover:bg-muted-dark",
+                                                draggable: Some(true),
+                                                ondragstart: Some(EventHandler::new(move |_: DragEvent| {
+                                                    dragging_task_uuid.set(Some(dragged_uuid_from.clone()));
+                                                })),
+                                                ondrop: Some(EventHandler::new(move |_: DragEvent| {
+                                                    let uuid_to = dragged_uuid_to.clone();
+                                                    if let Some(uuid_from) = dragging_task_uuid() {
+                                                        spawn_local(async move {
+                                                            match fetch::tasks::switch_tasks(&uuid_from, &uuid_to).await {
+                                                                Ok(_) => refetch_signal.set(refetch_signal() + 1),
+                                                                Err(err) => tracing::error!("Update task failed with: {err}"),
+                                                            }
+                                                        })
+                                                    }
+                                                })),
+
                                                 TableCell {
                                                     class: Some("font-medium".to_string()),
                                                     {task.uuid.clone()}
@@ -100,9 +117,40 @@ pub fn Tasks(uuid: String) -> Element {
 }
 
 #[component]
-pub fn DialogAdd(uuid: String, refetch_signal: Signal<u32>) -> Element {
+pub fn DialogAdd(
+    uuid: String,
+    refetch_signal: Signal<u32>,
+    tasks: Resource<Option<Vec<Task>>>,
+) -> Element {
     let name = use_signal(|| "X".to_string());
     let description = use_signal(|| "".to_string());
+
+    let position = match tasks() {
+        Some(Some(tasks)) => {
+            let mut used_positions: Vec<i32> = tasks.iter().map(|task| task.position).collect();
+            used_positions.sort_unstable();
+            used_positions.dedup();
+
+            let mut next_position = 0;
+
+            for &pos in &used_positions {
+                if pos == next_position {
+                    next_position += 1;
+                } else if pos > next_position {
+                    break;
+                }
+            }
+
+            next_position
+        }
+        Some(None) => 0,
+        None => {
+            return rsx!(Button {
+                disabled: true,
+                Add { size: "14px"}
+            });
+        }
+    };
 
     rsx!(DialogForm {
         title: String::from("Add Task"),
@@ -114,8 +162,9 @@ pub fn DialogAdd(uuid: String, refetch_signal: Signal<u32>) -> Element {
                     name: name(),
                     description: Some(description()),
                     list_uuid: uuid,
-                    position: 1,
+                    position: position,
                     status: String::from("Todo"),
+                    priority: String::from("Medium"),
                 };
 
                 match fetch::tasks::add_task(task).await {
@@ -165,6 +214,7 @@ pub fn DialogUpdate(refetch_signal: Signal<u32>, task: Task) -> Element {
                     description: Some(description()),
                     position: None,
                     status: None,
+                    priority: None,
                 };
 
                 match fetch::tasks::update_task(&uuid, task).await {

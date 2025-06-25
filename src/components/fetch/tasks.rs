@@ -36,6 +36,7 @@ pub struct NewTask {
     pub list_uuid: String,
     pub position: i32,
     pub status: String,
+    pub priority: String,
 }
 
 pub async fn add_task(task: NewTask) -> Result<Task, Error> {
@@ -66,6 +67,7 @@ pub struct UpdateTask {
     pub description: Option<String>,
     pub position: Option<i32>,
     pub status: Option<String>,
+    pub priority: Option<String>,
 }
 
 pub async fn update_task(uuid: &str, task: UpdateTask) -> Result<bool, Error> {
@@ -73,6 +75,20 @@ pub async fn update_task(uuid: &str, task: UpdateTask) -> Result<bool, Error> {
     let response = client
         .put(format!("{API}/tasks/{uuid}"))
         .json(&task)
+        .send()
+        .await?;
+    if response.status().is_success() {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
+pub async fn switch_tasks(uuid_from: &str, uuid_to: &str) -> Result<bool, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .put(format!("{API}/tasks/switch"))
+        .json(&(uuid_from, uuid_to))
         .send()
         .await?;
     if response.status().is_success() {
