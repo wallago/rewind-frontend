@@ -5,7 +5,7 @@ use wasm_bindgen_futures::spawn_local;
 use crate::{
     Route,
     components::{
-        Button, Input, Label,
+        Button, Input, Label, Textarea,
         dialog::*,
         fetch,
         icons::{Add, Cross, Settings},
@@ -71,7 +71,7 @@ pub fn Lists(uuid: String) -> Element {
                                             let dragged_uuid_from = list.uuid.clone();
                                             let dragged_uuid_to = list.uuid.clone();
                                             rsx!(TableRow {
-                                                class: "cursor-pointer hover:bg-muted-light dark:hover:bg-muted-dark",
+                                                class: "cursor-pointer hover:bg-surface-variant-light dark:hover:bg-surface-variant-dark",
                                                 onclick: move |e: MouseEvent| {
                                                     e.stop_propagation();
                                                     navigator().push(Route::Tasks { uuid: uuid.clone() });
@@ -189,10 +189,9 @@ pub fn DialogAdd(
             div {
                 class: "grid gap-3",
                 Label { "Description" }
-                Input {
-                    class: "",
+                Textarea {
                     name: "description",
-                    value:description
+                    value: description
                 }
             }
         )
@@ -237,10 +236,9 @@ pub fn DialogUpdate(refetch_signal: Signal<u32>, list: List) -> Element {
             div {
                 class: "grid gap-3",
                 Label { "Description" }
-                Input {
-                    class: "",
+                Textarea {
                     name: "description",
-                    value:description
+                    value: description
                 }
             }
         )
