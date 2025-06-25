@@ -3,7 +3,7 @@ use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::components::{
-    Button, Input, Label,
+    Button, Input, Label, Select, Textarea,
     dialog::*,
     fetch,
     icons::{Add, Cross, Empty, Full, Half, Label as LabelIcon, Settings},
@@ -71,12 +71,12 @@ pub fn Tasks(uuid: String) -> Element {
                                         {tasks.iter().map(|task| {
                                             let name = task.name.clone();
                                             let desc = task.description.clone().unwrap_or_default();
-                                            let status = task.status.clone();
 
                                             let dragged_uuid_from = task.uuid.clone();
                                             let dragged_uuid_to = task.uuid.clone();
                                             rsx!(TableRow {
-                                                class: "hover:bg-muted-light dark:hover:bg-muted-dark",
+
+                                                class: "hover:bg-surface-variant-light dark:hover:bg-surface-variant-dark",
                                                 draggable: Some(true),
                                                 ondragstart: Some(EventHandler::new(move |_: DragEvent| {
                                                     dragging_task_uuid.set(Some(dragged_uuid_from.clone()));
@@ -160,8 +160,10 @@ pub fn DialogAdd(
     refetch_signal: Signal<u32>,
     tasks: Resource<Option<Vec<Task>>>,
 ) -> Element {
-    let name = use_signal(|| "X".to_string());
+    let name = use_signal(|| "".to_string());
     let description = use_signal(|| "".to_string());
+    let status = use_signal(|| Some("Todo".to_string()));
+    let priority = use_signal(|| Some("Medium".to_string()));
 
     let position = match tasks() {
         Some(Some(tasks)) => {
@@ -201,8 +203,8 @@ pub fn DialogAdd(
                     description: Some(description()),
                     list_uuid: uuid,
                     position: position,
-                    status: String::from("Todo"),
-                    priority: String::from("Medium"),
+                    status: status().unwrap_or("Todo".to_string()),
+                    priority: priority().unwrap_or("Medium".to_string()),
                 };
 
                 match fetch::tasks::add_task(task).await {
@@ -226,10 +228,35 @@ pub fn DialogAdd(
             div {
                 class: "grid gap-3",
                 Label { "Description" }
-                Input {
-                    class: "",
+                Textarea {
                     name: "description",
-                    value:description
+                    value: description
+                }
+            }
+            div {
+                class: "grid gap-3",
+                Label { "Status" }
+                Select {
+                    name: "status",
+                    options: [
+                        ("Todo".to_string(),"Todo".to_string()),
+                        ("InProgress".to_string(),"In Progress".to_string()),
+                        ("Done".to_string(),"Done".to_string())
+                    ].to_vec(),
+                    selected: status
+                }
+            }
+            div {
+                class: "grid gap-3",
+                Label { "Priority" }
+                Select {
+                    name: "priority",
+                    options: [
+                        ("Low".to_string(),"Low".to_string()),
+                        ("Medium".to_string(),"Medium".to_string()),
+                        ("High".to_string(),"High".to_string())
+                    ].to_vec(),
+                    selected: priority
                 }
             }
         )
@@ -240,6 +267,8 @@ pub fn DialogAdd(
 pub fn DialogUpdate(refetch_signal: Signal<u32>, task: Task) -> Element {
     let name = use_signal(|| task.name);
     let description = use_signal(|| task.description.unwrap_or_default());
+    let status = use_signal(|| Some(task.status));
+    let priority = use_signal(|| Some(task.priority));
 
     rsx!(DialogForm {
         title: String::from("Update Task"),
@@ -251,8 +280,8 @@ pub fn DialogUpdate(refetch_signal: Signal<u32>, task: Task) -> Element {
                     name: Some(name()),
                     description: Some(description()),
                     position: None,
-                    status: None,
-                    priority: None,
+                    status: status(),
+                    priority: priority(),
                 };
 
                 match fetch::tasks::update_task(&uuid, task).await {
@@ -276,10 +305,35 @@ pub fn DialogUpdate(refetch_signal: Signal<u32>, task: Task) -> Element {
             div {
                 class: "grid gap-3",
                 Label { "Description" }
-                Input {
-                    class: "",
+                Textarea {
                     name: "description",
-                    value:description
+                    value: description
+                }
+            }
+            div {
+                class: "grid gap-3",
+                Label { "Status" }
+                Select {
+                    name: "status",
+                    options: [
+                        ("Todo".to_string(),"Todo".to_string()),
+                        ("InProgress".to_string(),"In Progress".to_string()),
+                        ("Done".to_string(),"Done".to_string())
+                    ].to_vec(),
+                    selected: status
+                }
+            }
+            div {
+                class: "grid gap-3",
+                Label { "Priority" }
+                Select {
+                    name: "priority",
+                    options: [
+                        ("Low".to_string(),"Low".to_string()),
+                        ("Medium".to_string(),"Medium".to_string()),
+                        ("High".to_string(),"High".to_string())
+                    ].to_vec(),
+                    selected: priority
                 }
             }
         )
