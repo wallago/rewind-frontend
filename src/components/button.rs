@@ -24,7 +24,7 @@ pub fn Button(props: ButtonProps) -> Element {
             bg-surface-light dark:bg-surface-dark 
             text-text-light dark:text-text-dark 
             fill-text-light dark:fill-text-dark
-            hover:bg-surface-light/80 dark:hover:bg-surface-dark/80
+            hover:bg-surface-variant-light dark:hover:bg-surface-variant-dark
             active:bg-surface-light/50 dark:active:bg-surface-dark/50
             "
         }
