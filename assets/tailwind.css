@@ -634,6 +634,10 @@ video {
   height: 3rem;
 }
 
+.h-2 {
+  height: 0.5rem;
+}
+
 .h-4 {
   height: 1rem;
 }
@@ -644,6 +648,10 @@ video {
 
 .min-h-screen {
   min-height: 100vh;
+}
+
+.w-2 {
+  width: 0.5rem;
 }
 
 .w-4 {
@@ -660,6 +668,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-10 {
+  width: 2.5rem;
 }
 
 .max-w-md {
@@ -749,6 +761,11 @@ video {
   background-color: rgb(0 0 0 / 0.5);
 }
 
+.bg-medium-light {
+  --tw-bg-opacity: 1;
+  background-color: rgb(222 199 70 / var(--tw-bg-opacity, 1));
+}
+
 .bg-muted-light {
   --tw-bg-opacity: 1;
   background-color: rgb(163 177 138 / var(--tw-bg-opacity, 1));
@@ -770,6 +787,14 @@ video {
 
 .fill-text-light {
   fill: #344e41;
+}
+
+.fill-medium-light {
+  fill: #DEC746;
+}
+
+.fill-muted-light {
+  fill: #a3b18a;
 }
 
 .p-1 {
@@ -815,6 +840,10 @@ video {
 
 .text-left {
   text-align: left;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .text-right {
@@ -883,6 +912,21 @@ video {
   color: rgb(52 78 65 / 0.7);
 }
 
+.text-medium-light {
+  --tw-text-opacity: 1;
+  color: rgb(222 199 70 / var(--tw-text-opacity, 1));
+}
+
+.text-high-light {
+  --tw-text-opacity: 1;
+  color: rgb(252 119 83 / var(--tw-text-opacity, 1));
+}
+
+.text-low-light {
+  --tw-text-opacity: 1;
+  color: rgb(145 203 187 / var(--tw-text-opacity, 1));
+}
+
 .shadow-xl {
   --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
@@ -948,6 +992,11 @@ video {
   border-color: rgb(50 74 95 / var(--tw-border-opacity, 1));
 }
 
+.dark\:bg-medium-dark:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(244 211 94 / var(--tw-bg-opacity, 1));
+}
+
 .dark\:bg-muted-light:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(163 177 138 / var(--tw-bg-opacity, 1));
@@ -987,6 +1036,21 @@ video {
 
 .dark\:text-text-dark\/70:is(.dark *) {
   color: rgb(204 201 220 / 0.7);
+}
+
+.dark\:text-high-dark:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(214 73 51 / var(--tw-text-opacity, 1));
+}
+
+.dark\:text-low-dark:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(90 170 149 / var(--tw-text-opacity, 1));
+}
+
+.dark\:text-medium-dark:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(244 211 94 / var(--tw-text-opacity, 1));
 }
 
 .dark\:hover\:bg-muted-dark:hover:is(.dark *) {
