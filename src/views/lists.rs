@@ -20,11 +20,12 @@ pub struct List {
     board_uuid: String,
     name: String,
     description: Option<String>,
+    position: i32,
 }
 
 #[component]
 pub fn Lists(uuid: String) -> Element {
-    let refetch_signal = use_signal(|| 0);
+    let mut refetch_signal = use_signal(|| 0);
     let lists = fetch::lists::get_lists(uuid.clone(), refetch_signal);
 
     rsx! (
@@ -45,7 +46,7 @@ pub fn Lists(uuid: String) -> Element {
                         TableHead { "Description" }
                         TableHead {
                             class: Some("text-right".to_string()),
-                            DialogAdd { uuid, refetch_signal }
+                            DialogAdd { uuid, refetch_signal, lists }
                         }
                     }
                 }
@@ -60,17 +61,36 @@ pub fn Lists(uuid: String) -> Element {
                                     } })
                                 } else {
                                     let lists = lists.clone();
+                                    let mut dragging_list_uuid = use_signal(|| None::<String>);
                                     rsx!(
                                         {lists.iter().map(|list| {
                                             let uuid = list.uuid.clone();
                                             let name = list.name.clone();
                                             let desc = list.description.clone().unwrap_or_default();
+
+                                            let dragged_uuid_from = list.uuid.clone();
+                                            let dragged_uuid_to = list.uuid.clone();
                                             rsx!(TableRow {
                                                 class: "cursor-pointer hover:bg-muted-light dark:hover:bg-muted-dark",
                                                 onclick: move |e: MouseEvent| {
                                                     e.stop_propagation();
                                                     navigator().push(Route::Tasks { uuid: uuid.clone() });
                                                 },
+                                                draggable: Some(true),
+                                                ondragstart: Some(EventHandler::new(move |_: DragEvent| {
+                                                    dragging_list_uuid.set(Some(dragged_uuid_from.clone()));
+                                                })),
+                                                ondrop: Some(EventHandler::new(move |_: DragEvent| {
+                                                    let uuid_to = dragged_uuid_to.clone();
+                                                    if let Some(uuid_from) = dragging_list_uuid() {
+                                                        spawn_local(async move {
+                                                            match fetch::lists::switch_lists(&uuid_from, &uuid_to).await {
+                                                                Ok(_) => refetch_signal.set(refetch_signal() + 1),
+                                                                Err(err) => tracing::error!("Update list failed with: {err}"),
+                                                            }
+                                                        })
+                                                    }
+                                                })),
 
                                                 TableCell {
                                                     class: Some("font-medium".to_string()),
@@ -100,9 +120,40 @@ pub fn Lists(uuid: String) -> Element {
 }
 
 #[component]
-pub fn DialogAdd(uuid: String, refetch_signal: Signal<u32>) -> Element {
+pub fn DialogAdd(
+    uuid: String,
+    refetch_signal: Signal<u32>,
+    lists: Resource<Option<Vec<List>>>,
+) -> Element {
     let name = use_signal(|| "X".to_string());
     let description = use_signal(|| "".to_string());
+
+    let position = match lists() {
+        Some(Some(lists)) => {
+            let mut used_positions: Vec<i32> = lists.iter().map(|list| list.position).collect();
+            used_positions.sort_unstable();
+            used_positions.dedup();
+
+            let mut next_position = 0;
+
+            for &pos in &used_positions {
+                if pos == next_position {
+                    next_position += 1;
+                } else if pos > next_position {
+                    break;
+                }
+            }
+
+            next_position
+        }
+        Some(None) => 0,
+        None => {
+            return rsx!(Button {
+                disabled: true,
+                Add { size: "14px"}
+            });
+        }
+    };
 
     rsx!(DialogForm {
         title: String::from("Add List"),
@@ -114,6 +165,7 @@ pub fn DialogAdd(uuid: String, refetch_signal: Signal<u32>) -> Element {
                     name: name(),
                     description: Some(description()),
                     board_uuid: uuid,
+                    position: position,
                 };
 
                 match fetch::lists::add_list(list).await {
@@ -161,6 +213,7 @@ pub fn DialogUpdate(refetch_signal: Signal<u32>, list: List) -> Element {
                 let list = fetch::lists::UpdateList {
                     name: Some(name()),
                     description: Some(description()),
+                    position: None,
                 };
 
                 match fetch::lists::update_list(&uuid, list).await {

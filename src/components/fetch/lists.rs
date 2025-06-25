@@ -34,6 +34,7 @@ pub struct NewList {
     pub name: String,
     pub board_uuid: String,
     pub description: Option<String>,
+    pub position: i32,
 }
 
 pub async fn add_list(list: NewList) -> Result<List, Error> {
@@ -62,6 +63,7 @@ pub async fn delete_list(uuid: &str) -> Result<bool, Error> {
 pub struct UpdateList {
     pub name: Option<String>,
     pub description: Option<String>,
+    pub position: Option<i32>,
 }
 
 pub async fn update_list(uuid: &str, list: UpdateList) -> Result<bool, Error> {
@@ -69,6 +71,20 @@ pub async fn update_list(uuid: &str, list: UpdateList) -> Result<bool, Error> {
     let response = client
         .put(format!("{API}/lists/{uuid}"))
         .json(&list)
+        .send()
+        .await?;
+    if response.status().is_success() {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
+pub async fn switch_lists(uuid_from: &str, uuid_to: &str) -> Result<bool, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .put(format!("{API}/lists/switch"))
+        .json(&(uuid_from, uuid_to))
         .send()
         .await?;
     if response.status().is_success() {
