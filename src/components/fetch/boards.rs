@@ -32,6 +32,7 @@ pub fn get_boards(refetch_signal: Signal<u32>) -> Resource<Option<Vec<Board>>> {
 pub struct NewBoard {
     pub name: String,
     pub description: Option<String>,
+    pub position: i32,
 }
 
 pub async fn add_board(board: NewBoard) -> Result<Board, Error> {
@@ -60,6 +61,7 @@ pub async fn delete_board(uuid: &str) -> Result<bool, Error> {
 pub struct UpdateBoard {
     pub name: Option<String>,
     pub description: Option<String>,
+    pub position: Option<i32>,
 }
 
 pub async fn update_board(uuid: &str, board: UpdateBoard) -> Result<bool, Error> {
@@ -67,6 +69,20 @@ pub async fn update_board(uuid: &str, board: UpdateBoard) -> Result<bool, Error>
     let response = client
         .put(format!("{API}/boards/{uuid}"))
         .json(&board)
+        .send()
+        .await?;
+    if response.status().is_success() {
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
+pub async fn switch_boards(uuid_from: &str, uuid_to: &str) -> Result<bool, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .put(format!("{API}/boards/switch"))
+        .json(&(uuid_from, uuid_to))
         .send()
         .await?;
     if response.status().is_success() {
