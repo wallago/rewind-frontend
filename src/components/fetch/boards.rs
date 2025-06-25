@@ -1,10 +1,9 @@
 use dioxus::prelude::*;
 use futures_timer::Delay;
 use reqwest::Error;
-use serde::Serialize;
 
 use super::API;
-use crate::views::Board;
+use crate::components::models::*;
 
 pub fn get_boards(refetch_signal: Signal<u32>) -> Resource<Option<Vec<Board>>> {
     use_resource(move || {
@@ -28,13 +27,6 @@ pub fn get_boards(refetch_signal: Signal<u32>) -> Resource<Option<Vec<Board>>> {
     })
 }
 
-#[derive(Serialize, Clone)]
-pub struct NewBoard {
-    pub name: String,
-    pub description: Option<String>,
-    pub position: i32,
-}
-
 pub async fn add_board(board: NewBoard) -> Result<Board, Error> {
     let client = reqwest::Client::new();
     let response = client
@@ -55,13 +47,6 @@ pub async fn delete_board(uuid: &str) -> Result<bool, Error> {
     } else {
         Ok(false)
     }
-}
-
-#[derive(Serialize, Clone)]
-pub struct UpdateBoard {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub position: Option<i32>,
 }
 
 pub async fn update_board(uuid: &str, board: UpdateBoard) -> Result<bool, Error> {

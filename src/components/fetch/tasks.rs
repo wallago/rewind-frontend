@@ -1,10 +1,9 @@
 use dioxus::prelude::*;
 use futures_timer::Delay;
 use reqwest::Error;
-use serde::Serialize;
 
 use super::API;
-use crate::views::Task;
+use crate::components::models::{NewTask, Task, UpdateTask};
 
 pub fn get_tasks(uuid: String, refetch_signal: Signal<u32>) -> Resource<Option<Vec<Task>>> {
     use_resource(move || {
@@ -29,16 +28,6 @@ pub fn get_tasks(uuid: String, refetch_signal: Signal<u32>) -> Resource<Option<V
     })
 }
 
-#[derive(Serialize, Clone)]
-pub struct NewTask {
-    pub name: String,
-    pub description: Option<String>,
-    pub list_uuid: String,
-    pub position: i32,
-    pub status: String,
-    pub priority: String,
-}
-
 pub async fn add_task(task: NewTask) -> Result<Task, Error> {
     let client = reqwest::Client::new();
     let response = client
@@ -59,15 +48,6 @@ pub async fn delete_task(uuid: &str) -> Result<bool, Error> {
     } else {
         Ok(false)
     }
-}
-
-#[derive(Serialize, Clone)]
-pub struct UpdateTask {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub position: Option<i32>,
-    pub status: Option<String>,
-    pub priority: Option<String>,
 }
 
 pub async fn update_task(uuid: &str, task: UpdateTask) -> Result<bool, Error> {

@@ -1,10 +1,9 @@
 use dioxus::prelude::*;
 use futures_timer::Delay;
 use reqwest::Error;
-use serde::Serialize;
 
 use super::API;
-use crate::views::List;
+use crate::components::models::*;
 
 pub fn get_lists(uuid: String, refetch_signal: Signal<u32>) -> Resource<Option<Vec<List>>> {
     use_resource(move || {
@@ -29,14 +28,6 @@ pub fn get_lists(uuid: String, refetch_signal: Signal<u32>) -> Resource<Option<V
     })
 }
 
-#[derive(Serialize, Clone)]
-pub struct NewList {
-    pub name: String,
-    pub board_uuid: String,
-    pub description: Option<String>,
-    pub position: i32,
-}
-
 pub async fn add_list(list: NewList) -> Result<List, Error> {
     let client = reqwest::Client::new();
     let response = client
@@ -57,13 +48,6 @@ pub async fn delete_list(uuid: &str) -> Result<bool, Error> {
     } else {
         Ok(false)
     }
-}
-
-#[derive(Serialize, Clone)]
-pub struct UpdateList {
-    pub name: Option<String>,
-    pub description: Option<String>,
-    pub position: Option<i32>,
 }
 
 pub async fn update_list(uuid: &str, list: UpdateList) -> Result<bool, Error> {

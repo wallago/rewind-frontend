@@ -20,4 +20,5 @@ pub mod dialog;
 pub mod fetch;
 pub mod icons;
 pub mod layout;
+pub mod models;
 pub mod table;

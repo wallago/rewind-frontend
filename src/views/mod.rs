@@ -1,8 +1,8 @@
 mod lists;
-pub use lists::{List, Lists};
+pub use lists::Lists;
 
 mod boards;
-pub use boards::{Board, Boards};
+pub use boards::Boards;
 
 mod tasks;
-pub use tasks::{Task, Tasks};
+pub use tasks::Tasks;
