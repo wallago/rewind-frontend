@@ -25,6 +25,7 @@ pub fn Textarea(mut props: TextareaProps) -> Element {
         class: format!(
             "
             text-sm font-medium
+            placeholder:text-border-light dark:placeholder:text-border-dark
             bg-surface-light dark:bg-surface-dark
             border-2 border-border-light dark:border-border-dark
             p-1

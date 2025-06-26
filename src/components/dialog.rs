@@ -41,7 +41,7 @@ fn DialogTrigger(props: DialogProps) -> Element {
     } else {
         rsx!(
             Button {
-                 onclick: Some(EventHandler::new(move |e: MouseEvent| {
+                 onclick: Some(EventHandler::new(move |_| {
                      is_open.set(true)
                  })),
                 {props.children}
@@ -79,7 +79,7 @@ fn DialogClose(props: DialogProps) -> Element {
     if props.as_child.unwrap_or(false) {
         rsx!(
             div {
-                 onclick: move |e: MouseEvent| {
+                 onclick: move |_| {
                      is_open.set(false)
                  },
                 {props.children}
@@ -88,7 +88,7 @@ fn DialogClose(props: DialogProps) -> Element {
     } else {
         rsx!(
             Button {
-                 onclick: Some(EventHandler::new(move |e: MouseEvent| {
+                 onclick: Some(EventHandler::new(move |_| {
                      is_open.set(false)
                  })),
                 "Cancel"

@@ -11,7 +11,7 @@ use crate::components::{
 
 #[component]
 pub fn DialogAdd(refetch_signal: Signal<u32>, boards: Resource<Option<Vec<Board>>>) -> Element {
-    let name = use_signal(|| "X".to_string());
+    let name = use_signal(|| "".to_string());
     let description = use_signal(|| "".to_string());
 
     let position = match boards() {
@@ -59,7 +59,14 @@ pub fn DialogAdd(refetch_signal: Signal<u32>, boards: Resource<Option<Vec<Board>
             });
         })),
         trigger: rsx!(Button {
-            Add { size: "14px"}
+            Button {
+                class: "flex gap-2 items-center p-0",
+                p {
+                    class: "pl-1",
+                    "board"
+                }
+                Add { size: "14px"}
+            }
         }),
         form: rsx!(
             div {

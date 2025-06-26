@@ -27,5 +27,8 @@ pub use add::Add;
 mod label;
 pub use label::Label;
 
+mod search;
+pub use search::Search;
+
 mod status;
 pub use status::{Empty, Full, Half};

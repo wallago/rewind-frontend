@@ -6,3 +6,5 @@ pub use boards::Boards;
 
 mod tasks;
 pub use tasks::Tasks;
+
+pub mod tags;

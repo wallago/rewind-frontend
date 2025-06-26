@@ -15,7 +15,7 @@ pub fn DialogAdd(
     refetch_signal: Signal<u32>,
     lists: Resource<Option<Vec<List>>>,
 ) -> Element {
-    let name = use_signal(|| "X".to_string());
+    let name = use_signal(|| "".to_string());
     let description = use_signal(|| "".to_string());
 
     let position = match lists() {
@@ -65,7 +65,14 @@ pub fn DialogAdd(
             });
         })),
         trigger: rsx!(Button {
-            Add { size: "14px"}
+            Button {
+                class: "flex gap-2 items-center p-0",
+                p {
+                    class: "pl-1",
+                    "list"
+                }
+                Add { size: "14px"}
+            }
         }),
         form: rsx!(
             div {

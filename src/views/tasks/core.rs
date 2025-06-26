@@ -3,13 +3,12 @@ use wasm_bindgen_futures::spawn_local;
 
 use crate::{
     components::{
-        fetch,
-        icons::{Add, Cross, Empty, Full, Half, Label as LabelIcon, Settings},
+        Label, fetch,
+        icons::{Cross, Empty, Full, Half, Label as LabelIcon},
         layout::Body,
-        models::{NewTask, Task, UpdateTask},
         table::*,
     },
-    views::tasks::dialog::*,
+    views::{tags::DialogAdd as DialogAddTag, tasks::dialog::*},
 };
 
 #[component]
@@ -19,10 +18,15 @@ pub fn Tasks(uuid: String) -> Element {
 
     rsx! (
          Body {
-            p {
-                class: "text-sm font-semibold pb-6",
-                "List: {uuid}"
+            div {
+                class: "pt-2",
+                p {
+                    class: "text-sm font-semibold pb-4",
+                    "List: {uuid}"
+                }
+                DialogAddTag {}
             }
+            // div { class: "h-0.5 w-full bg-border-light mb-4" }
             Table {
                 TableCaption { "List of your tasks." }
                 TableHeader {

@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use wasm_bindgen_futures::spawn_local;
 
 use crate::components::{
-    Button, Input, Label, Select, Textarea,
+    Button, Combobox, Input, Label, Select, Textarea,
     dialog::*,
     fetch,
     icons::{Add, Cross, Settings},
@@ -69,7 +69,14 @@ pub fn DialogAdd(
             });
         })),
         trigger: rsx!(Button {
-            Add { size: "14px"}
+            Button {
+                class: "flex gap-2 items-center p-0",
+                p {
+                    class: "pl-1",
+                    "task"
+                }
+                Add { size: "14px"}
+            }
         }),
         form: rsx!(
             div {
@@ -113,6 +120,22 @@ pub fn DialogAdd(
                     ].to_vec(),
                     selected: priority
                 }
+            }
+            div {
+                class: "grid gap-3",
+                Label { "Tags" }
+                Combobox { title: "Select", options: [
+                    ("a".to_string(),"A".to_string())
+                ].to_vec() }
+                // Select {
+                //     name: "priority",
+                //     options: [
+                //         ("Low".to_string(),"Low".to_string()),
+                //         ("Medium".to_string(),"Medium".to_string()),
+                //         ("High".to_string(),"High".to_string())
+                //     ].to_vec(),
+                //     selected: priority
+                // }
             }
         )
     })

@@ -16,6 +16,8 @@ mod textarea;
 pub use textarea::Textarea;
 mod select;
 pub use select::Select;
+mod combobox;
+pub use combobox::Combobox;
 pub mod dialog;
 pub mod fetch;
 pub mod icons;

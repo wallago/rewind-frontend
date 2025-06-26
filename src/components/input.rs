@@ -13,27 +13,45 @@ pub struct InputProps {
     pub placeholder: Option<String>,
     #[props(optional)]
     pub disabled: Option<bool>,
+    #[props(optional)]
+    pub r#type: Option<String>,
+    #[props(optional)]
+    pub variant: Option<String>,
 }
 
 #[component]
 pub fn Input(mut props: InputProps) -> Element {
+    let class = match props.variant.as_deref() {
+        Some("variant") => {
+            "
+            bg-surface-variant-light dark:bg-surface-variant-dark
+        "
+        }
+        _ => {
+            "
+            bg-surface-light dark:bg-surface-dark
+        "
+        }
+    };
     rsx!(input {
         class: format!(
             "
             text-sm font-medium
-            bg-surface-light dark:bg-surface-dark
+            placeholder:text-border-light dark:placeholder:text-border-dark
             border-2 border-border-light dark:border-border-dark
             p-1
             focus:outline-none focus:ring-0
-            {}
+            {} {}
         ",
+            class,
             props.class.unwrap_or_default()
         ),
+        type: props.r#type,
         name: props.name,
         id: props.id,
         placeholder: props.placeholder.unwrap_or("Enter".to_string()),
-        value: (props.value)(),
         disabled: props.disabled.unwrap_or(false),
-        oninput: move |e| { props.value.set(e.value()) }
+        value: (props.value)(),
+        onchange: move |e| { props.value.set(e.value()) }
     })
 }
