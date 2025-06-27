@@ -1,12 +1,14 @@
-use components::{Footer, Navbar, get_dom_token_list};
 use dioxus::prelude::*;
 use views::{Boards, Lists, Tasks};
 
+use crate::helpers::get_dom_token_list;
+
 mod components;
+mod helpers;
 mod views;
 
 #[derive(Debug, Clone)]
-struct DarkMode(bool);
+struct DarkMode(Signal<bool>);
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -22,6 +24,7 @@ enum Route {
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
+const GLOBAL_CSS: Asset = asset!("/assets/global.css");
 
 fn main() {
     dioxus::launch(App);
@@ -34,25 +37,21 @@ fn App() -> Element {
         if let Some(dom_token_list) = dom_token_list {
             let is_dark = dom_token_list.contains("dark");
             if is_dark {
-                Signal::new(DarkMode(true))
+                DarkMode(Singal::new(true))
             } else {
-                Signal::new(DarkMode(false))
+                DarkMode(Signal::new(false))
             }
         } else {
-            Signal::new(DarkMode(false))
+            DarkMode(Signal::new(false))
         }
     });
 
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
+        document::Link { rel: "stylesheet", href: GLOBAL_CSS }
         div {
-            class: "
-                relative min-h-screen 
-                font-frida 
-                dark:bg-surface-dark bg-surface-light 
-                dark:text-text-dark text-text-light 
-            ",
+            class: "relative min-h-screen font-frida font-medium text-sm bg-primary text-secondary",
             Router::<Route> {}
         }
     }
@@ -61,11 +60,11 @@ fn App() -> Element {
 #[component]
 pub fn MainLayout() -> Element {
     rsx! {
-        Navbar {}
+        // Navbar {}
         div {
-            class: "flex-grow",
+            class: "flex-grow pt-10",
             Outlet::<Route> {}
         }
-        Footer {}
+        // Footer {}
     }
 }

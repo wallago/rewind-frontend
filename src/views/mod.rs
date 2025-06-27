@@ -8,3 +8,6 @@ mod tasks;
 pub use tasks::Tasks;
 
 pub mod tags;
+
+mod navbar;
+pub use navbar::Navbar;

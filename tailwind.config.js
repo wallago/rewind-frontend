@@ -5,7 +5,7 @@ module.exports = {
   content: ["./src/**/*.{rs,html,css}", "./dist/**/*.html"],
   variants: {
     extend: {
-      backgroundColor: ["dark", "hover", "dark:hover", "active", "dark:active"],
+      backgroundColor: ["dark"],
     },
   },
   theme: {
@@ -13,46 +13,34 @@ module.exports = {
       captionSide: {
         bottom: "bottom",
       },
-      fontFamily: {
-        frida: ['"Frida Code"', "monospace"],
-      },
       colors: {
-        surface: {
-          light: "#dad7cd",
-          dark: "#0c1821",
-        },
-        "surface-variant": {
-          light: "#BFBAAB",
-          dark: "#142532",
-        },
-        text: {
-          light: "#344e41",
-          dark: "#ccc9dc",
-        },
-        border: {
-          light: "#588157",
-          dark: "#324a5f",
-        },
-        muted: {
-          light: "#a3b18a",
-          dark: "#1b2a41",
-        },
-        error: {
-          light: "#9d0208",
-          dark: "#f28482",
-        },
-        low: {
-          light: "#91CBBB",
-          dark: "#5AAA95",
-        },
-        medium: {
-          light: "#DEC746",
-          dark: "#F4D35E",
-        },
-        high: {
-          light: "#fc7753",
-          dark: "#D64933",
-        },
+        primary: "var(--primary-color)",
+        "primary-1": "var(--primary-color-1)",
+        "primary-2": "var(--primary-color-2)",
+        "primary-3": "var(--primary-color-3)",
+        "primary-4": "var(--primary-color-4)",
+        "primary-5": "var(--primary-color-5)",
+        "primary-6": "var(--primary-color-6)",
+        "primary-7": "var(--primary-color-7)",
+
+        secondary: "var(--secondary-color)",
+        "secondary-1": "var(--secondary-color-1)",
+        "secondary-2": "var(--secondary-color-2)",
+        "secondary-3": "var(--secondary-color-3)",
+        "secondary-4": "var(--secondary-color-4)",
+        "secondary-5": "var(--secondary-color-5)",
+        "secondary-6": "var(--secondary-color-6)",
+
+        focus: "var(--focused-border-color)",
+        "success-primary": "var(--primary-success-color)",
+        "success-secondary": "var(--secondary-success-color)",
+        "warning-primary": "var(--primary-warning-color)",
+        "warning-secondary": "var(--secondary-warning-color)",
+        "error-primary": "var(--primary-error-color)",
+        "error-secondary": "var(--secondary-error-color)",
+        "info-primary": "var(--primary-info-color)",
+        "info-secondary": "var(--secondary-info-color)",
+        "error-contrast": "var(--contrast-error-color)",
       },
     },
   },
