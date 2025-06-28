@@ -1,9 +1,5 @@
-mod navbar;
-pub use navbar::Navbar;
 mod footer;
 pub use footer::Footer;
-mod theme_toggle;
-pub use theme_toggle::{ThemeToggle, get_dom_token_list};
 mod checkbox;
 // pub use checkbox::Checkbox;
 mod button;

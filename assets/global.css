@@ -31,70 +31,64 @@ body {
 
 :root {
   /* Light mode colors */
-  --primary-color: #fff;
-  --primary-color-1: #fbfbfb;
-  --primary-color-2: #fff;
-  --primary-color-3: #f8f8f8;
-  --primary-color-4: #f8f8f8;
-  --primary-color-5: #f5f5f5;
-  --primary-color-6: #e5e5e5;
-  --primary-color-7: #b0b0b0;
+  --primary-color: #ffedd8;
+  --primary-color-1: #f3d5b5;
+  --primary-color-2: #e7bc91;
+  --primary-color-3: #d4a276;
+  --primary-color-4: #bc8a5f;
 
-  --secondary-color: #000;
-  --secondary-color-1: #000;
-  --secondary-color-2: #0d0d0d;
-  --secondary-color-3: #2b2b2b;
-  --secondary-color-4: #111;
-  --secondary-color-5: #848484;
-  --secondary-color-6: #d0d0d0;
+  --secondary-color: #583101;
+  --secondary-color-1: #603808;
+  --secondary-color-2: #6f4518;
+  --secondary-color-3: #8b5e34;
+  --secondary-color-4: #a47148;
+
+  --priority-low-color: #84a59d;
+  --priority-medium-color: #fca311;
+  --priority-hight-color: #ad2831;
 
   /* Highlight colors */
-  --focused-border-color: #2b7fff;
-  --primary-success-color: #ecfdf5;
-  --secondary-success-color: #10b981;
-  --primary-warning-color: #fffbeb;
-  --secondary-warning-color: #f59e0b;
-  --primary-error-color: #c01c1c;
-  --secondary-error-color: #ef4444;
-  --contrast-error-color: var(--primary-color);
-  --primary-info-color: var(--primary-color);
-  --secondary-info-color: var(--secondary-color-3);
-  --primary-alert-color: var(--primary-error-color);
-  --secondary-alert-color: var(--secondary-error-color);
+  /* --focused-border-color: #2b7fff; */
+  /* --primary-success-color: #ecfdf5; */
+  /* --secondary-success-color: #10b981; */
+  /* --primary-warning-color: #fffbeb; */
+  /* --secondary-warning-color: #f59e0b; */
+  /* --primary-error-color: #c01c1c; */
+  /* --secondary-error-color: #ef4444; */
+  /* --contrast-error-color: var(--primary-color); */
+  /* --primary-info-color: var(--primary-color); */
+  /* --secondary-info-color: var(--secondary-color-3); */
+  /* --primary-alert-color: var(--primary-error-color); */
+  /* --secondary-alert-color: var(--secondary-error-color); */
 }
 
 /* Dark mode overrides */
 :root.dark {
-  --primary-color: #000;
-  --primary-color-1: #0e0e0e;
-  --primary-color-2: #0a0a0a;
-  --primary-color-3: #141313;
-  --primary-color-4: #1a1a1a;
-  --primary-color-5: #262626;
-  --primary-color-6: #232323;
-  --primary-color-7: #3e3e3e;
+  --primary-color: #212529;
+  --primary-color-1: #343a40;
+  --primary-color-2: #495057;
+  --primary-color-3: #6c757d;
+  --primary-color-4: #adb5bd;
 
-  --secondary-color: #fff;
-  --secondary-color-1: #fafafa;
-  --secondary-color-2: #e6e6e6;
-  --secondary-color-3: #dcdcdc;
-  --secondary-color-4: #d4d4d4;
-  --secondary-color-5: #a1a1a1;
-  --secondary-color-6: #5d5d5d;
+  --secondary-color: #f8f9fa;
+  --secondary-color-1: #e9ecef;
+  --secondary-color-2: #dee2e6;
+  --secondary-color-3: #ced4da;
+  --secondary-color-4: #ced4da;
 
   /* Highlight colors */
-  --focused-border-color: #2b7fff;
-  --primary-success-color: #02271c;
-  --secondary-success-color: #b6fae3;
-  --primary-warning-color: #342203;
-  --secondary-warning-color: #feeac7;
-  --primary-error-color: #a22e2e;
-  --secondary-error-color: #9b1c1c;
-  --contrast-error-color: var(--secondary-color-3);
-  --primary-info-color: var(--primary-color-5);
-  --secondary-info-color: var(--primary-color-7);
-  --primary-alert-color: var(--primary-error-color);
-  --secondary-alert-color: var(--secondary-error-color);
+  /* --focused-border-color: #2b7fff; */
+  /* --primary-success-color: #02271c; */
+  /* --secondary-success-color: #b6fae3; */
+  /* --primary-warning-color: #342203; */
+  /* --secondary-warning-color: #feeac7; */
+  /* --primary-error-color: #a22e2e; */
+  /* --secondary-error-color: #9b1c1c; */
+  /* --contrast-error-color: var(--secondary-color-3); */
+  /* --primary-info-color: var(--primary-color-5); */
+  /* --secondary-info-color: var(--primary-color-7); */
+  /* --primary-alert-color: var(--primary-error-color); */
+  /* --secondary-alert-color: var(--secondary-error-color); */
 }
 
 /* Modern browsers with `scrollbar-*` support */

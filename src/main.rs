@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
-use views::{Boards, Lists, Navbar, Tasks};
+use views::{Footer, Home, Navbar};
+// use views::{Boards, Footer, Lists, Navbar, Tasks};
 
 use crate::helpers::get_dom_token_list;
 
@@ -15,11 +16,11 @@ struct DarkMode(Signal<bool>);
 enum Route {
     #[layout(MainLayout)]
         #[route("/")]
-        Boards {},
-        #[route("/board/:uuid")]
-        Lists { uuid: String },
-        #[route("/list/:uuid")]
-        Tasks { uuid: String },
+        Home {},
+        // #[route("/board/:uuid")]
+        // Lists { uuid: String },
+        // #[route("/list/:uuid")]
+        // Tasks { uuid: String },
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -33,16 +34,15 @@ fn main() {
 #[component]
 fn App() -> Element {
     use_context_provider(|| {
-        let dom_token_list = get_dom_token_list();
-        if let Some(dom_token_list) = dom_token_list {
-            let is_dark = dom_token_list.contains("dark");
-            if is_dark {
-                DarkMode(Singal::new(true))
+        if let Some(is_dark) = helpers::load_dark_mode_preference() {
+            DarkMode(Signal::new(is_dark))
+        } else {
+            let dom_token_list = get_dom_token_list();
+            if let Some(dom_token_list) = dom_token_list {
+                DarkMode(Signal::new(dom_token_list.contains("dark")))
             } else {
                 DarkMode(Signal::new(false))
             }
-        } else {
-            DarkMode(Signal::new(false))
         }
     });
 
@@ -60,13 +60,17 @@ fn App() -> Element {
 pub fn MainLayout() -> Element {
     rsx! {
         div {
-            class: "h-screen overflow-hidden",
+            class: "h-screen overflow-hidden bg-primary-2",
             div {
                 class: "fixed top-0 left-0 right-0 z-10",
                 Navbar {}
             }
             div {
-                class: "flex pt-20 h-full",
+                class: "fixed bottom-0 left-0 right-0 z-10",
+                Footer {}
+            }
+            div {
+                class: "flex py-16 px-4 h-full",
                 div {
                     class: "flex-grow overflow-auto p-4",
                     Outlet::<Route> {}

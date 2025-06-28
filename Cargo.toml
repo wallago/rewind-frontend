@@ -12,7 +12,10 @@ daisy_rsx = "0.1.38"
 dioxus = { version = "0.6.0", features = ["router"] }
 dioxus-lib = "0.6.2"
 dioxus-material = "0.3.0"
-dioxus-free-icons = { version = "0.9", features = ["font-awesome-solid"] }
+dioxus-free-icons = { version = "0.9", features = [
+  "font-awesome-solid",
+  "font-awesome-regular",
+] }
 dotenvy = "0.15.7"
 futures-timer = "3.0.3"
 reqwest = { version = "0.12.20", features = ["json"] }
@@ -20,7 +23,7 @@ serde = { version = "1.0.219", features = ["derive"] }
 tracing = "0.1.41"
 wasm-bindgen = "0.2.100"
 wasm-bindgen-futures = "0.4.50"
-web-sys = { version = "0.3.77", features = ["DomTokenList"] }
+web-sys = { version = "0.3.77", features = ["DomTokenList", "Storage"] }
 
 [features]
 default = ["web"]
