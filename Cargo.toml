@@ -12,6 +12,7 @@ daisy_rsx = "0.1.38"
 dioxus = { version = "0.6.0", features = ["router"] }
 dioxus-lib = "0.6.2"
 dioxus-material = "0.3.0"
+dioxus-free-icons = { version = "0.9", features = ["font-awesome-solid"] }
 dotenvy = "0.15.7"
 futures-timer = "3.0.3"
 reqwest = { version = "0.12.20", features = ["json"] }

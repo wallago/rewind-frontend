@@ -22,7 +22,7 @@ pub fn Navbar() -> Element {
 
     rsx! {
         div {
-            class: "sticky top-0 h-10",
+            class: "h-10 pt-2",
             div {
                 div {
                     class:"flex justify-between my-2 px-4 font-semibold text-xs items-center",

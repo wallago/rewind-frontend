@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use views::{Boards, Lists, Tasks};
+use views::{Boards, Lists, Navbar, Tasks};
 
 use crate::helpers::get_dom_token_list;
 
@@ -51,7 +51,6 @@ fn App() -> Element {
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
         document::Link { rel: "stylesheet", href: GLOBAL_CSS }
         div {
-            class: "relative min-h-screen font-frida font-medium text-sm bg-primary text-secondary",
             Router::<Route> {}
         }
     }
@@ -60,11 +59,19 @@ fn App() -> Element {
 #[component]
 pub fn MainLayout() -> Element {
     rsx! {
-        // Navbar {}
         div {
-            class: "flex-grow pt-10",
-            Outlet::<Route> {}
+            class: "h-screen overflow-hidden",
+            div {
+                class: "fixed top-0 left-0 right-0 z-10",
+                Navbar {}
+            }
+            div {
+                class: "flex pt-20 h-full",
+                div {
+                    class: "flex-grow overflow-auto p-4",
+                    Outlet::<Route> {}
+                }
+            }
         }
-        // Footer {}
     }
 }
