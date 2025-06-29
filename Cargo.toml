@@ -9,7 +9,7 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.98"
 daisy_rsx = "0.1.38"
-dioxus = { version = "0.6.0", features = ["router"] }
+dioxus = { version = "0.6.0", features = ["router", "web"] }
 dioxus-lib = "0.6.2"
 dioxus-material = "0.3.0"
 dioxus-free-icons = { version = "0.9", features = [

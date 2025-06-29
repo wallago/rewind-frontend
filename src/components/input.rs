@@ -52,7 +52,7 @@ pub fn Input(mut props: InputProps) -> Element {
         value: (props.value)(),
         oninput: move |e| { props.value.set(e.value()) },
         onkeydown: move |e: KeyboardEvent| {
-            if e.key() == Key::Enter {
+            if e.key() == Key::Enter &&  !(props.value)().is_empty() {
                 if let Some(handler) = &props.onenter {
                     handler.call(e);
                 }
