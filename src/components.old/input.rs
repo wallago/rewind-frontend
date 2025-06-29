@@ -17,30 +17,34 @@ pub struct InputProps {
     pub r#type: Option<String>,
     #[props(optional)]
     pub variant: Option<String>,
-    #[props(optional)]
-    pub width: Option<String>,
 }
 
 #[component]
 pub fn Input(mut props: InputProps) -> Element {
-    let variant_class = match props.variant.as_deref() {
+    let class = match props.variant.as_deref() {
+        Some("variant") => {
+            "
+            bg-surface-variant-light dark:bg-surface-variant-dark
+        "
+        }
         _ => {
             "
-            border-2 border-secondary-4 
-            bg-primary-2 text-secondary
-            placeholder:text-secondary-4
-            focus:border-secondary
+            bg-surface-light dark:bg-surface-dark
         "
         }
     };
-    let base_class = "px-2 flex items-center focus:outline-none focus:ring-0";
     rsx!(input {
         class: format!(
-            "{} {} {} {}",
-            variant_class,
-            base_class,
-            props.class.unwrap_or_default(),
-            props.width.clone().unwrap_or("w-fit".to_string())
+            "
+            text-sm font-medium
+            placeholder:text-border-light dark:placeholder:text-border-dark
+            border-2 border-border-light dark:border-border-dark
+            p-1
+            focus:outline-none focus:ring-0
+            {} {}
+        ",
+            class,
+            props.class.unwrap_or_default()
         ),
         type: props.r#type,
         name: props.name,

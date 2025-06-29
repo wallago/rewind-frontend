@@ -1,18 +1,12 @@
+use crate::{DarkMode, helpers};
 use dioxus::prelude::*;
 use dioxus_free_icons::Icon;
 use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
-use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
-
-use crate::{
-    DarkMode,
-    components::{Button, Input},
-    helpers,
-};
+use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaCircleHalfStroke, FaPlus};
 
 #[component]
 pub fn Navbar() -> Element {
     let mut dark_mode = use_context::<DarkMode>();
-    let search = Signal::new("".to_string());
 
     use_effect(move || {
         let is_dark = dark_mode.0();
@@ -44,18 +38,16 @@ pub fn Navbar() -> Element {
             }
             div {
                 class: "pl-20 flex gap-12",
-                Button {
-                    class: "w-24 justify-between font-semibold text-sm",
-                    width: "w-24",
+                button {
+                    class: "w-24 flex justify-between bg-secondary text-primary items-center pl-2 pr-1 font-semibold text-sm py-0.5 hover:bg-secondary-1 hover:text-primary-1",
                     "Recent"
                     Icon {
                         height: 14,
                         icon: FaChevronDown,
                     }
                 }
-                Button {
-                    class: "justify-between font-semibold text-sm",
-                    width: "w-24",
+                button {
+                    class: "w-24 flex justify-between bg-secondary text-primary items-center pl-2 pr-1 font-semibold text-sm py-0.5 hover:bg-secondary-1 hover:text-primary-1",
                     "Board"
                     Icon {
                         height: 14,
@@ -65,18 +57,16 @@ pub fn Navbar() -> Element {
             }
             div {
                 class: "ml-auto flex gap-12 items-center",
-                Input {
-                    class: "h-6 justify-between text-xs",
-                    placeholder: " Search",
-                    value: search,
-                    width: "w-32"
+                input {
+                    class: "h-6 w-32 flex justify-between border-2 border-secondary-4 bg-primary-2 text-secondary items-center px-2 text-xs placeholder:text-secondary-4 focus:outline-none focus:ring-0 focus:border-secondary",
+                    placeholder: " Search"
                 }
                 button {
                     class: "px-2 py-1 text-secondary hover:text-secondary-2",
                     onclick: toggle_dark_mode,
                     Icon {
                         height: 24,
-                        icon: FaMoon,
+                        icon: FaCircleHalfStroke,
                     }
                 }
             }

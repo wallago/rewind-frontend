@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
-use views::{Footer, Home, Navbar};
-// use views::{Boards, Footer, Lists, Navbar, Tasks};
+use views::{Board, Footer, Home, Navbar};
 
 use crate::helpers::get_dom_token_list;
 
@@ -17,10 +16,8 @@ enum Route {
     #[layout(MainLayout)]
         #[route("/")]
         Home {},
-        // #[route("/board/:uuid")]
-        // Lists { uuid: String },
-        // #[route("/list/:uuid")]
-        // Tasks { uuid: String },
+        #[route("/board/:uuid")]
+        Board { uuid: String },
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");

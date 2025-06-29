@@ -1,14 +1,3 @@
-// mod lists;
-// pub use lists::Lists;
-
-// mod boards;
-// pub use boards::Boards;
-
-// mod tasks;
-// pub use tasks::Tasks;
-
-// pub mod tags;
-
 mod navbar;
 pub use navbar::Navbar;
 
@@ -17,3 +6,6 @@ pub use footer::Footer;
 
 mod home;
 pub use home::Home;
+
+mod board;
+pub use board::Board;

@@ -9,9 +9,8 @@ pub struct TableProps {
 pub fn Table(props: TableProps) -> Element {
     rsx!(
         div {
-            class: "overflow-auto w-full",
-            table {
-                class: "w-full caption-bottom",
+            class: "overflow-auto",
+            table { class: "w-full caption-bottom text-sm",
                 {props.children}
             }
         }
@@ -29,7 +28,7 @@ pub struct TableCaptionProps {
 pub fn TableCaption(props: TableCaptionProps) -> Element {
     rsx!(
         caption {
-            class: format!("mt-2 text-secondary-4 {}", props.class.unwrap_or_default()),
+            class: format!("mt-4 text-sm text-text-light/60 dark:text-text-dark/50 {}", props.class.unwrap_or_default()),
             {props.children}
         }
     )
@@ -46,7 +45,7 @@ pub struct TableHeaderProps {
 pub fn TableHeader(props: TableHeaderProps) -> Element {
     rsx!(
         thead {
-            class: format!("table w-full table-fixed px-4 {}",props.class.unwrap_or_default()),
+            class: format!("font-semibold {}",props.class.unwrap_or_default()),
             {props.children}
         }
     )
@@ -72,8 +71,6 @@ pub struct TableRowProps {
 #[component]
 pub fn TableRow(props: TableRowProps) -> Element {
     rsx!(
-        div {
-            class: "mx-3 border-b-2 border-secondary",
         tr {
             draggable: true,
             ondragstart: move |e| {
@@ -98,12 +95,10 @@ pub fn TableRow(props: TableRowProps) -> Element {
                     handler.call(e);
                 }
             },
-            class: "table w-full table-fixed",
-            div {
-                class: format!("w-full px-2 py-1 {}", props.class.unwrap_or_default()),
-                {props.children}
-            }
-            }
+            class: format!("
+                       border-b-2 border-border-light dark:border-border-dark 
+                       {}", props.class.unwrap_or_default()),
+            {props.children}
         }
     )
 }
@@ -121,7 +116,7 @@ pub struct TableHeadProps {
 pub fn TableHead(props: TableHeadProps) -> Element {
     rsx!(
         th {
-            class: format!("align-middle {}", props.class.unwrap_or_default()),
+            class: format!("h-12 px-4 text-left align-middle {}", props.class.unwrap_or_default()),
             colspan: props.colspan.unwrap_or(1),
             {props.children}
         }
@@ -139,7 +134,7 @@ pub struct TableBodyProps {
 pub fn TableBody(props: TableBodyProps) -> Element {
     rsx!(
         tbody {
-            class: format!("block overflow-y-auto {}", props.class.unwrap_or_default()),
+            class: props.class.unwrap_or_default(),
             {props.children}
         }
     )
@@ -158,7 +153,7 @@ pub struct TableCellProps {
 pub fn TableCell(props: TableCellProps) -> Element {
     rsx!(
         td {
-            class: format!("align-middle {}", props.class.unwrap_or_default()),
+            class: format!("p-4 align-middle {}", props.class.unwrap_or_default()),
             colspan: props.colspan.unwrap_or(1),
             {props.children}
         }
@@ -176,7 +171,7 @@ pub struct TableFooterProps {
 pub fn TableFooter(props: TableFooterProps) -> Element {
     rsx!(
         tfoot {
-            class: format!("font-medium bg-primary-2 {}", props.class.unwrap_or_default()),
+            class: format!("font-medium bg-muted-light dark:bg-muted-light {}", props.class.unwrap_or_default()),
             {props.children}
         }
     )
