@@ -1,14 +1,13 @@
 use dioxus::prelude::*;
 use views::{Board, Footer, Home, Navbar};
 
-use crate::helpers::get_dom_token_list;
+use crate::{helpers::get_dom_token_list, models::DarkMode};
 
 mod components;
 mod helpers;
+mod hooks;
+mod models;
 mod views;
-
-#[derive(Debug, Clone)]
-struct DarkMode(Signal<bool>);
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]

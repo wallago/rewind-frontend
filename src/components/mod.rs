@@ -11,3 +11,9 @@ mod table;
 pub use table::{
     Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
 };
+
+mod dialog;
+pub use dialog::{
+    Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogState,
+    DialogTitle, DialogTrigger,
+};

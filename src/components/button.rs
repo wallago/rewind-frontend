@@ -20,6 +20,14 @@ pub struct ButtonProps {
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
     let variant_class = match props.variant.as_deref() {
+        Some("outline") => {
+            "
+            bg-primary text-secondary
+            hover:bg-primary-1 hover:text-secondary-1
+            active:bg-primary-2 hover:text-secondary-2
+            border-2 border-secondary
+            "
+        }
         _ => {
             "
             bg-secondary text-primary

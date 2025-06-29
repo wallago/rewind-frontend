@@ -100,7 +100,7 @@ pub fn TableRow(props: TableRowProps) -> Element {
             },
             class: "table w-full table-fixed",
             div {
-                class: format!("w-full px-2 py-1 {}", props.class.unwrap_or_default()),
+                class: format!("w-full px-3 py-1 {}", props.class.unwrap_or_default()),
                 {props.children}
             }
             }

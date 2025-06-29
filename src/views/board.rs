@@ -1,97 +1,52 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
     Icon,
-    icons::{
-        fa_regular_icons::FaCircle as FaCircleEmpty,
-        fa_solid_icons::{
-            FaCheck, FaChevronRight, FaCircle, FaCircleHalfStroke, FaPlus, FaTag, FaXmark,
-        },
+    icons::fa_solid_icons::{FaCheck, FaChevronRight, FaCircle, FaPenToSquare, FaPlus, FaXmark},
+};
+
+use crate::{
+    components::{
+        Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
+        DialogState, DialogTitle, DialogTrigger, Input, Label, Table, TableBody, TableCaption,
+        TableHead, TableHeader, TableRow,
     },
+    hooks::use_click_outside,
+    models::{Priority, Status, Task},
 };
-use wasm_bindgen::{JsCast, prelude::Closure};
-use web_sys::{EventTarget, HtmlElement};
-
-use crate::components::{
-    Button, Input, Label, Table, TableBody, TableCaption, TableCell, TableHead, TableHeader,
-    TableRow,
-};
-
-#[derive(Clone, PartialEq)]
-enum Status {
-    Todo,
-    InProgress,
-    Done,
-}
-
-impl Into<Element> for Status {
-    fn into(self) -> Element {
-        match self {
-            Status::Todo => rsx!(Icon {
-                class: "text-secondary",
-                height: 16,
-                icon: FaCircleEmpty,
-            }),
-            Status::InProgress => rsx!(Icon {
-                class: "text-secondary",
-                height: 16,
-                icon: FaCircleHalfStroke,
-            }),
-            Status::Done => rsx!(Icon {
-                class: "text-secondary",
-                height: 16,
-                icon: FaCircle,
-            }),
-        }
-    }
-}
-
-#[derive(Clone, PartialEq)]
-enum Priority {
-    Low,
-    Medium,
-    High,
-}
-
-impl Into<Element> for Priority {
-    fn into(self) -> Element {
-        match self {
-            Priority::Low => rsx!(Icon {
-                class: "text-priority-low",
-                height: 16,
-                icon: FaTag,
-            }),
-            Priority::Medium => rsx!(Icon {
-                class: "text-priority-medium",
-                height: 16,
-                icon: FaTag,
-            }),
-            Priority::High => rsx!(Icon {
-                class: "text-priority-high",
-                height: 16,
-                icon: FaTag,
-            }),
-        }
-    }
-}
-
-#[derive(Clone, PartialEq)]
-struct Task {
-    text: String,
-    priority: Priority,
-    status: Status,
-}
 
 #[component]
 pub fn Board(uuid: String) -> Element {
+    let lists = ["Backend", "Frontend", "Miscellaneous"].to_vec();
+    let mut adding_task = use_signal(|| false);
+    let mut is_task_settings_open = use_signal(|| false);
+
+    use_click_outside(
+        "add-task-area".to_string(),
+        adding_task,
+        EventHandler::new(move |_| adding_task.set(false)),
+    );
+
+    use_click_outside(
+        "settings-task-area".to_string(),
+        is_task_settings_open,
+        EventHandler::new(move |_| is_task_settings_open.set(false)),
+    );
+
     rsx! {
         div {
             class: "p-4 h-full bg-primary border-2 border-secondary flex flex-col gap-4",
             Header { uuid }
             div {
                 class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(26rem,_1fr))] h-full",
-                List {}
-                List {}
-                List {}
+                {lists.into_iter().enumerate().map(|(id, list)| rsx!(
+                    List {
+                        name: "{list}",
+                        r#key: "{id}",
+                        adding_task,
+                        is_task_settings_open,
+                    }
+                ))}
+                TaskSettings { is_open: is_task_settings_open}
             }
         }
     }
@@ -121,8 +76,12 @@ fn Header(uuid: String) -> Element {
 }
 
 #[component]
-fn List() -> Element {
-    let mut adding_task = use_signal(|| false);
+fn List(
+    name: String,
+    r#key: String,
+    adding_task: Signal<bool>,
+    is_task_settings_open: Signal<bool>,
+) -> Element {
     let mut input_text = use_signal(|| "".to_string());
     let mut tasks = use_signal(|| {
         [
@@ -165,41 +124,9 @@ fn List() -> Element {
         }
     };
 
-    {
-        use_effect(move || {
-            if !adding_task() {
-                return;
-            }
-
-            let window = web_sys::window().unwrap();
-            let document = window.document().unwrap();
-            let document_for_closure = document.clone();
-
-            let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
-                let target = event.target();
-
-                if let Some(target) = target {
-                    let target: Option<HtmlElement> = target.dyn_into::<HtmlElement>().ok();
-                    let input_area = document_for_closure.get_element_by_id("input-area");
-
-                    if let (Some(target), Some(input_area)) = (target, input_area) {
-                        if !input_area.contains(Some(&target)) {
-                            adding_task.set(false);
-                        }
-                    }
-                }
-            }) as Box<dyn FnMut(_)>);
-
-            document
-                .add_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref())
-                .unwrap();
-
-            closure.forget();
-        });
-    }
-
     rsx! {
         div {
+            key: r#key,
             class: "h-fit w-96 p-2 bg-primary-2 border-2 border-secondary flex flex-col gap-2",
             div {
                 class: "flex text-sm font-medium gap-2 w-full",
@@ -209,7 +136,7 @@ fn List() -> Element {
                     width: "w-1/2",
                     div {
                         class: "truncate",
-                        "Name: Backend"
+                        "Name: {name}"
                     }
                 }
                 Label {
@@ -222,12 +149,12 @@ fn List() -> Element {
                     }
                 }
             }
-            Tasks { tasks: tasks() }
+            Tasks { tasks: tasks(), is_settings_open: is_task_settings_open}
             div {
                 class: "w-full flex justify-end px-2 pb-2",
                 if adding_task() {
                     div {
-                        id: "input-area",
+                        id: "add-task-area",
                         class: "flex w-full gap-4 items-center",
                         Input {
                             class: "flex-1 text-sm",
@@ -276,7 +203,38 @@ fn List() -> Element {
 }
 
 #[component]
-fn Tasks(tasks: Vec<Task>) -> Element {
+fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
+    let tasks_element = tasks.into_iter().enumerate().map(|(id, task)| {
+        rsx!(
+                div {
+                    key: "{id}",
+                    TableRow {
+                        class: "group cursor-pointer",
+                        onclick: move |_| { is_settings_open.set(true) },
+                        div {
+                            class: "w-full flex items-center h-full gap-4",
+                            {<Priority as Into<Element>>::into(task.priority.clone())}
+                            {<Status as Into<Element>>::into(task.status.clone())}
+                            div {
+                                class: "flex-grow",
+                                {task.text.clone()}
+                            }
+                            div {
+                                class: "w-fit flex flex-wrap justify-end gap-0.5",
+                                Icon { class: "text-red-800", height: 6, width: 6, icon: FaCircle },
+                                Icon { class: "text-red-800", height: 6, width: 6, icon: FaCircle },
+                            }
+                            Icon {
+                                class: "text-secondary hidden group-hover:block",
+                                height: 14,
+                                icon: FaPenToSquare
+                            },
+                        }
+                    }
+                }
+        )
+    });
+
     rsx! {
         div {
             Table {
@@ -287,6 +245,7 @@ fn Tasks(tasks: Vec<Task>) -> Element {
                 TableHeader {
                     class: "font-semibold text-sm text-secondary",
                     TableRow {
+                        draggable: false,
                         TableHead {
                             "Tasks"
                         }
@@ -294,22 +253,32 @@ fn Tasks(tasks: Vec<Task>) -> Element {
                 }
                 TableBody {
                     class: "w-full font-medium text-sm text-secondary max-h-64",
-                    {tasks.into_iter().map(|task| rsx!(
-                            TableRow {
-                                TableCell {
-                                    class: "w-fit pr-2",
-                                    {<Priority as Into<Element>>::into(task.priority)}
-                                }
-                                TableCell {
-                                    class: "w-full truncate",
-                                    {task.text.clone()}
-                                }
-                                TableCell {
-                                    class: "w-fit pl-2",
-                                    {<Status as Into<Element>>::into(task.status)}
-                                }
-                            }
-                    ))}
+                    {tasks_element}
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn TaskSettings(is_open: Signal<bool>) -> Element {
+    use_context_provider(|| DialogState(is_open));
+    rsx! {
+        Dialog {
+            DialogContent {
+                id: "settings-task-area",
+                class: "sm:max-w-[425px]",
+                DialogHeader {
+                    DialogTitle { "Task settings" }
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        r#type:"submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Save"
+                    }
                 }
             }
         }
