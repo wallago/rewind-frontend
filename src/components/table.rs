@@ -73,7 +73,7 @@ pub struct TableRowProps {
 pub fn TableRow(props: TableRowProps) -> Element {
     rsx!(
         div {
-            class: "mx-3 border-b-2 border-secondary",
+            class: "mx-3 border-b-2 border-secondary hover:bg-primary-3",
         tr {
             draggable: true,
             ondragstart: move |e| {

@@ -19,6 +19,8 @@ pub struct InputProps {
     pub variant: Option<String>,
     #[props(optional)]
     pub width: Option<String>,
+    #[props(optional)]
+    pub onenter: Option<EventHandler<KeyboardEvent>>,
 }
 
 #[component]
@@ -48,6 +50,13 @@ pub fn Input(mut props: InputProps) -> Element {
         placeholder: props.placeholder.unwrap_or("Enter".to_string()),
         disabled: props.disabled.unwrap_or(false),
         value: (props.value)(),
-        onchange: move |e| { props.value.set(e.value()) }
+        oninput: move |e| { props.value.set(e.value()) },
+        onkeydown: move |e: KeyboardEvent| {
+            if e.key() == Key::Enter {
+                if let Some(handler) = &props.onenter {
+                    handler.call(e);
+                }
+            }
+        }
     })
 }

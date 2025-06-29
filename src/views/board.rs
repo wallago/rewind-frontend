@@ -1,13 +1,83 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
     Icon,
-    icons::fa_regular_icons::FaCircle as FaCircleEmpty,
-    icons::fa_solid_icons::{FaChevronRight, FaCircle, FaCircleHalfStroke, FaTag},
+    icons::{
+        fa_regular_icons::FaCircle as FaCircleEmpty,
+        fa_solid_icons::{
+            FaCheck, FaChevronRight, FaCircle, FaCircleHalfStroke, FaPlus, FaTag, FaXmark,
+        },
+    },
 };
 
 use crate::components::{
-    Label, Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
+    Button, Input, Label, Table, TableBody, TableCaption, TableCell, TableHead, TableHeader,
+    TableRow,
 };
+
+#[derive(Clone, PartialEq)]
+enum Status {
+    Todo,
+    InProgress,
+    Done,
+}
+
+impl Into<Element> for Status {
+    fn into(self) -> Element {
+        match self {
+            Status::Todo => rsx!(Icon {
+                class: "text-secondary",
+                height: 16,
+                icon: FaCircleEmpty,
+            }),
+            Status::InProgress => rsx!(Icon {
+                class: "text-secondary",
+                height: 16,
+                icon: FaCircleHalfStroke,
+            }),
+            Status::Done => rsx!(Icon {
+                class: "text-secondary",
+                height: 16,
+                icon: FaCircle,
+            }),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq)]
+enum Priority {
+    Low,
+    Medium,
+    High,
+}
+
+impl Into<Element> for Priority {
+    fn into(self) -> Element {
+        match self {
+            Priority::Low => rsx!(Icon {
+                class: "text-priority-low",
+                height: 16,
+                icon: FaTag,
+            }),
+            Priority::Medium => rsx!(Icon {
+                class: "text-priority-medium",
+                height: 16,
+                icon: FaTag,
+            }),
+            Priority::High => rsx!(Icon {
+                class: "text-priority-high",
+                height: 16,
+                icon: FaTag,
+            }),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq)]
+struct Task {
+    text: String,
+    priority: Priority,
+    status: Status,
+}
 
 #[component]
 pub fn Board(uuid: String) -> Element {
@@ -16,7 +86,7 @@ pub fn Board(uuid: String) -> Element {
             class: "p-4 h-full bg-primary border-2 border-secondary flex flex-col gap-4",
             Header { uuid }
             div {
-                class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(26rem,_1fr))]",
+                class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(26rem,_1fr))] h-full",
                 List {}
                 List {}
                 List {}
@@ -39,7 +109,10 @@ fn Header(uuid: String) -> Element {
                 icon: FaChevronRight,
             }
             Label {
-                {uuid}
+                div {
+                    class: "w-fit truncate",
+                    {uuid}
+                }
             }
         }
     }
@@ -47,6 +120,50 @@ fn Header(uuid: String) -> Element {
 
 #[component]
 fn List() -> Element {
+    let mut adding_task = use_signal(|| false);
+    let input_text = use_signal(|| "".to_string());
+    let tasks = use_signal(|| {
+        [
+            Task {
+                text: String::from("Websocket with Actix"),
+                priority: Priority::Low,
+                status: Status::Todo,
+            },
+            Task {
+                text: String::from("Websocket with Actix"),
+                priority: Priority::Medium,
+                status: Status::InProgress,
+            },
+            Task {
+                text: String::from("Websocket with Actix"),
+                priority: Priority::High,
+                status: Status::Done,
+            },
+        ]
+        .to_vec()
+    });
+
+    let on_submit = {
+        let mut tasks = tasks.clone();
+        let mut input_text = input_text.clone();
+        let mut adding_task = adding_task.clone();
+
+        move |_: KeyboardEvent| {
+            tracing::info!("ENTER !!!! with {}", input_text());
+            if !input_text().is_empty() {
+                tasks.with_mut(|list| {
+                    list.push(Task {
+                        text: input_text(),
+                        priority: Priority::Low,
+                        status: Status::Todo,
+                    })
+                });
+                input_text.set("".to_string());
+                adding_task.set(false);
+            }
+        }
+    };
+
     rsx! {
         div {
             class: "h-fit w-96 p-2 bg-primary-2 border-2 border-secondary flex flex-col gap-2",
@@ -71,13 +188,70 @@ fn List() -> Element {
                     }
                 }
             }
-            Tasks {}
+            Tasks { tasks: tasks() }
+            div {
+                class: "w-full flex justify-end px-2 pb-2",
+                if adding_task() {
+                    div {
+                        class: "flex w-full gap-4 items-center",
+                        Input {
+                            class: "flex-1",
+                            value: input_text,
+                            onenter: on_submit
+
+                        }
+                        Button {
+                            class: "px-1 h-fit py-1.5",
+                            onclick: move |_| adding_task.set(false),
+                            Icon {
+                                class: "text-primary",
+                                height: 12,
+                                icon: FaCheck,
+                            }
+                        }
+                        Button {
+                            class: "px-1 h-fit py-1.5",
+                            onclick: move |_| adding_task.set(false),
+                            Icon {
+                                class: "text-primary",
+                                height: 12,
+                                icon: FaXmark,
+                            }
+                        }
+                    }
+                    // div {
+                    //     class: "px-2",
+                    //     input {
+                    //         class: "w-full text-sm px-2 py-1 border rounded bg-primary",
+                    //         value: "{input_text}",
+                    //         oninput: move |e| input_text.set(e.value.clone()),
+                    //         onkeydown: move |e| {
+                    //             if e.key() == "Enter" {
+                    //                 on_submit(());
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                } else {
+                    Button {
+                        onclick: move |_| adding_task.set(true),
+                        class: "text-sm justify-between pl-2 pr-1 mt-0.5 mb-0.5",
+                        width: "w-20",
+                        "Task"
+                        Icon {
+                            class: "text-primary",
+                            height: 12,
+                            icon: FaPlus,
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 #[component]
-fn Tasks() -> Element {
+fn Tasks(tasks: Vec<Task>) -> Element {
     rsx! {
         div {
             Table {
@@ -94,109 +268,23 @@ fn Tasks() -> Element {
                     }
                 }
                 TableBody {
-                    class: "w-full font-medium text-sm text-secondary h-64",
-                    TaskDemo1 {  }
-                    TaskDemo2 {  }
-                    TaskDemo3 {  }
-                    TaskDemo1 {  }
-                    TaskDemo2 {  }
-                    TaskDemo3 {  }
-                    TaskDemo1 {  }
-                    TaskDemo2 {  }
-                    TaskDemo3 {  }
-                    TaskDemo1 {  }
-                    TaskDemo2 {  }
-                    TaskDemo3 {  }
-                    TaskDemo1 {  }
-                    TaskDemo2 {  }
-                    TaskDemo3 {  }
-                    TaskDemo1 {  }
-                    TaskDemo2 {  }
-                    TaskDemo3 {  }
-                }
-            }
-        }
-    }
-}
-
-#[component]
-fn TaskDemo1() -> Element {
-    rsx! {
-        TableRow {
-            TableCell {
-                class: "w-fit pr-2",
-                Icon {
-                    class: "text-priority-low",
-                    height: 16,
-                    icon: FaTag,
-                }
-            }
-            TableCell {
-                class: "w-full truncate",
-                "Websocker with Actix"
-            }
-            TableCell {
-                class: "w-fit pl-2",
-                Icon {
-                    class: "text-secondary",
-                    height: 16,
-                    icon: FaCircleHalfStroke,
-                }
-            }
-        }
-    }
-}
-
-#[component]
-fn TaskDemo2() -> Element {
-    rsx! {
-        TableRow {
-            TableCell {
-                class: "w-fit pr-2",
-                Icon {
-                    class: "text-priority-medium",
-                    height: 16,
-                    icon: FaTag,
-                }
-            }
-            TableCell {
-                class: "w-full truncate",
-                "Websocker with Actix"
-            }
-            TableCell {
-                class: "w-fit pl-2",
-                Icon {
-                    class: "text-secondary",
-                    height: 16,
-                    icon: FaCircleEmpty,
-                }
-            }
-        }
-    }
-}
-
-#[component]
-fn TaskDemo3() -> Element {
-    rsx! {
-        TableRow {
-            TableCell {
-                class: "w-fit pr-2",
-                Icon {
-                    class: "text-priority-high",
-                    height: 16,
-                    icon: FaTag,
-                }
-            }
-            TableCell {
-                class: "w-full truncate",
-                "Websocker with Actix"
-            }
-            TableCell {
-                class: "w-fit pl-2",
-                Icon {
-                    class: "text-secondary",
-                    height: 16,
-                    icon: FaCircle,
+                    class: "w-full font-medium text-sm text-secondary max-h-64",
+                    {tasks.into_iter().map(|task| rsx!(
+                            TableRow {
+                                TableCell {
+                                    class: "w-fit pr-2",
+                                    {<Priority as Into<Element>>::into(task.priority)}
+                                }
+                                TableCell {
+                                    class: "w-full truncate",
+                                    {task.text.clone()}
+                                }
+                                TableCell {
+                                    class: "w-fit pl-2",
+                                    {<Status as Into<Element>>::into(task.status)}
+                                }
+                            }
+                    ))}
                 }
             }
         }

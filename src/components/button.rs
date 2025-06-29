@@ -29,7 +29,7 @@ pub fn Button(props: ButtonProps) -> Element {
         }
     };
 
-    let base_class = " flex items-center px-2 py-0.5";
+    let base_class = " flex items-center py-0.5";
     rsx!(
         button {
             class: format!(

@@ -45,7 +45,7 @@ pub fn Navbar() -> Element {
             div {
                 class: "pl-20 flex gap-12",
                 Button {
-                    class: "w-24 justify-between font-semibold text-sm",
+                    class: "pr-1 pl-2 w-24 justify-between font-semibold text-sm",
                     width: "w-24",
                     "Recent"
                     Icon {
@@ -54,7 +54,7 @@ pub fn Navbar() -> Element {
                     }
                 }
                 Button {
-                    class: "justify-between font-semibold text-sm",
+                    class: "pr-1 pl-2 justify-between font-semibold text-sm",
                     width: "w-24",
                     "Board"
                     Icon {
