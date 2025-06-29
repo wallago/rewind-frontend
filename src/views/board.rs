@@ -230,13 +230,13 @@ fn List() -> Element {
                         id: "input-area",
                         class: "flex w-full gap-4 items-center",
                         Input {
-                            class: "flex-1",
+                            class: "flex-1 text-sm",
                             value: input_text,
                             onenter: on_submit_by_key
 
                         }
                         Button {
-                            class: "px-1 h-fit py-1.5",
+                            class: "px-1 h-full",
                             onclick: move |_| {
                                 adding_task.set(false);
                                 on_submit();
@@ -248,7 +248,7 @@ fn List() -> Element {
                             }
                         }
                         Button {
-                            class: "px-1 h-fit py-1.5",
+                            class: "px-1 h-full",
                             onclick: move |_| adding_task.set(false),
                             Icon {
                                 class: "text-primary",
@@ -260,7 +260,7 @@ fn List() -> Element {
                 } else {
                     Button {
                         onclick: move |_| adding_task.set(true),
-                        class: "text-sm justify-between pl-2 pr-1 mt-0.5 mb-0.5",
+                        class: "text-sm justify-between pl-2 pr-1",
                         width: "w-20",
                         "Task"
                         Icon {
