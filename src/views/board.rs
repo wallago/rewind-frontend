@@ -6,9 +6,9 @@ use dioxus_free_icons::{
 
 use crate::{
     components::{
-        Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
-        DialogState, DialogTitle, DialogTrigger, Input, Label, Table, TableBody, TableCaption,
-        TableHead, TableHeader, TableRow,
+        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogState,
+        DialogTitle, DialogTrigger, HoverCard, HoverCardContent, HoverCardTrigger, Input, Label,
+        Table, TableBody, TableCaption, TableHead, TableHeader, TableRow,
     },
     hooks::use_click_outside,
     models::{List, Priority, Status, Tag, Task},
@@ -55,9 +55,9 @@ pub fn Board(uuid: String) -> Element {
                         is_task_settings_open,
                     }
                 ))}
-                TaskSettings { is_open: is_task_settings_open}
             }
         }
+        TaskSettings { is_open: is_task_settings_open}
     }
 }
 
@@ -266,8 +266,7 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                                 class: "w-fit flex justify-end gap-1",
                                 {task.tags.iter().map(|tag| {
                                     rsx!(
-                                        div {
-                                            class: "relative group/tag ",
+                                        HoverCard {
                                             Icon {
                                                 style: format!("--tag-color: {};", tag.color),
                                                 class: format!("text-[var(--tag-color)]"),
@@ -275,10 +274,9 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                                                 width: 10,
                                                 icon: FaCircle
                                             },
-                                            // div {
-                                            //     class: "overflow-visible absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 text-xs bg-secondary text-primary z-10 opacity-0 group-hover/tag:opacity-100 transition",
-                                            //     {tag.name.clone()}
-                                            // }
+                                            HoverCardContent {
+                                                {tag.name.clone()}
+                                            }
                                         }
                                     )
                                 })}

@@ -23,3 +23,6 @@ pub use dialog::{
 
 mod dropdown;
 pub use dropdown::Dropdown;
+
+mod hover_card;
+pub use hover_card::{HoverCard, HoverCardContent, HoverCardTrigger};

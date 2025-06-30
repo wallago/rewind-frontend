@@ -58,12 +58,12 @@ pub fn MainLayout() -> Element {
         div {
             class: "h-screen overflow-hidden bg-primary-2",
             div {
-                class: "fixed top-0 left-0 right-0 z-10",
-                Navbar {}
-            }
-            div {
                 class: "fixed bottom-0 left-0 right-0 z-10",
                 Footer {}
+            }
+            div {
+                class: "fixed top-0 left-0 right-0 z-10",
+                Navbar {}
             }
             div {
                 class: "flex py-16 px-4 h-full",
