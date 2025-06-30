@@ -1,8 +1,9 @@
-use crate::models::{Priority, Status};
+use crate::models::{Priority, Status, Tag};
 
 #[derive(Clone, PartialEq)]
 pub struct Task {
-    pub text: String,
+    pub name: String,
     pub priority: Priority,
     pub status: Status,
+    pub tags: Vec<Tag>,
 }

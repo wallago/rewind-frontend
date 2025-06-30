@@ -74,35 +74,35 @@ pub fn TableRow(props: TableRowProps) -> Element {
     rsx!(
         div {
             class: "mx-3 border-b-2 border-secondary hover:bg-primary-3",
-        tr {
-            draggable: true,
-            ondragstart: move |e| {
-                if let Some(handler) = &props.ondragstart {
-                    handler.call(e);
+            tr {
+                draggable: true,
+                ondragstart: move |e| {
+                    if let Some(handler) = &props.ondragstart {
+                        handler.call(e);
+                    }
+                },
+                ondragover: move |e| {
+                    e.prevent_default();
+                    if let Some(handler) = &props.ondragover {
+                        handler.call(e);
+                    }
+                },
+                ondrop: move |e| {
+                    if let Some(handler) = &props.ondrop {
+                        handler.call(e);
+                    }
+                },
+                onclick: move |e: MouseEvent| {
+                    e.stop_propagation();
+                    if let Some(handler) = &props.onclick {
+                        handler.call(e);
+                    }
+                },
+                class: "table w-full table-fixed",
+                td {
+                    class: format!("w-full px-3 py-1 {}", props.class.unwrap_or_default()),
+                    {props.children}
                 }
-            },
-            ondragover: move |e| {
-                e.prevent_default();
-                if let Some(handler) = &props.ondragover {
-                    handler.call(e);
-                }
-            },
-            ondrop: move |e| {
-                if let Some(handler) = &props.ondrop {
-                    handler.call(e);
-                }
-            },
-            onclick: move |e: MouseEvent| {
-                e.stop_propagation();
-                if let Some(handler) = &props.onclick {
-                    handler.call(e);
-                }
-            },
-            class: "table w-full table-fixed",
-            div {
-                class: format!("w-full px-3 py-1 {}", props.class.unwrap_or_default()),
-                {props.children}
-            }
             }
         }
     )

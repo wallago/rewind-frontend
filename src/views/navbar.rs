@@ -3,9 +3,10 @@ use dioxus_free_icons::Icon;
 use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
+use crate::Route;
 use crate::{
     DarkMode,
-    components::{Button, Input},
+    components::{Button, Dropdown, Input},
     helpers,
 };
 
@@ -35,33 +36,39 @@ pub fn Navbar() -> Element {
     rsx! {
         div {
             class: "h-12 py-2 px-4 bg-primary flex items-center border-b-2 border-secondary",
-            div {
-                class: "text-secondary",
-                Icon {
-                    height: 24,
-                    icon: FaNoteSticky,
-                }
+            button {
+                class: "px-2 py-1 text-secondary hover:text-secondary-2",
+                onclick: |_| {
+                    navigator().push(Route::Home {});
+                },
+                Icon { height: 24, icon: FaNoteSticky }
             }
             div {
                 class: "pl-20 flex gap-12",
-                Button {
-                    class: "pr-1 pl-2 w-24 justify-between font-semibold text-sm",
-                    width: "w-24",
-                    "Recent"
-                    Icon {
-                        height: 14,
-                        icon: FaChevronDown,
-                    }
+                Dropdown {
+                    class: "font-semibold text-sm",
+                    options: [
+                        (String::from("Project X"), Some(EventHandler::new(|_| {
+                            navigator().push(Route::Board { uuid: String::from("571a9fa0-1bb4-4545-bdd3-b7315dcb6615") });
+                        }))),
+                        (String::from("Project Y"), None),
+                        (String::from("Project Z"), None)
+                    ].to_vec(),
+                    name: "Recent",
+                    Icon { height: 14, width: 14,icon: FaChevronDown }
                 }
                 Button {
-                    class: "pr-1 pl-2 justify-between font-semibold text-sm",
+                    class: "px-2 justify-between gap-2 font-semibold text-sm",
                     width: "w-24",
                     "Board"
-                    Icon {
-                        height: 14,
-                        icon: FaPlus,
-                    }
+                    Icon { height: 14, width: 14,icon: FaPlus }
                 }
+                // Select {
+                //     selected: Signal::new(Some(String::from("Stuff"))),
+                //     options: [(String::from("sexe"), String::from("Sexe"))].to_vec(),
+                //     class: "font-semibold text-sm",
+                //     // width: "w-32"
+                // }
             }
             div {
                 class: "ml-auto flex gap-12 items-center",
@@ -74,10 +81,7 @@ pub fn Navbar() -> Element {
                 button {
                     class: "px-2 py-1 text-secondary hover:text-secondary-2",
                     onclick: toggle_dark_mode,
-                    Icon {
-                        height: 24,
-                        icon: FaMoon,
-                    }
+                    Icon { height: 24, icon: FaMoon }
                 }
             }
         }

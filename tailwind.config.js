@@ -3,6 +3,11 @@ module.exports = {
   darkMode: "class",
   mode: "all",
   content: ["./src/**/*.{rs,html,css}", "./dist/**/*.html"],
+  safelist: [
+    {
+      pattern: /^text-\[#.*\]$/,
+    },
+  ],
   variants: {
     extend: {
       backgroundColor: ["dark"],
