@@ -50,7 +50,9 @@ pub fn Input(mut props: InputProps) -> Element {
         placeholder: props.placeholder.unwrap_or("Enter".to_string()),
         disabled: props.disabled.unwrap_or(false),
         value: (props.value)(),
-        oninput: move |e| { props.value.set(e.value()) },
+        oninput: move |e| {
+            props.value.set(e.value());
+        },
         onkeydown: move |e: KeyboardEvent| {
             if e.key() == Key::Enter &&  !(props.value)().is_empty() {
                 if let Some(handler) = &props.onenter {

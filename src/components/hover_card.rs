@@ -19,11 +19,6 @@ pub fn HoverCard(children: Element) -> Element {
 }
 
 #[component]
-pub fn HoverCardTrigger() -> Element {
-    rsx! {}
-}
-
-#[component]
 pub fn HoverCardContent(children: Element) -> Element {
     let is_hovered = use_context::<HoverCardState>();
 

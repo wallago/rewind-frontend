@@ -8,9 +8,7 @@ mod label;
 pub use label::Label;
 
 mod table;
-pub use table::{
-    Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow,
-};
+pub use table::{Table, TableBody, TableCaption, TableHead, TableHeader, TableRow};
 
 mod dialog;
 pub use dialog::{
@@ -24,5 +22,8 @@ pub use dialog::{
 mod dropdown;
 pub use dropdown::Dropdown;
 
+mod search_dropdown;
+pub use search_dropdown::SearchDropdown;
+
 mod hover_card;
-pub use hover_card::{HoverCard, HoverCardContent, HoverCardTrigger};
+pub use hover_card::{HoverCard, HoverCardContent};

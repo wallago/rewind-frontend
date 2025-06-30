@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 use crate::components::Button;
 
 #[derive(PartialEq, Clone, Props)]
-pub struct SelectProps {
+pub struct DropdownProps {
     pub is_open: Signal<bool>,
     pub options: Vec<(String, Option<EventHandler>)>,
     #[props(optional)]
@@ -18,7 +18,7 @@ pub struct SelectProps {
 }
 
 #[component]
-pub fn Dropdown(mut props: SelectProps) -> Element {
+pub fn Dropdown(mut props: DropdownProps) -> Element {
     let base_class = "relative w-full";
     rsx!(
         div { class: format!("{} {}", base_class, props.class.clone().unwrap_or_default()),

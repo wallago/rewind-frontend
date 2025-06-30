@@ -17,7 +17,10 @@ impl Drop for ClickOutsideListener {
     }
 }
 
-pub fn use_click_outside(id: String, is_active: Signal<bool>, on_outside: EventHandler) {
+pub fn use_click_outside<F>(id: String, is_active: F, on_outside: EventHandler)
+where
+    F: Fn() -> bool + 'static + Clone,
+{
     let mut listener = use_signal(|| None::<ClickOutsideListener>);
 
     use_effect(move || {

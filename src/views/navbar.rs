@@ -9,8 +9,8 @@ use crate::hooks::use_click_outside;
 use crate::{
     DarkMode,
     components::{
-        Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
-        DialogTitle, Dropdown, Input,
+        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+        Dropdown, SearchDropdown,
     },
     helpers,
 };
@@ -18,21 +18,29 @@ use crate::{
 #[component]
 pub fn Navbar() -> Element {
     let mut dark_mode = use_context::<DarkMode>();
-    let search = Signal::new("".to_string());
+    let mut search = use_signal(|| "".to_string());
 
+    let is_search_active = use_memo(move || !search().is_empty());
+    // let is_search_active = use_signal(move || !search().is_empty());
     let mut is_adding_board_open = use_signal(|| false);
     let mut is_recent_boards_open = use_signal(|| false);
 
     use_click_outside(
         "add-board-area".to_string(),
-        is_adding_board_open,
+        move || is_adding_board_open(),
         EventHandler::new(move |_| is_adding_board_open.set(false)),
     );
 
     use_click_outside(
         "recent-boards-area".to_string(),
-        is_recent_boards_open,
+        move || is_recent_boards_open(),
         EventHandler::new(move |_| is_recent_boards_open.set(false)),
+    );
+
+    use_click_outside(
+        "search-boards-area".to_string(),
+        move || is_search_active(),
+        EventHandler::new(move |_| search.set("".to_string())),
     );
 
     use_effect(move || {
@@ -90,11 +98,12 @@ pub fn Navbar() -> Element {
             }
             div {
                 class: "ml-auto flex gap-12 items-center",
-                Input {
+                SearchDropdown {
+                    value: search,
                     class: "h-6 justify-between text-xs",
                     placeholder: " Search",
-                    value: search,
-                    width: "w-32"
+                    width: "w-32",
+                    id: "search-boards-area",
                 }
                 button {
                     class: "px-2 py-1 text-secondary hover:text-secondary-2",

@@ -7,8 +7,8 @@ use dioxus_free_icons::{
 use crate::{
     components::{
         Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogState,
-        DialogTitle, DialogTrigger, HoverCard, HoverCardContent, HoverCardTrigger, Input, Label,
-        Table, TableBody, TableCaption, TableHead, TableHeader, TableRow,
+        DialogTitle, HoverCard, HoverCardContent, Input, Label, Table, TableBody, TableCaption,
+        TableHead, TableHeader, TableRow,
     },
     hooks::use_click_outside,
     models::{List, Priority, Status, Tag, Task},
@@ -39,7 +39,7 @@ pub fn Board(uuid: String) -> Element {
 
     use_click_outside(
         "settings-task-area".to_string(),
-        is_task_settings_open,
+        move || is_task_settings_open(),
         EventHandler::new(move |_| is_task_settings_open.set(false)),
     );
 
@@ -136,7 +136,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
 
     use_click_outside(
         "add-task-area".to_string(),
-        adding_task,
+        move || adding_task(),
         EventHandler::new(move |_| adding_task.set(false)),
     );
 
