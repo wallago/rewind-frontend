@@ -28,9 +28,9 @@ pub fn Input(mut props: InputProps) -> Element {
     let variant_class = match props.variant.as_deref() {
         _ => {
             "
-            border-2 border-secondary-4 
+            border-2 border-secondary-2
             bg-primary-2 text-secondary
-            placeholder:text-secondary-4
+            placeholder:text-secondary-2
             focus:border-secondary
         "
         }

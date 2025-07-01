@@ -19,7 +19,7 @@ pub fn HoverCard(children: Element) -> Element {
 }
 
 #[component]
-pub fn HoverCardContent(children: Element) -> Element {
+pub fn HoverCardContent(children: Element, class: Option<String>) -> Element {
     let is_hovered = use_context::<HoverCardState>();
 
     if !is_hovered.0() {
@@ -27,7 +27,7 @@ pub fn HoverCardContent(children: Element) -> Element {
     }
     rsx!(
         div {
-            class: "fixed z-50 mt-3 ml-2 -translate-x-1/2 bg-primary border-2 border-secondary p-1 text-secondary",
+            class: format!("fixed z-50 mt-3 bg-primary border-2 border-secondary p-1 text-secondary {}", class.unwrap_or_default()),
             {children}
         }
     )

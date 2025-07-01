@@ -5,8 +5,9 @@ use dioxus_free_icons::{
 };
 
 use crate::{
+    Route,
     components::{
-        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogState,
+        Button, Card, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogState,
         DialogTitle, HoverCard, HoverCardContent, Input, Label, Table, TableBody, TableCaption,
         TableHead, TableHeader, TableRow,
     },
@@ -48,8 +49,9 @@ pub fn Board(uuid: String) -> Element {
             class: "p-4 h-full bg-primary border-2 border-secondary flex flex-col gap-4",
             Header { uuid }
             div {
-                class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(26rem,_1fr))] h-full",
-                {lists.into_iter().map(|(list)| rsx!(
+                class: "h-full grid gap-4 grid-cols-4",
+                // class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(26rem,_1fr))] h-full",
+                {lists.into_iter().map(|list| rsx!(
                     ListCard {
                         list,
                         is_task_settings_open,
@@ -66,7 +68,9 @@ fn Header(uuid: String) -> Element {
     rsx! {
         div {
             class: "flex gap-4 items-center",
-            Label {
+            Button {
+                class: "px-2 text-base",
+                onclick: move |_| { navigator().push(Route::Home { }); },
                 "Boards"
             }
             Icon {
@@ -75,10 +79,8 @@ fn Header(uuid: String) -> Element {
                 icon: FaChevronRight,
             }
             Label {
-                div {
-                    class: "w-fit truncate",
-                    {uuid}
-                }
+                class: "w-fit px-2 truncate text-base py-1.5",
+                {uuid}
             }
         }
     }
@@ -90,6 +92,36 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
     let mut input_text = use_signal(|| "".to_string());
     let mut tasks = use_signal(|| {
         [
+            Task {
+                name: String::from("Websocket with Actix"),
+                priority: Priority::Low,
+                status: Status::Todo,
+                tags: [Tag {
+                    name: String::from("tech"),
+                    color: String::from("#FFAA00"),
+                }]
+                .to_vec(),
+            },
+            Task {
+                name: String::from("Websocket with Actix"),
+                priority: Priority::Low,
+                status: Status::Todo,
+                tags: [Tag {
+                    name: String::from("tech"),
+                    color: String::from("#FFAA00"),
+                }]
+                .to_vec(),
+            },
+            Task {
+                name: String::from("Websocket with Actix"),
+                priority: Priority::Low,
+                status: Status::Todo,
+                tags: [Tag {
+                    name: String::from("tech"),
+                    color: String::from("#FFAA00"),
+                }]
+                .to_vec(),
+            },
             Task {
                 name: String::from("Websocket with Actix"),
                 priority: Priority::Low,
@@ -166,27 +198,32 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
     };
 
     rsx! {
-        div {
-            key: format!("{}",list.uuid),
-            class: "h-fit w-96 p-2 bg-primary-2 border-2 border-secondary flex flex-col gap-2",
+        Card {
+            class: "h-fit flex flex-col gap-2",
+            width: "w-96",
             div {
-                class: "flex text-sm font-medium gap-2 w-full",
+                class: "flex flex-col text-sm font-medium gap-2 w-full",
                 Label {
-                    variant: "outline",
-                    class: "p-2",
-                    width: "w-1/2",
+                    variant: "title_1",
+                    class: "px-2 pb-2 text-base",
+                    width: "w-full",
                     div {
-                        class: "truncate",
-                        "Name: {list.name}"
+                        class: "break-all",
+                        "{list.name}"
                     }
                 }
-                Label {
-                    variant: "outline",
-                    class: "p-2",
-                    width: "w-1/2",
-                    div {
-                        class: "truncate",
-                        "UUID: 571a9fa0-1bb4-4545-bdd3-b7315dcb6615"
+                HoverCard {
+                    Label {
+                        variant: "outline",
+                        class: "p-2",
+                        width: "w-full",
+                        div {
+                            class: "truncate",
+                            "UUID: {list.uuid}"
+                        }
+                    }
+                     HoverCardContent {
+                        {list.uuid.clone()}
                     }
                 }
             }
@@ -250,7 +287,7 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
             div {
                 key: "{id}",
                 TableRow {
-                    class: "group cursor-pointer",
+                    class: "cursor-pointer",
                     onclick: move |_| { is_settings_open.set(true) },
                     div {
                         class: "flex items-center gap-2",
@@ -262,30 +299,54 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                                 class: "flex-grow flex-shrink inline-block truncate",
                                 {task.name.clone()}
                             }
-                            div {
-                                class: "w-fit flex justify-end gap-1",
-                                {task.tags.iter().map(|tag| {
-                                    rsx!(
-                                        HoverCard {
-                                            Icon {
-                                                style: format!("--tag-color: {};", tag.color),
-                                                class: format!("text-[var(--tag-color)]"),
-                                                height: 10,
-                                                width: 10,
-                                                icon: FaCircle
-                                            },
-                                            HoverCardContent {
-                                                {tag.name.clone()}
-                                            }
+                            HoverCard {
+                                div {
+                                    class: "w-8 flex justify-end gap-1 block group-hover:hidden",
+                                    {task.tags.iter().enumerate().map(|(id, tag)| {
+                                        if id < 2 {
+                                            rsx!(
+                                                Icon {
+                                                    style: format!("--tag-color: {};", tag.color),
+                                                    class: format!("text-[var(--tag-color)]"),
+                                                    height: 10,
+                                                    width: 10,
+                                                    icon: FaCircle
+                                                }
+                                            )
+                                        } else if id == 2 {
+                                            rsx!(
+                                                Icon {
+                                                    class: format!("text-secondary"),
+                                                    height: 14,
+                                                    width: 14,
+                                                    icon: FaPlus
+                                                }
+                                            )
+                                        } else {
+                                            rsx!()
                                         }
-                                    )
-                                })}
+                                    })}
+                                }
+                                HoverCardContent {
+                                    {task.tags.iter().map(|tag| {
+                                        rsx!(
+                                            div {
+                                                class: "flex items-center gap-1 p-0.5",
+                                                {tag.name.clone()}
+                                                Icon {
+                                                    style: format!("--tag-color: {};", tag.color),
+                                                    class: format!("text-[var(--tag-color)]"),
+                                                    height: 10,
+                                                    width: 10,
+                                                    icon: FaCircle
+                                                },
+
+                                            }
+                                        )
+                                    })}
+                                }
                             }
-                        }
-                        Icon {
-                            class: "text-secondary hidden group-hover:block",
-                            height: 14,
-                            icon: FaPenToSquare
+
                         }
                     }
                 }
@@ -297,11 +358,11 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
         div {
             Table {
                 TableCaption {
-                    class: "text-xs",
+                    class: "text-sm",
                     "Tasks"
                 }
                 TableHeader {
-                    class: "font-semibold text-sm text-secondary",
+                    class: "font-semibold text-base text-secondary",
                     TableRow {
                         draggable: false,
                         TableHead {
@@ -310,7 +371,7 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                     }
                 }
                 TableBody {
-                    class: "w-full font-medium text-sm text-secondary max-h-64",
+                    class: "w-full font-medium text-base text-secondary max-h-64",
                     {tasks_element}
                 }
             }

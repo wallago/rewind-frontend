@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 use crate::{
     Route,
-    components::{Button, Label},
+    components::{Button, Card, HoverCard, HoverCardContent, Label},
     models::Board,
 };
 
@@ -28,7 +28,8 @@ pub fn Home() -> Element {
             class: "p-4 h-full bg-primary border-2 border-secondary flex flex-col gap-4",
             Header {  }
             div {
-                class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(12rem,_1fr))]",
+                // class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(12rem,_1fr))]",
+                class: "grid gap-4 grid-cols-5",
                 {boards.iter().map(|board| {
                    rsx!(
                         BoardCard { board: board.clone() }
@@ -43,6 +44,7 @@ pub fn Home() -> Element {
 fn Header() -> Element {
     rsx! {
         Label {
+            class: "px-2 py-1.5",
             "Boards"
         }
     }
@@ -51,36 +53,42 @@ fn Header() -> Element {
 #[component]
 fn BoardCard(board: Board) -> Element {
     rsx! {
-        div {
-            class: "h-fit w-48 p-2 bg-primary-2 border-2 border-secondary flex flex-col gap-4",
+        Card {
+            class: "h-fit p-2 flex flex-col gap-4",
+            width: "w-72",
             div {
                 class: "flex flex-col justify-center text-sm font-medium gap-2 w-full",
                 Label {
-                    variant: "outline",
-                    class: "p-2",
+                    variant: "title_1",
+                    class: "px-2 pb-2 text-base",
                     width: "w-full",
                     div {
-                        class: "truncate",
-                        "Name: {board.name}"
+                        class: "break-all",
+                        "{board.name}"
                     }
                 }
-                Label {
-                    variant: "outline",
-                    class: "p-2",
-                    width: "w-full",
-                    div {
-                        class: "truncate",
-                        "UUID: {board.uuid}"
+                HoverCard {
+                    Label {
+                        variant: "outline",
+                        class: "p-2 text-sm",
+                        width: "w-full",
+                        div {
+                            class: "truncate",
+                            "UUID: {board.uuid}"
+                        }
+                    }
+                    HoverCardContent {
+                        {board.uuid.clone()}
                     }
                 }
             }
             div {
-                class: "flex justify-center",
+                class: "flex justify-end",
                 Button {
                     onclick: move |_| {
                         navigator().push(Route::Board { uuid: board.uuid.clone() });
                     },
-                    class: "px-4",
+                    class: "px-2 text-sm",
                     "Details"
                 }
             }

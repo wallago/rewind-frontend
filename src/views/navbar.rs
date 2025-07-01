@@ -10,7 +10,7 @@ use crate::{
     DarkMode,
     components::{
         Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
-        Dropdown, SearchDropdown,
+        Dropdown, Input, SearchDropdown,
     },
     helpers,
 };
@@ -21,14 +21,13 @@ pub fn Navbar() -> Element {
     let mut search = use_signal(|| "".to_string());
 
     let is_search_active = use_memo(move || !search().is_empty());
-    // let is_search_active = use_signal(move || !search().is_empty());
-    let mut is_adding_board_open = use_signal(|| false);
+    let mut is_add_board_open = use_signal(|| false);
     let mut is_recent_boards_open = use_signal(|| false);
 
     use_click_outside(
         "add-board-area".to_string(),
-        move || is_adding_board_open(),
-        EventHandler::new(move |_| is_adding_board_open.set(false)),
+        move || is_add_board_open(),
+        EventHandler::new(move |_| is_add_board_open.set(false)),
     );
 
     use_click_outside(
@@ -91,7 +90,7 @@ pub fn Navbar() -> Element {
                 Button {
                     class: "px-2 justify-between gap-2 font-semibold text-sm",
                     width: "w-24",
-                    onclick: move |_| is_adding_board_open.set(true),
+                    onclick: move |_| is_add_board_open.set(true),
                     "Board"
                     Icon { height: 14, width: 14,icon: FaPlus }
                 }
@@ -112,12 +111,15 @@ pub fn Navbar() -> Element {
                 }
             }
         }
-        AddingBoard { is_open: is_adding_board_open }
+        AddBoard { is_open: is_add_board_open, onsave: move |_| {
+            navigator().push(Route::Home {});
+        } }
     }
 }
 
 #[component]
-fn AddingBoard(is_open: Signal<bool>) -> Element {
+fn AddBoard(is_open: Signal<bool>, onsave: EventHandler<MouseEvent>) -> Element {
+    let name = use_signal(|| "".to_string());
     use_context_provider(|| DialogState(is_open));
     rsx! {
         Dialog {
@@ -125,11 +127,20 @@ fn AddingBoard(is_open: Signal<bool>) -> Element {
                 id: "add-board-area",
                 class: "sm:max-w-[425px]",
                 DialogHeader {
-                    DialogTitle { "Task settings" }
+                    DialogTitle { "Add Board" }
+                }
+                Input {
+                    width: "w-full",
+                    placeholder: "Enter board name",
+                    value: name,
                 }
                 DialogFooter {
                     DialogClose {}
                     Button {
+                        onclick: move |e: MouseEvent| {
+                            onsave.call(e);
+                            is_open.set(false)
+                        },
                         r#type:"submit",
                         variant: "outline",
                         class: "font-semibold px-2 text-sm",

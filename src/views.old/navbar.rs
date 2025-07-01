@@ -58,7 +58,7 @@ pub fn Navbar() -> Element {
             div {
                 class: "ml-auto flex gap-12 items-center",
                 input {
-                    class: "h-6 w-32 flex justify-between border-2 border-secondary-4 bg-primary-2 text-secondary items-center px-2 text-xs placeholder:text-secondary-4 focus:outline-none focus:ring-0 focus:border-secondary",
+                    class: "h-6 w-32 flex justify-between border-2 border-secondary-2 bg-primary-2 text-secondary items-center px-2 text-xs placeholder:text-secondary-4 focus:outline-none focus:ring-0 focus:border-secondary",
                     placeholder: " Search"
                 }
                 button {

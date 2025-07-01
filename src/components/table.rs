@@ -73,7 +73,7 @@ pub struct TableRowProps {
 pub fn TableRow(props: TableRowProps) -> Element {
     rsx!(
         div {
-            class: "mx-3 border-b-2 border-secondary hover:bg-primary-3",
+            class: "mx-3 border-b-2 border-secondary hover:bg-primary-2",
             tr {
                 draggable: true,
                 ondragstart: move |e| {
@@ -100,7 +100,7 @@ pub fn TableRow(props: TableRowProps) -> Element {
                 },
                 class: "table w-full table-fixed",
                 td {
-                    class: format!("w-full px-3 py-1 {}", props.class.unwrap_or_default()),
+                    class: format!("w-full px-3 py-1 overflow-hidden {}", props.class.unwrap_or_default()),
                     {props.children}
                 }
             }

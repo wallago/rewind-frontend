@@ -16,17 +16,10 @@ pub struct LabelProps {
 #[component]
 pub fn Label(props: LabelProps) -> Element {
     let variant_class = match props.variant.as_deref() {
-        Some("outline") => {
-            "
-            bg-primary text-secondary
-            border-2 border-secondary
-            "
-        }
-        _ => {
-            "
-            bg-secondary text-primary
-            "
-        }
+        Some("outline") => "bg-primary text-secondary border-2 border-secondary",
+        Some("title") => "bg-primary text-secondary font-semibold",
+        Some("title_1") => "bg-primary-1 text-secondary font-semibold",
+        _ => "bg-secondary text-primary",
     };
     let base_class = "
         p-1 flex items-center leading-none inline-block max-w-full 

@@ -17,14 +17,10 @@ module.exports = {
         primary: "var(--primary-color)",
         "primary-1": "var(--primary-color-1)",
         "primary-2": "var(--primary-color-2)",
-        "primary-3": "var(--primary-color-3)",
-        "primary-4": "var(--primary-color-4)",
 
         secondary: "var(--secondary-color)",
         "secondary-1": "var(--secondary-color-1)",
         "secondary-2": "var(--secondary-color-2)",
-        "secondary-3": "var(--secondary-color-3)",
-        "secondary-4": "var(--secondary-color-4)",
 
         "priority-low": "var(--priority-low-color)",
         "priority-medium": "var(--priority-medium-color)",

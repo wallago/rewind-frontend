@@ -61,7 +61,7 @@ pub fn DialogContent(props: DialogProps) -> Element {
     if !is_open() {
         return rsx!();
     }
-    let base_class = "bg-primary shadow-xl py-4 px-6 w-full max-w-md flex flex-col text-left border-2 border-secondary text-secondary";
+    let base_class = "bg-primary shadow-xl py-4 px-6 w-full max-w-md flex flex-col gap-2 text-left border-2 border-secondary text-secondary";
     rsx!(
         div {
             class: "fixed inset-0 z-50 flex items-center justify-center bg-black/50",
