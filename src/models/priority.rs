@@ -29,3 +29,24 @@ impl Into<Element> for Priority {
         }
     }
 }
+
+impl ToString for Priority {
+    fn to_string(&self) -> String {
+        match self {
+            Priority::Low => "Low".to_string(),
+            Priority::Medium => "Medium".to_string(),
+            Priority::High => "High".to_string(),
+        }
+    }
+}
+
+impl From<&str> for Priority {
+    fn from(s: &str) -> Self {
+        match s {
+            "Low" => Priority::Low,
+            "Medium" => Priority::Medium,
+            "High" => Priority::High,
+            _ => Priority::Low,
+        }
+    }
+}

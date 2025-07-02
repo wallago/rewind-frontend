@@ -35,3 +35,24 @@ impl Into<Element> for Status {
         }
     }
 }
+
+impl ToString for Status {
+    fn to_string(&self) -> String {
+        match self {
+            Status::Todo => "Todo".to_string(),
+            Status::InProgress => "InProgress".to_string(),
+            Status::Done => "Done".to_string(),
+        }
+    }
+}
+
+impl From<&str> for Status {
+    fn from(s: &str) -> Self {
+        match s {
+            "Todo" => Status::Todo,
+            "InProgress" => Status::InProgress,
+            "Done" => Status::Done,
+            _ => Status::Todo,
+        }
+    }
+}

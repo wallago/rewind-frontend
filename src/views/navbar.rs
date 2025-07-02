@@ -4,13 +4,13 @@ use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
 use crate::Route;
-use crate::components::DialogState;
 use crate::hooks::use_click_outside;
 use crate::{
     DarkMode,
     components::{
         Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
-        Dropdown, Input, SearchDropdown,
+        Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown, SearchDropdownContent,
+        SearchDropdownInput,
     },
     helpers,
 };
@@ -73,9 +73,8 @@ pub fn Navbar() -> Element {
             div {
                 class: "pl-20 flex gap-12",
                 Dropdown {
-                    id: "recent-boards-area",
-                    class: "font-semibold text-sm",
                     is_open: is_recent_boards_open,
+                    class: "font-semibold text-base",
                     options: [
                         (String::from("Project X"), Some(EventHandler::new(move |_| {
                             is_recent_boards_open.set(false);
@@ -84,11 +83,15 @@ pub fn Navbar() -> Element {
                         (String::from("Project Y"), None),
                         (String::from("Project Z"), None)
                     ].to_vec(),
-                    name: "Recent",
-                    Icon { height: 14, width: 14,icon: FaChevronDown }
+                    DropdownTrigger {
+                        Icon { height: 14, width: 14,icon: FaChevronDown }
+                    }
+                    DropdownContent {
+                        id: "recent-boards-area",
+                    }
                 }
                 Button {
-                    class: "px-2 justify-between gap-2 font-semibold text-sm",
+                    class: "px-2 justify-between gap-2 font-semibold text-base",
                     width: "w-24",
                     onclick: move |_| is_add_board_open.set(true),
                     "Board"
@@ -99,10 +102,13 @@ pub fn Navbar() -> Element {
                 class: "ml-auto flex gap-12 items-center",
                 SearchDropdown {
                     value: search,
-                    class: "h-6 justify-between text-xs",
-                    placeholder: " Search",
-                    width: "w-32",
-                    id: "search-boards-area",
+                    class: "text-base w-72",
+                    SearchDropdownInput {
+                        placeholder: " Search boards",
+                    }
+                    SearchDropdownContent {
+                        id: "search-boards-area",
+                    }
                 }
                 button {
                     class: "px-2 py-1 text-secondary hover:text-secondary-2",
@@ -120,9 +126,9 @@ pub fn Navbar() -> Element {
 #[component]
 fn AddBoard(is_open: Signal<bool>, onsave: EventHandler<MouseEvent>) -> Element {
     let name = use_signal(|| "".to_string());
-    use_context_provider(|| DialogState(is_open));
     rsx! {
         Dialog {
+            is_open: is_open,
             DialogContent {
                 id: "add-board-area",
                 class: "sm:max-w-[425px]",

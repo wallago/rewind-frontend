@@ -24,7 +24,7 @@ pub fn Button(props: ButtonProps) -> Element {
             "
             bg-primary text-secondary
             hover:bg-primary-1 hover:text-secondary-1
-            active:bg-primary-2 hover:text-secondary-2
+            active:bg-primary-2 active:text-secondary-2
             border-2 border-secondary
             "
         }
@@ -32,7 +32,7 @@ pub fn Button(props: ButtonProps) -> Element {
             "
             bg-secondary text-primary
             hover:bg-secondary-1 hover:text-primary-1
-            active:bg-secondary-2 hover:text-primary-2
+            active:bg-secondary-2 active:text-primary-2
             "
         }
     };

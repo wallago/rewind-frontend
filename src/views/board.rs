@@ -1,15 +1,16 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
     Icon,
-    icons::fa_solid_icons::{FaCheck, FaChevronRight, FaCircle, FaPenToSquare, FaPlus, FaXmark},
+    icons::fa_solid_icons::{FaCheck, FaChevronDown, FaChevronRight, FaCircle, FaPlus, FaXmark},
 };
 
 use crate::{
     Route,
     components::{
-        Button, Card, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogState,
-        DialogTitle, HoverCard, HoverCardContent, Input, Label, Table, TableBody, TableCaption,
-        TableHead, TableHeader, TableRow,
+        Button, Card, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+        Dropdown, DropdownContent, DropdownTrigger, HoverCard, HoverCardContent, Input, Label,
+        SearchDropdown, SearchDropdownContent, SearchDropdownInput, Table, TableBody, TableCaption,
+        TableHead, TableHeader, TableRow, Textarea,
     },
     hooks::use_click_outside,
     models::{List, Priority, Status, Tag, Task},
@@ -235,7 +236,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
                         id: "add-task-area",
                         class: "flex w-full gap-4 items-center",
                         Input {
-                            class: "flex-1 text-sm",
+                            class: "flex-1 text-base bg-primary-2",
                             value: input_text,
                             onenter: on_submit_by_key
 
@@ -265,7 +266,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
                 } else {
                     Button {
                         onclick: move |_| adding_task.set(true),
-                        class: "text-sm justify-between pl-2 pr-1",
+                        class: "text-base justify-between pl-2 pr-1",
                         width: "w-20",
                         "Task"
                         Icon {
@@ -381,14 +382,96 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
 
 #[component]
 fn TaskSettings(is_open: Signal<bool>) -> Element {
-    use_context_provider(|| DialogState(is_open));
+    let name = use_signal(|| "T".to_string());
+    let desc = use_signal(|| "".to_string());
+    let search = use_signal(|| "".to_string());
+    let is_status_open = use_signal(|| false);
+    let mut status = use_signal(|| Status::Todo);
+    let is_priority_open = use_signal(|| false);
+    let mut priority = use_signal(|| Priority::Low);
+    let mut adding_tag = use_signal(|| false);
     rsx! {
         Dialog {
+            is_open: is_open,
             DialogContent {
                 id: "settings-task-area",
                 class: "sm:max-w-[425px]",
                 DialogHeader {
                     DialogTitle { "Task settings" }
+                }
+                div {
+                    class: "flex flex-col gap-4",
+                    Input {
+                        width: "w-full",
+                        placeholder: "Enter board name",
+                        value: name,
+                    }
+                    Textarea {
+                        width: "w-full",
+                        placeholder: "Enter board description",
+                        value: desc,
+                    }
+                    Dropdown {
+                        is_open: is_status_open,
+                        class: "text-base",
+                        options: [
+                            (Status::Todo.to_string(), Some(EventHandler::new(move |_| status.set(Status::Todo)))),
+                            (Status::InProgress.to_string(), Some(EventHandler::new(move |_| status.set(Status::InProgress)))),
+                            (Status::Done.to_string(), Some(EventHandler::new(move |_| status.set(Status::Done))))
+                        ].to_vec(),
+                        DropdownTrigger {
+                            width: "w-full",
+                            name: status().to_string(),
+                            Icon { height: 14, width: 14,icon: FaChevronDown }
+                        }
+                        DropdownContent {
+                            id: "recent-boards-area",
+                        }
+                    }
+                    Dropdown {
+                        is_open: is_priority_open,
+                        class: "text-base",
+                        options: [
+                            (Priority::Low.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Low)))),
+                            (Priority::Medium.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Medium)))),
+                            (Priority::High.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::High))))
+                        ].to_vec(),
+                        DropdownTrigger {
+                            width: "w-full",
+                            name: priority().to_string(),
+                            Icon { height: 14, width: 14,icon: FaChevronDown }
+                        }
+                        DropdownContent {
+                            id: "recent-boards-area",
+                        }
+                    }
+                    div {
+                        class: "flex items-center gap-2",
+                        SearchDropdown {
+                            value: search,
+                            class: "text-base",
+                            SearchDropdownInput {
+                                width: "w-full",
+                                placeholder: " Search tags",
+                            }
+                            SearchDropdownContent {
+                                id: "search-boards-area",
+                            }
+                        }
+                        Button {
+                            class: "px-1 h-full",
+                            onclick: move |_| {
+                                adding_tag.set(false);
+                                // on_submit();
+                            },
+                            Icon {
+                                class: "text-primary",
+                                height: 12,
+                                icon: FaCheck,
+                            }
+                        }
+                    }
+
                 }
                 DialogFooter {
                     DialogClose {}
@@ -398,6 +481,9 @@ fn TaskSettings(is_open: Signal<bool>) -> Element {
                         class: "font-semibold px-2 text-sm",
                         "Save"
                     }
+                }
+                if adding_tag() {
+                } else {
                 }
             }
         }

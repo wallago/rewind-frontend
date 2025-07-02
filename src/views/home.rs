@@ -88,7 +88,7 @@ fn BoardCard(board: Board) -> Element {
                     onclick: move |_| {
                         navigator().push(Route::Board { uuid: board.uuid.clone() });
                     },
-                    class: "px-2 text-sm",
+                    class: "px-2 text-base",
                     "Details"
                 }
             }
