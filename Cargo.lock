@@ -3770,6 +3770,7 @@ dependencies = [
  "dioxus-material",
  "dotenvy",
  "futures-timer",
+ "regex",
  "reqwest",
  "serde",
  "tracing",

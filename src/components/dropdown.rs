@@ -86,11 +86,11 @@ pub fn DropdownContent(props: DropdownContentProps) -> Element {
                 class: format!("
                     absolute z-50 mt-1 max-h-60 overflow-y-auto
                     border-2 border-secondary shadow-lg
-                    bg-primary text-secondary
+                    bg-primary text-secondary flex flex-col
                     {} {}", props.class.unwrap_or_default(), props.width.unwrap_or("w-full".to_string())),
                     {ctx.options.into_iter().map(|(label,handler)| {
                         rsx!(button {
-                            class: "w-full text-left px-1 hover:bg-primary-1 hover:text-secondary-1",
+                            class: "w-full text-left hover:bg-primary-1 px-1 py-0.5 hover:text-secondary-1",
                             onclick: move |e: MouseEvent| {
                                 if let Some(handler) = handler {
                                     handler.call(e)

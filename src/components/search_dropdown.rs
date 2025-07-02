@@ -11,6 +11,7 @@ struct SearchDropdownContext {
 #[derive(PartialEq, Clone, Props)]
 pub struct SearchDropdownProps {
     pub value: Signal<String>,
+    pub options: Signal<Vec<String>>,
     #[props(optional)]
     pub id: Option<String>,
     #[props(optional)]
@@ -20,10 +21,8 @@ pub struct SearchDropdownProps {
 
 #[component]
 pub fn SearchDropdown(props: SearchDropdownProps) -> Element {
-    let querry_results = ["result 1".to_string(), "result 2".to_string()].to_vec();
-
     let filtered_results = use_memo(move || {
-        querry_results
+        (props.options)()
             .iter()
             .cloned()
             .filter(|result| {
@@ -100,7 +99,7 @@ pub fn SearchDropdownContent(props: SearchDropdownContentProps) -> Element {
                 {ctx.filtered_results.iter().map(|filter_result| {
                     rsx!(
                         button {
-                            class: "w-full text-left px-1 hover:bg-primary-1 hover:text-secondary-1",
+                            class: "w-full text-left px-1 py-0.5 hover:bg-primary-1 hover:text-secondary-1",
                             onclick: move |e: MouseEvent| {
                                 if let Some(handler) = props.onclick {
                                     handler.call(e)

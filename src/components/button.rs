@@ -36,16 +36,22 @@ pub fn Button(props: ButtonProps) -> Element {
             "
         }
     };
+    let disabled_class = if props.disabled.unwrap_or(false) {
+        "pointer-events-none opacity-50"
+    } else {
+        ""
+    };
 
     let base_class = " flex items-center py-0.5";
     rsx!(
         button {
             class: format!(
-                "{} {} {} {}",
+                "{} {} {} {} {}",
                 base_class,
                 variant_class,
                 props.class.clone().unwrap_or_default(),
-                props.width.clone().unwrap_or("w-fit".to_string())
+                props.width.clone().unwrap_or("w-fit".to_string()),
+                disabled_class
             ),
             r#type: props.r#type.clone().unwrap_or("button".into()),
             disabled: props.disabled.unwrap_or(false),

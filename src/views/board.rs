@@ -3,6 +3,7 @@ use dioxus_free_icons::{
     Icon,
     icons::fa_solid_icons::{FaCheck, FaChevronDown, FaChevronRight, FaCircle, FaPlus, FaXmark},
 };
+use regex::Regex;
 
 use crate::{
     Route,
@@ -302,9 +303,9 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                             }
                             HoverCard {
                                 div {
-                                    class: "w-8 flex justify-end gap-1 block group-hover:hidden",
+                                    class: "w-8 flex justify-end items-center gap-1 block group-hover:hidden",
                                     {task.tags.iter().enumerate().map(|(id, tag)| {
-                                        if id < 2 {
+                                        if id < 1 {
                                             rsx!(
                                                 Icon {
                                                     style: format!("--tag-color: {};", tag.color),
@@ -314,7 +315,7 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                                                     icon: FaCircle
                                                 }
                                             )
-                                        } else if id == 2 {
+                                        } else if id == 1 {
                                             rsx!(
                                                 Icon {
                                                     class: format!("text-secondary"),
@@ -382,14 +383,39 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
 
 #[component]
 fn TaskSettings(is_open: Signal<bool>) -> Element {
-    let name = use_signal(|| "T".to_string());
+    let re = Regex::new(r"^#[0-9a-fA-F]{6}$")?;
+    let name = use_signal(|| "".to_string());
     let desc = use_signal(|| "".to_string());
-    let search = use_signal(|| "".to_string());
-    let is_status_open = use_signal(|| false);
+    let mut search = use_signal(|| "".to_string());
+    let mut is_status_open = use_signal(|| false);
     let mut status = use_signal(|| Status::Todo);
-    let is_priority_open = use_signal(|| false);
+    let mut is_priority_open = use_signal(|| false);
     let mut priority = use_signal(|| Priority::Low);
     let mut adding_tag = use_signal(|| false);
+    let new_tag_name = use_signal(|| "".to_string());
+    let new_tag_color = use_signal(|| "".to_string());
+    let mut is_valid_hex = use_signal(|| false);
+    let mut tags = use_signal(|| Vec::<Tag>::new());
+    let is_search_active = use_memo(move || !search().is_empty());
+
+    use_click_outside(
+        "status-task-area".to_string(),
+        move || is_status_open(),
+        EventHandler::new(move |_| is_status_open.set(false)),
+    );
+
+    use_click_outside(
+        "priority-task-area".to_string(),
+        move || is_priority_open(),
+        EventHandler::new(move |_| is_priority_open.set(false)),
+    );
+
+    use_click_outside(
+        "search-tags-area".to_string(),
+        move || is_search_active(),
+        EventHandler::new(move |_| search.set("".to_string())),
+    );
+
     rsx! {
         Dialog {
             is_open: is_open,
@@ -412,66 +438,136 @@ fn TaskSettings(is_open: Signal<bool>) -> Element {
                         value: desc,
                     }
                     Dropdown {
+                        id: "status-task-area",
                         is_open: is_status_open,
                         class: "text-base",
                         options: [
-                            (Status::Todo.to_string(), Some(EventHandler::new(move |_| status.set(Status::Todo)))),
-                            (Status::InProgress.to_string(), Some(EventHandler::new(move |_| status.set(Status::InProgress)))),
-                            (Status::Done.to_string(), Some(EventHandler::new(move |_| status.set(Status::Done))))
+                        (Status::Todo.to_string(), Some(EventHandler::new(move |_| status.set(Status::Todo)))),
+                        (Status::InProgress.to_string(), Some(EventHandler::new(move |_| status.set(Status::InProgress)))),
+                        (Status::Done.to_string(), Some(EventHandler::new(move |_| status.set(Status::Done))))
                         ].to_vec(),
                         DropdownTrigger {
                             width: "w-full",
                             name: status().to_string(),
                             Icon { height: 14, width: 14,icon: FaChevronDown }
                         }
-                        DropdownContent {
-                            id: "recent-boards-area",
-                        }
+                        DropdownContent {}
                     }
                     Dropdown {
+                        id: "priority-task-area",
                         is_open: is_priority_open,
                         class: "text-base",
                         options: [
-                            (Priority::Low.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Low)))),
-                            (Priority::Medium.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Medium)))),
-                            (Priority::High.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::High))))
+                        (Priority::Low.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Low)))),
+                        (Priority::Medium.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Medium)))),
+                        (Priority::High.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::High))))
                         ].to_vec(),
                         DropdownTrigger {
                             width: "w-full",
                             name: priority().to_string(),
                             Icon { height: 14, width: 14,icon: FaChevronDown }
                         }
-                        DropdownContent {
-                            id: "recent-boards-area",
-                        }
+                        DropdownContent {}
                     }
                     div {
-                        class: "flex items-center gap-2",
-                        SearchDropdown {
-                            value: search,
-                            class: "text-base",
-                            SearchDropdownInput {
+                        class: "flex items-center gap-2 h-full",
+                        if !adding_tag() {
+                            SearchDropdown {
+                                id: "search-tags-area",
+                                options: Signal::new(tags().iter().map(|tag| tag.name.clone()).collect()),
+                                value: search,
+                                class: "text-base",
+                                SearchDropdownInput {
+                                    width: "w-full",
+                                    placeholder: " Search tags",
+                                }
+                                SearchDropdownContent {}
+                            }
+                            Button {
+                                class: "px-1 h-7 w-7",
+                                onclick: move |_| {
+                                    adding_tag.set(true);
+                                },
+                                Icon {
+                                    class: "text-primary",
+                                    height: 12,
+                                    icon: FaPlus,
+                                }
+                            }
+                        } else {
+                            Input {
                                 width: "w-full",
-                                placeholder: " Search tags",
+                                placeholder: "New tag name",
+                                value: new_tag_name,
                             }
-                            SearchDropdownContent {
-                                id: "search-boards-area",
+                            Input {
+                                width: "w-full",
+                                placeholder: "New tag color",
+                                value: new_tag_color,
+                                oninput: move |_| {
+                                    if !re.is_match(&new_tag_color()) {
+                                        is_valid_hex.set(false)
+                                    } else {
+                                        is_valid_hex.set(true)
+                                    }
+                                }
                             }
-                        }
-                        Button {
-                            class: "px-1 h-full",
-                            onclick: move |_| {
-                                adding_tag.set(false);
-                                // on_submit();
-                            },
-                            Icon {
-                                class: "text-primary",
-                                height: 12,
-                                icon: FaCheck,
+                            Button {
+                                class: "px-1 h-7 w-7",
+                                onclick: move |_| {
+                                    adding_tag.set(false);
+                                    tags.with_mut(|tag_list| {
+                                        tag_list.push(Tag {
+                                            name: new_tag_name(),
+                                            color: new_tag_color(),
+                                        });
+                                    });
+                                },
+                                disabled: !is_valid_hex(),
+                                Icon {
+                                    class: "text-primary",
+                                    height: 12,
+                                    icon: FaCheck,
+                                }
                             }
                         }
                     }
-
+                    if !tags().is_empty() {
+                        div {
+                            p {
+                                class: "font-semibold pb-2",
+                                "Tags"
+                            }
+                            div {
+                                class: "flex flex-col gap-2 max-h-32 overflow-y-auto w-full border-2 border-2-primary p-2",
+                                {tags.iter().map(|tag| rsx!(
+                                    div {
+                                        class: "flex gap-2 justify-between items-center w-full px-1",
+                                        div {
+                                            class: "flex gap-4 items-center w-fit",
+                                            Icon {
+                                                style: format!("--tag-color: {};", tag.color),
+                                                class: format!("text-[var(--tag-color)]"),
+                                                height: 10,
+                                                width: 10,
+                                                icon: FaCircle
+                                            },
+                                            "{tag.name}"
+                                        }
+                                        Button {
+                                            class: "px-1 h-5 w-5",
+                                            // onclick: move |_| adding_task.set(false),
+                                            Icon {
+                                                class: "text-primary",
+                                                height: 12,
+                                                icon: FaXmark,
+                                            }
+                                        }
+                                    }
+                                ))}
+                            }
+                        }
+                    }
                 }
                 DialogFooter {
                     DialogClose {}
@@ -481,9 +577,6 @@ fn TaskSettings(is_open: Signal<bool>) -> Element {
                         class: "font-semibold px-2 text-sm",
                         "Save"
                     }
-                }
-                if adding_tag() {
-                } else {
                 }
             }
         }
