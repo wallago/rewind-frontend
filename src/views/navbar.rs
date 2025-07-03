@@ -75,6 +75,7 @@ pub fn Navbar() -> Element {
             div {
                 class: "pl-20 flex gap-12",
                 Dropdown {
+                    id: "recent-boards-area",
                     is_open: is_recent_boards_open,
                     class: "font-semibold text-base",
                     options: [
@@ -88,9 +89,7 @@ pub fn Navbar() -> Element {
                     DropdownTrigger {
                         Icon { height: 14, width: 14,icon: FaChevronDown }
                     }
-                    DropdownContent {
-                        id: "recent-boards-area",
-                    }
+                    DropdownContent {}
                 }
                 Button {
                     class: "px-2 justify-between gap-2 font-semibold text-base",
@@ -103,14 +102,14 @@ pub fn Navbar() -> Element {
             div {
                 class: "ml-auto flex gap-12 items-center",
                 SearchDropdown {
+                    id: "search-boards-area",
+                    options: Signal::new(Vec::new()),
                     value: search,
                     class: "text-base w-72",
                     SearchDropdownInput {
                         placeholder: " Search boards",
                     }
-                    SearchDropdownContent {
-                        id: "search-boards-area",
-                    }
+                    SearchDropdownContent {}
                 }
                 button {
                     class: "px-2 py-1 text-secondary hover:text-secondary-2",
