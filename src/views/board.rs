@@ -6,6 +6,7 @@ use dioxus_free_icons::{
 
 use crate::{
     Route,
+    api::{add_list, add_task, get_lists_by_board_uuid, get_tags, get_tasks_by_list_uuid},
     components::{
         Button, Card, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
         Dropdown, DropdownContent, DropdownTrigger, HoverCard, HoverCardContent, Input, Label,
@@ -13,31 +14,39 @@ use crate::{
         TableHead, TableHeader, TableRow, Textarea,
     },
     hooks::use_click_outside,
-    models::{List, Priority, Status, Tag, Task},
+    models::{List, NewList, NewTask, Priority, Status, Tag, Task},
 };
 
 #[component]
 pub fn Board(uuid: String) -> Element {
-    let lists = [
-        List {
-            name: String::from("Backend"),
-            uuid: String::from("23221150-a181-4592-99e7-fbbb76ad3772"),
-        },
-        List {
-            name: String::from("Backend"),
-            uuid: String::from("23221199-a181-4592-99e7-fbbb76ad3772"),
-        },
-        List {
-            name: String::from("Backend"),
-            uuid: String::from("23221149-a181-4592-99e7-fbbb76ad3772"),
-        },
-        List {
-            name: String::from("Backend"),
-            uuid: String::from("23221149-d181-4592-99e7-fbbb76ad3772"),
-        },
-    ]
-    .to_vec();
+    let mut lists = use_signal(|| None::<Vec<List>>);
+    let mut tags = use_signal(|| None::<Vec<Tag>>);
+    use_future(move || async move {
+        match get_tags().await {
+            Ok(res) => tags.set(Some(res)),
+            Err(err) => tracing::error!("{err}"),
+        }
+    });
+
+    let board_uuid = uuid.clone();
+    use_future(move || {
+        let uuid = board_uuid.clone();
+        async move {
+            match get_lists_by_board_uuid(uuid).await {
+                Ok(res) => lists.set(Some(res)),
+                Err(err) => tracing::error!("{err}"),
+            }
+        }
+    });
+
     let mut is_task_settings_open = use_signal(|| false);
+    let mut is_add_list_open = use_signal(|| false);
+
+    use_click_outside(
+        "add-list-area".to_string(),
+        move || is_add_list_open(),
+        EventHandler::new(move |_| is_add_list_open.set(false)),
+    );
 
     use_click_outside(
         "settings-task-area".to_string(),
@@ -48,19 +57,30 @@ pub fn Board(uuid: String) -> Element {
     rsx! {
         div {
             class: "p-4 h-full bg-primary border-2 border-secondary flex flex-col gap-4",
-            Header { uuid }
             div {
-                class: "h-full grid gap-4 grid-cols-4",
-                // class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(26rem,_1fr))] h-full",
-                {lists.into_iter().map(|list| rsx!(
-                    ListCard {
-                        list,
-                        is_task_settings_open,
-                    }
-                ))}
+                class: "flex justify-between",
+                Header { uuid: uuid.clone() }
+                Button {
+                    class: "px-2 justify-between gap-2 font-semibold text-base",
+                    width: "w-24",
+                    onclick: move |_| is_add_list_open.set(true),
+                    "List"
+                    Icon { height: 14, width: 14,icon: FaPlus }
+                }
+            }
+            div {
+                class: "overflow-y-auto  h-full grid gap-4 grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3",
+                if let Some(lists) = lists() {
+                    {lists.iter().map(|list| {
+                       rsx!(
+                            ListCard { list: list.clone(), is_task_settings_open }
+                        )
+                    })}
+                }
             }
         }
-        TaskSettings { is_open: is_task_settings_open}
+        AddList { is_open: is_add_list_open, board_uuid: uuid.clone() }
+        TaskSettings { is_open: is_task_settings_open, tags: tags().unwrap_or(Vec::new())}
     }
 }
 
@@ -90,81 +110,20 @@ fn Header(uuid: String) -> Element {
 #[component]
 fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
     let mut adding_task = use_signal(|| false);
-    let mut input_text = use_signal(|| "".to_string());
-    let mut tasks = use_signal(|| {
-        [
-            Task {
-                name: String::from("Websocket with Actix"),
-                priority: Priority::Low,
-                status: Status::Todo,
-                tags: [Tag {
-                    name: String::from("tech"),
-                    color: String::from("#FFAA00"),
-                }]
-                .to_vec(),
-            },
-            Task {
-                name: String::from("Websocket with Actix"),
-                priority: Priority::Low,
-                status: Status::Todo,
-                tags: [Tag {
-                    name: String::from("tech"),
-                    color: String::from("#FFAA00"),
-                }]
-                .to_vec(),
-            },
-            Task {
-                name: String::from("Websocket with Actix"),
-                priority: Priority::Low,
-                status: Status::Todo,
-                tags: [Tag {
-                    name: String::from("tech"),
-                    color: String::from("#FFAA00"),
-                }]
-                .to_vec(),
-            },
-            Task {
-                name: String::from("Websocket with Actix"),
-                priority: Priority::Low,
-                status: Status::Todo,
-                tags: [Tag {
-                    name: String::from("tech"),
-                    color: String::from("#FFAA00"),
-                }]
-                .to_vec(),
-            },
-            Task {
-                name: String::from("Websocket with Actix"),
-                priority: Priority::Medium,
-                status: Status::InProgress,
-                tags: [
-                    Tag {
-                        name: String::from("tech"),
-                        color: String::from("#FFFF00"),
-                    },
-                    Tag {
-                        name: String::from("tech"),
-                        color: String::from("#AB0000"),
-                    },
-                    Tag {
-                        name: String::from("tech"),
-                        color: String::from("#FFAA00"),
-                    },
-                ]
-                .to_vec(),
-            },
-            Task {
-                name: String::from("Websocket with Actix"),
-                priority: Priority::High,
-                status: Status::Done,
-                tags: [Tag {
-                    name: String::from("tech"),
-                    color: String::from("#FFAA00"),
-                }]
-                .to_vec(),
-            },
-        ]
-        .to_vec()
+    let name = use_signal(|| "".to_string());
+
+    let mut tasks = use_signal(|| None::<Vec<Task>>);
+    let list_uuid = list.uuid.clone();
+    let list_uuid_copy_1 = list.uuid.clone();
+    let list_uuid_copy_2 = list.uuid.clone();
+    use_future(move || {
+        let uuid = list_uuid.clone();
+        async move {
+            match get_tasks_by_list_uuid(uuid).await {
+                Ok(res) => tasks.set(Some(res)),
+                Err(err) => tracing::error!("{err}"),
+            }
+        }
     });
 
     use_click_outside(
@@ -173,29 +132,24 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
         EventHandler::new(move |_| adding_task.set(false)),
     );
 
-    let mut on_submit = move || {
-        if !input_text().is_empty() {
-            tasks.with_mut(|list| {
-                list.push(Task {
-                    name: input_text(),
-                    priority: Priority::Low,
-                    status: Status::Todo,
-                    tags: [Tag {
-                        name: String::from("tech"),
-                        color: String::from("#FFAA00"),
-                    }]
-                    .to_vec(),
+    let on_submit = move |uuid: String| {
+        use_future(move || {
+            let uuid = uuid.clone();
+            async move {
+                match add_task(NewTask {
+                    name: name(),
+                    list_uuid: uuid.clone(),
+                    position: None,
+                    status: None,
+                    priority: None,
                 })
-            });
-            input_text.set(String::new());
-            adding_task.set(false);
-        }
-    };
-
-    let on_submit_by_key = {
-        move |_: KeyboardEvent| {
-            on_submit();
-        }
+                .await
+                {
+                    Ok(_) => (),
+                    Err(err) => tracing::error!("{err}"),
+                }
+            }
+        });
     };
 
     rsx! {
@@ -237,15 +191,19 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
                         class: "flex w-full gap-4 items-center",
                         Input {
                             class: "flex-1 text-base bg-primary-2",
-                            value: input_text,
-                            onenter: on_submit_by_key
+                            value: name,
+                            onenter: EventHandler::new(move |_e: KeyboardEvent| {
+                                let uuid = list_uuid_copy_1.clone();
+                                on_submit(uuid);
+                            })
 
                         }
                         Button {
                             class: "px-1 h-full",
                             onclick: move |_| {
+                                let uuid = list_uuid_copy_2.clone();
                                 adding_task.set(false);
-                                on_submit();
+                                on_submit(uuid);
                             },
                             Icon {
                                 class: "text-primary",
@@ -282,79 +240,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
 }
 
 #[component]
-fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
-    let tasks_element = tasks.into_iter().enumerate().map(|(id, task)| {
-        rsx!(
-            div {
-                key: "{id}",
-                TableRow {
-                    class: "cursor-pointer",
-                    onclick: move |_| { is_settings_open.set(true) },
-                    div {
-                        class: "flex items-center gap-2",
-                        div {
-                            class: "w-full flex items-center h-full gap-4",
-                            {<Priority as Into<Element>>::into(task.priority.clone())}
-                            {<Status as Into<Element>>::into(task.status.clone())}
-                            div {
-                                class: "flex-grow flex-shrink inline-block truncate",
-                                {task.name.clone()}
-                            }
-                            HoverCard {
-                                div {
-                                    class: "w-8 flex justify-end gap-1 block group-hover:hidden",
-                                    {task.tags.iter().enumerate().map(|(id, tag)| {
-                                        if id < 2 {
-                                            rsx!(
-                                                Icon {
-                                                    style: format!("--tag-color: {};", tag.color),
-                                                    class: format!("text-[var(--tag-color)]"),
-                                                    height: 10,
-                                                    width: 10,
-                                                    icon: FaCircle
-                                                }
-                                            )
-                                        } else if id == 2 {
-                                            rsx!(
-                                                Icon {
-                                                    class: format!("text-secondary"),
-                                                    height: 14,
-                                                    width: 14,
-                                                    icon: FaPlus
-                                                }
-                                            )
-                                        } else {
-                                            rsx!()
-                                        }
-                                    })}
-                                }
-                                HoverCardContent {
-                                    {task.tags.iter().map(|tag| {
-                                        rsx!(
-                                            div {
-                                                class: "flex items-center gap-1 p-0.5",
-                                                {tag.name.clone()}
-                                                Icon {
-                                                    style: format!("--tag-color: {};", tag.color),
-                                                    class: format!("text-[var(--tag-color)]"),
-                                                    height: 10,
-                                                    width: 10,
-                                                    icon: FaCircle
-                                                },
-
-                                            }
-                                        )
-                                    })}
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        )
-    });
-
+fn Tasks(tasks: Option<Vec<Task>>, is_settings_open: Signal<bool>) -> Element {
     rsx! {
         div {
             Table {
@@ -373,7 +259,79 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
                 }
                 TableBody {
                     class: "w-full font-medium text-base text-secondary max-h-64",
-                    {tasks_element}
+
+                    if let Some(tasks) = tasks {
+                        {tasks.into_iter().map(|task| {
+                            rsx!(
+                                div {
+                                    TableRow {
+                                        class: "cursor-pointer",
+                                        onclick: move |_| { is_settings_open.set(true) },
+                                        div {
+                                            class: "flex items-center gap-2",
+                                            div {
+                                                class: "w-full flex items-center h-full gap-4",
+                                                {<Priority as Into<Element>>::into(task.priority.clone())}
+                                                {<Status as Into<Element>>::into(task.status.clone())}
+                                                div {
+                                                    class: "flex-grow flex-shrink inline-block truncate",
+                                                    {task.name.clone()}
+                                                }
+                                                // HoverCard {
+                                                //     div {
+                                                //         class: "w-8 flex justify-end gap-1 block group-hover:hidden",
+                                                //         {task.tags.iter().enumerate().map(|(id, tag)| {
+                                                //             if id < 2 {
+                                                //                 rsx!(
+                                                //                     Icon {
+                                                //                         style: format!("--tag-color: {};", tag.color),
+                                                //                         class: format!("text-[var(--tag-color)]"),
+                                                //                         height: 10,
+                                                //                         width: 10,
+                                                //                         icon: FaCircle
+                                                //                     }
+                                                //                 )
+                                                //             } else if id == 2 {
+                                                //                 rsx!(
+                                                //                     Icon {
+                                                //                         class: format!("text-secondary"),
+                                                //                         height: 14,
+                                                //                         width: 14,
+                                                //                         icon: FaPlus
+                                                //                     }
+                                                //                 )
+                                                //             } else {
+                                                //                 rsx!()
+                                                //             }
+                                                //         })}
+                                                //     }
+                                                //     HoverCardContent {
+                                                //         {task.tags.iter().map(|tag| {
+                                                //             rsx!(
+                                                //                 div {
+                                                //                     class: "flex items-center gap-1 p-0.5",
+                                                //                     {tag.name.clone()}
+                                                //                     Icon {
+                                                //                         style: format!("--tag-color: {};", tag.color),
+                                                //                         class: format!("text-[var(--tag-color)]"),
+                                                //                         height: 10,
+                                                //                         width: 10,
+                                                //                         icon: FaCircle
+                                                //                     },
+
+                                                //                 }
+                                                //             )
+                                                //         })}
+                                                //     }
+                                                // }
+
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        })}
+                    }
                 }
             }
         }
@@ -381,8 +339,8 @@ fn Tasks(tasks: Vec<Task>, is_settings_open: Signal<bool>) -> Element {
 }
 
 #[component]
-fn TaskSettings(is_open: Signal<bool>) -> Element {
-    let name = use_signal(|| "T".to_string());
+fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
+    let name = use_signal(|| "".to_string());
     let desc = use_signal(|| "".to_string());
     let search = use_signal(|| "".to_string());
     let is_status_open = use_signal(|| false);
@@ -484,6 +442,54 @@ fn TaskSettings(is_open: Signal<bool>) -> Element {
                 }
                 if adding_tag() {
                 } else {
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
+    let name = use_signal(|| "".to_string());
+    let uuid = board_uuid.clone();
+    rsx! {
+        Dialog {
+            is_open: is_open,
+            DialogContent {
+                id: "add-list-area",
+                class: "sm:max-w-[425px]",
+                DialogHeader {
+                    DialogTitle { "Add List" }
+                }
+                Input {
+                    width: "w-full",
+                    placeholder: "Enter list name",
+                    value: name,
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        onclick: move |_| {
+                            let board_uuid = uuid.clone();
+                            use_future(move || {
+                                let uuid = board_uuid.clone();
+                                async move {
+                                match add_list(NewList {
+                                    name: name(),
+                                    position: None,
+                                    board_uuid: uuid
+                                }).await {
+                                    Ok(_) => (),
+                                    Err(err) => tracing::error!("{err}"),
+                                }
+                            }});
+                            is_open.set(false);
+                        },
+                        r#type:"submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Save"
+                    }
                 }
             }
         }

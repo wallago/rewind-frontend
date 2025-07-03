@@ -1,7 +1,8 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaTag};
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Deserialize, Serialize)]
 pub enum Priority {
     Low,
     Medium,

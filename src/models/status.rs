@@ -6,8 +6,9 @@ use dioxus_free_icons::{
         fa_solid_icons::{FaCircle, FaCircleHalfStroke},
     },
 };
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Deserialize, Serialize)]
 pub enum Status {
     Todo,
     InProgress,

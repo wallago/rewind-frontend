@@ -3,6 +3,7 @@ use views::{Board, Footer, Home, Navbar};
 
 use crate::{helpers::get_dom_token_list, models::DarkMode};
 
+mod api;
 mod components;
 mod helpers;
 mod hooks;

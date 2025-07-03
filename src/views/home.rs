@@ -2,39 +2,34 @@ use dioxus::prelude::*;
 
 use crate::{
     Route,
+    api::get_boards,
     components::{Button, Card, HoverCard, HoverCardContent, Label},
     models::Board,
 };
 
 #[component]
 pub fn Home() -> Element {
-    let boards = [
-        Board {
-            uuid: "3276121d-e160-4a17-a4ed-250cd028a177".to_string(),
-            name: "Project X".to_string(),
-        },
-        Board {
-            uuid: "3206121d-e160-4a17-a4ed-250cd028a177".to_string(),
-            name: "Project Y".to_string(),
-        },
-        Board {
-            uuid: "3286121d-e160-4a17-a4ed-250cd028a177".to_string(),
-            name: "Project Z".to_string(),
-        },
-    ]
-    .to_vec();
+    let mut boards = use_signal(|| None::<Vec<Board>>);
+    use_future(move || async move {
+        match get_boards().await {
+            Ok(res) => boards.set(Some(res)),
+            Err(err) => tracing::error!("{err}"),
+        }
+    });
+
     rsx! {
         div {
             class: "p-4 h-full bg-primary border-2 border-secondary flex flex-col gap-4",
             Header {  }
             div {
-                // class: "grid gap-4 grid-cols-[repeat(auto-fit,_minmax(12rem,_1fr))]",
-                class: "grid gap-4 grid-cols-5",
-                {boards.iter().map(|board| {
-                   rsx!(
-                        BoardCard { board: board.clone() }
-                    )
-                })}
+                class: "grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+                if let Some(boards) = boards() {
+                    {boards.iter().map(|board| {
+                       rsx!(
+                            BoardCard { board: board.clone() }
+                        )
+                    })}
+                }
             }
         }
     }

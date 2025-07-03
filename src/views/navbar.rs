@@ -4,7 +4,9 @@ use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
 use crate::Route;
+use crate::api::add_board;
 use crate::hooks::use_click_outside;
+use crate::models::NewBoard;
 use crate::{
     DarkMode,
     components::{
@@ -117,14 +119,12 @@ pub fn Navbar() -> Element {
                 }
             }
         }
-        AddBoard { is_open: is_add_board_open, onsave: move |_| {
-            navigator().push(Route::Home {});
-        } }
+        AddBoard { is_open: is_add_board_open }
     }
 }
 
 #[component]
-fn AddBoard(is_open: Signal<bool>, onsave: EventHandler<MouseEvent>) -> Element {
+fn AddBoard(is_open: Signal<bool>) -> Element {
     let name = use_signal(|| "".to_string());
     rsx! {
         Dialog {
@@ -143,9 +143,19 @@ fn AddBoard(is_open: Signal<bool>, onsave: EventHandler<MouseEvent>) -> Element 
                 DialogFooter {
                     DialogClose {}
                     Button {
-                        onclick: move |e: MouseEvent| {
-                            onsave.call(e);
-                            is_open.set(false)
+                        onclick: move |_| {
+                            use_future(move || async move {
+                                match add_board(NewBoard {
+                                    name: name(),
+                                    position: None
+                                }).await {
+                                    Ok(_) => (),
+                                    Err(err) => tracing::error!("{err}"),
+
+                                }
+                            });
+                            navigator().push(Route::Home {});
+                            is_open.set(false);
                         },
                         r#type:"submit",
                         variant: "outline",
