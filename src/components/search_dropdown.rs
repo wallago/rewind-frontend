@@ -6,6 +6,7 @@ use crate::components::Input;
 struct SearchDropdownContext {
     input: Signal<String>,
     filtered_results: Memo<Vec<String>>,
+    is_focus: Signal<bool>,
 }
 
 #[derive(PartialEq, Clone, Props)]
@@ -26,9 +27,16 @@ pub fn SearchDropdown(props: SearchDropdownProps) -> Element {
             .iter()
             .cloned()
             .filter(|result| {
-                result
+                if result
                     .to_lowercase()
                     .contains(&(props.value)().to_lowercase())
+                {
+                    true
+                // } else if (props.value)() == "".to_string() {
+                //     true
+                } else {
+                    false
+                }
             })
             .collect::<Vec<String>>()
     });
@@ -36,6 +44,7 @@ pub fn SearchDropdown(props: SearchDropdownProps) -> Element {
     use_context_provider(|| SearchDropdownContext {
         filtered_results,
         input: props.value,
+        is_focus: Signal::new(false),
     });
 
     let base_class = "relative w-full";
@@ -62,13 +71,14 @@ pub struct SearchDropdownInputProps {
 
 #[component]
 pub fn SearchDropdownInput(props: SearchDropdownInputProps) -> Element {
-    let ctx = use_context::<SearchDropdownContext>();
+    let mut ctx = use_context::<SearchDropdownContext>();
     rsx!(Input {
         id: props.id,
         class: props.class,
         placeholder: props.placeholder,
         value: ctx.input,
         width: props.width,
+        is_focus: ctx.is_focus
     })
 }
 
@@ -87,7 +97,7 @@ pub struct SearchDropdownContentProps {
 #[component]
 pub fn SearchDropdownContent(props: SearchDropdownContentProps) -> Element {
     let mut ctx = use_context::<SearchDropdownContext>();
-    if !(ctx.input)().is_empty() && !ctx.filtered_results.is_empty() {
+    if (!(ctx.input)().is_empty() || (ctx.is_focus)()) && !ctx.filtered_results.is_empty() {
         rsx!(
             div {
                 id: props.id,

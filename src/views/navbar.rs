@@ -4,9 +4,9 @@ use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
 use crate::Route;
-use crate::api::add_board;
+use crate::api::{add_board, get_boards};
 use crate::hooks::use_click_outside;
-use crate::models::NewBoard;
+use crate::models::{Board, NewBoard};
 use crate::{
     DarkMode,
     components::{
@@ -25,6 +25,36 @@ pub fn Navbar() -> Element {
     let is_search_active = use_memo(move || !search().is_empty());
     let mut is_add_board_open = use_signal(|| false);
     let mut is_recent_boards_open = use_signal(|| false);
+
+    let mut boards = use_signal(|| None::<Vec<Board>>);
+    let mut board_recent_options = use_signal(|| vec![]);
+    let mut board_search_options = use_signal(|| vec![]);
+    use_future(move || async move {
+        match get_boards().await {
+            Ok(res) => boards.set(Some(res)),
+            Err(err) => tracing::error!("{err}"),
+        }
+    });
+    use_effect(move || {
+        if let Some(boards) = boards() {
+            board_recent_options.set(
+                boards
+                    .iter()
+                    .map(|board| {
+                        let uuid = board.uuid.clone();
+                        (
+                            board.name.clone(),
+                            Some(EventHandler::new(move |_| {
+                                is_recent_boards_open.set(false);
+                                navigator().push(Route::Board { uuid: uuid.clone() });
+                            })),
+                        )
+                    })
+                    .collect(),
+            );
+            board_search_options.set(boards.iter().map(|board| board.name.clone()).collect());
+        }
+    });
 
     use_click_outside(
         "add-board-area".to_string(),
@@ -78,14 +108,7 @@ pub fn Navbar() -> Element {
                     id: "recent-boards-area",
                     is_open: is_recent_boards_open,
                     class: "font-semibold text-base",
-                    options: [
-                        (String::from("Project X"), Some(EventHandler::new(move |_| {
-                            is_recent_boards_open.set(false);
-                            navigator().push(Route::Board { uuid: String::from("571a9fa0-1bb4-4545-bdd3-b7315dcb6615") });
-                        }))),
-                        (String::from("Project Y"), None),
-                        (String::from("Project Z"), None)
-                    ].to_vec(),
+                    options: board_recent_options,
                     DropdownTrigger {
                         Icon { height: 14, width: 14,icon: FaChevronDown }
                     }
@@ -103,11 +126,12 @@ pub fn Navbar() -> Element {
                 class: "ml-auto flex gap-12 items-center",
                 SearchDropdown {
                     id: "search-boards-area",
-                    options: Signal::new(Vec::new()),
+                    options: board_search_options,
                     value: search,
                     class: "text-base w-72",
                     SearchDropdownInput {
                         placeholder: " Search boards",
+                        // onfocus: move |_| search.set("".to_string())
                     }
                     SearchDropdownContent {}
                 }

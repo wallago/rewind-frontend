@@ -353,7 +353,7 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
     let new_tag_name = use_signal(|| "".to_string());
     let new_tag_color = use_signal(|| "".to_string());
     let mut is_valid_hex = use_signal(|| false);
-    let mut tags = use_signal(|| Vec::<Tag>::new());
+    let mut task_tags = use_signal(|| Vec::<Tag>::new());
     let is_search_active = use_memo(move || !search().is_empty());
 
     use_click_outside(
@@ -399,11 +399,11 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                         id: "status-task-area",
                         is_open: is_status_open,
                         class: "text-base",
-                        options: [
-                        (Status::Todo.to_string(), Some(EventHandler::new(move |_| status.set(Status::Todo)))),
-                        (Status::InProgress.to_string(), Some(EventHandler::new(move |_| status.set(Status::InProgress)))),
-                        (Status::Done.to_string(), Some(EventHandler::new(move |_| status.set(Status::Done))))
-                        ].to_vec(),
+                        options: Signal::new([
+                            (Status::Todo.to_string(), Some(EventHandler::new(move |_| status.set(Status::Todo)))),
+                            (Status::InProgress.to_string(), Some(EventHandler::new(move |_| status.set(Status::InProgress)))),
+                            (Status::Done.to_string(), Some(EventHandler::new(move |_| status.set(Status::Done))))
+                        ].to_vec()),
                         DropdownTrigger {
                             width: "w-full",
                             name: status().to_string(),
@@ -415,11 +415,11 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                         id: "priority-task-area",
                         is_open: is_priority_open,
                         class: "text-base",
-                        options: [
-                        (Priority::Low.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Low)))),
-                        (Priority::Medium.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Medium)))),
-                        (Priority::High.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::High))))
-                        ].to_vec(),
+                        options: Signal::new([
+                            (Priority::Low.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Low)))),
+                            (Priority::Medium.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::Medium)))),
+                            (Priority::High.to_string(), Some(EventHandler::new(move |_| priority.set(Priority::High))))
+                        ].to_vec()),
                         DropdownTrigger {
                             width: "w-full",
                             name: priority().to_string(),
@@ -432,7 +432,7 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                         if !adding_tag() {
                             SearchDropdown {
                                 id: "search-tags-area",
-                                options: Signal::new(tags().iter().map(|tag| tag.name.clone()).collect()),
+                                options: Signal::new(tags.iter().map(|tag| tag.name.clone()).collect()),
                                 value: search,
                                 class: "text-base",
                                 SearchDropdownInput {
@@ -474,7 +474,7 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                                 class: "px-1 h-7 w-7",
                                 onclick: move |_| {
                                     adding_tag.set(false);
-                                    tags.with_mut(|tag_list| {
+                                    task_tags.with_mut(|tag_list| {
                                         tag_list.push(Tag {
                                             name: new_tag_name(),
                                             color: new_tag_color(),
@@ -490,14 +490,14 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                             }
                         }
                     }
-                    if !tags().is_empty() {
+                    if !tags.is_empty() {
                         div {
                             p {
                                 class: "font-semibold pb-2",
                                 "Tags"
                             }
                             div {
-                                class: "flex flex-col gap-2 max-h-32 overflow-y-auto w-full border-2 border-2-primary p-2",
+                                class: "flex flex-col gap-2 max-h-32 overflow-y-auto w-full border-2 border-secondary p-2",
                                 {tags.iter().map(|tag| rsx!(
                                     div {
                                         class: "flex gap-2 justify-between items-center w-full px-1",
@@ -513,7 +513,7 @@ fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                                             "{tag.name}"
                                         }
                                         Button {
-                                            class: "px-1 h-5 w-5",
+                                            class: "px-1 h-6 w-6",
                                             // onclick: move |_| adding_task.set(false),
                                             Icon {
                                                 class: "text-primary",

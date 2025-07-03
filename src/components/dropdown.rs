@@ -5,12 +5,12 @@ use crate::components::Button;
 #[derive(Clone)]
 struct DropdownContext {
     is_open: Signal<bool>,
-    options: Vec<(String, Option<EventHandler<MouseEvent>>)>,
+    options: Signal<Vec<(String, Option<EventHandler<MouseEvent>>)>>,
 }
 
 #[derive(PartialEq, Clone, Props)]
 pub struct DropdownProps {
-    pub options: Vec<(String, Option<EventHandler<MouseEvent>>)>,
+    pub options: Signal<Vec<(String, Option<EventHandler<MouseEvent>>)>>,
     #[props(optional)]
     pub class: Option<String>,
     #[props(optional)]
@@ -88,7 +88,7 @@ pub fn DropdownContent(props: DropdownContentProps) -> Element {
                     border-2 border-secondary shadow-lg
                     bg-primary text-secondary flex flex-col
                     {} {}", props.class.unwrap_or_default(), props.width.unwrap_or("w-full".to_string())),
-                    {ctx.options.into_iter().map(|(label,handler)| {
+                    {(ctx.options)().into_iter().map(|(label,handler)| {
                         rsx!(button {
                             class: "w-full text-left hover:bg-primary-1 px-1 py-0.5 hover:text-secondary-1",
                             onclick: move |e: MouseEvent| {
