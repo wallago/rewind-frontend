@@ -9,7 +9,9 @@ pub use label::Label;
 mod table;
 pub use table::{Table, TableBody, TableCaption, TableHead, TableHeader, TableRow};
 mod dialog;
-pub use dialog::{Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle};
+pub use dialog::{
+    Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+};
 mod dropdown;
 pub use dropdown::{Dropdown, DropdownContent, DropdownTrigger};
 mod search_dropdown;

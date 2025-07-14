@@ -1,9 +1,15 @@
 use dioxus::prelude::*;
+use dioxus_free_icons::Icon;
+use dioxus_free_icons::icons::fa_solid_icons::FaXmark;
 
 use crate::{
     Route,
-    api::get_boards,
-    components::{Button, Card, HoverCard, HoverCardContent, Label},
+    api::{delete_board, get_boards},
+    components::{
+        Button, Card, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter,
+        DialogHeader, DialogTitle, HoverCard, HoverCardContent, Label,
+    },
+    hooks::use_click_outside,
     models::Board,
 };
 
@@ -47,19 +53,36 @@ fn Header() -> Element {
 
 #[component]
 fn BoardCard(board: Board) -> Element {
+    let board_copy = board.clone();
+    let mut is_delete_open = use_signal(|| false);
+
+    use_click_outside(
+        "delete-board-area".to_string(),
+        move || is_delete_open(),
+        EventHandler::new(move |_| is_delete_open.set(false)),
+    );
+
     rsx! {
         Card {
             class: "h-fit p-2 flex flex-col gap-4",
             width: "w-72",
             div {
                 class: "flex flex-col justify-center text-sm font-medium gap-2 w-full",
-                Label {
-                    variant: "title_1",
-                    class: "px-2 pb-2 text-base",
-                    width: "w-full",
-                    div {
-                        class: "break-all",
-                        "{board.name}"
+                div {
+                    class: "flex justify-between h-full items-center pb-1",
+                    Label {
+                        variant: "title_1",
+                        class: "px-2text-base",
+                        width: "w-full",
+                        div {
+                            class: "break-all",
+                            "{board.name}"
+                        }
+                    }
+                    Button {
+                        class: "px-1 h-fit py-1",
+                        onclick: move |_| is_delete_open.set(true),
+                        Icon { height: 16, width: 16, icon: FaXmark }
                     }
                 }
                 HoverCard {
@@ -85,6 +108,47 @@ fn BoardCard(board: Board) -> Element {
                     },
                     class: "px-2 text-base",
                     "Details"
+                }
+            }
+        }
+        DeleteBoard { board: board_copy, is_open: is_delete_open }
+    }
+}
+
+#[component]
+fn DeleteBoard(board: Board, is_open: Signal<bool>) -> Element {
+    rsx! {
+        Dialog {
+            is_open: is_open,
+            DialogContent {
+                id: "delete-board-area",
+                class: "sm:max-w-[425px]",
+                DialogHeader {
+                    DialogTitle { "Delete {board.name}" }
+                    DialogDescription { "Are you sure ?" }
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        onclick: move |_| {
+                            let uuid = board.uuid.clone();
+                            use_future(move || {
+                                let board_uuid = uuid.clone();
+                                async move {
+                                    match delete_board(board_uuid).await {
+                                        Ok(_) => (),
+                                        Err(err) => tracing::error!("{err}"),
+
+                                    }
+                                }
+                            });
+                            is_open.set(false);
+                        },
+                        r#type:"submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Delete"
+                    }
                 }
             }
         }

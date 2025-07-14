@@ -116,7 +116,6 @@ pub fn Navbar() -> Element {
                 }
                 Button {
                     class: "px-2 justify-between gap-2 font-semibold text-base",
-                    width: "w-24",
                     onclick: move |_| is_add_board_open.set(true),
                     "Board"
                     Icon { height: 14, width: 14,icon: FaPlus }

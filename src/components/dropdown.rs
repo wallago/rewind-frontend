@@ -79,7 +79,7 @@ pub struct DropdownContentProps {
 #[component]
 pub fn DropdownContent(props: DropdownContentProps) -> Element {
     let mut ctx = use_context::<DropdownContext>();
-    if (ctx.is_open)() {
+    if (ctx.is_open)() && !ctx.options.is_empty() {
         rsx!(
             div {
                 id: props.id,

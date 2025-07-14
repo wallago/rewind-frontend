@@ -1,4 +1,4 @@
-use reqwest::Error;
+use reqwest::{Error, StatusCode};
 
 use crate::{
     api::BASE_URL,
@@ -21,4 +21,13 @@ pub async fn add_board(board: NewBoard) -> Result<Board, Error> {
         .await?;
     let board = response.json::<Board>().await?;
     Ok(board)
+}
+
+pub async fn delete_board(board_uuid: String) -> Result<StatusCode, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .delete(format!("{BASE_URL}/boards/{board_uuid}"))
+        .send()
+        .await?;
+    Ok(response.status())
 }
