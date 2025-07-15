@@ -4,18 +4,19 @@ use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
 use crate::Route;
-use crate::api::{add_board, get_boards};
+use crate::api::get_boards;
 use crate::hooks::use_click_outside;
-use crate::models::{Board, NewBoard};
+use crate::models::Board;
 use crate::{
     DarkMode,
     components::{
-        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
-        Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown, SearchDropdownContent,
+        Button, Dropdown, DropdownContent, DropdownTrigger, SearchDropdown, SearchDropdownContent,
         SearchDropdownInput,
     },
     helpers,
 };
+
+mod modals;
 
 #[component]
 pub fn Navbar() -> Element {
@@ -93,8 +94,7 @@ pub fn Navbar() -> Element {
     };
 
     rsx! {
-        div {
-            class: "h-12 py-2 px-4 bg-primary flex items-center border-b-2 border-secondary",
+        div { class: "h-12 py-2 px-4 bg-primary flex items-center border-b-2 border-secondary",
             button {
                 class: "px-2 py-1 text-secondary hover:text-secondary-2",
                 onclick: |_| {
@@ -102,15 +102,14 @@ pub fn Navbar() -> Element {
                 },
                 Icon { height: 24, icon: FaNoteSticky }
             }
-            div {
-                class: "pl-20 flex gap-12",
+            div { class: "pl-20 flex gap-12",
                 Dropdown {
                     id: "recent-boards-area",
                     is_open: is_recent_boards_open,
                     class: "font-semibold text-base",
                     options: board_recent_options,
                     DropdownTrigger {
-                        Icon { height: 14, width: 14,icon: FaChevronDown }
+                        Icon { height: 14, width: 14, icon: FaChevronDown }
                     }
                     DropdownContent {}
                 }
@@ -118,20 +117,16 @@ pub fn Navbar() -> Element {
                     class: "px-2 justify-between gap-2 font-semibold text-base",
                     onclick: move |_| is_add_board_open.set(true),
                     "Board"
-                    Icon { height: 14, width: 14,icon: FaPlus }
+                    Icon { height: 14, width: 14, icon: FaPlus }
                 }
             }
-            div {
-                class: "ml-auto flex gap-12 items-center",
+            div { class: "ml-auto flex gap-12 items-center",
                 SearchDropdown {
                     id: "search-boards-area",
                     options: board_search_options,
                     value: search,
                     class: "text-base w-72",
-                    SearchDropdownInput {
-                        placeholder: " Search boards",
-                        // onfocus: move |_| search.set("".to_string())
-                    }
+                    SearchDropdownInput { placeholder: " Search boards" }
                     SearchDropdownContent {}
                 }
                 button {
@@ -141,51 +136,6 @@ pub fn Navbar() -> Element {
                 }
             }
         }
-        AddBoard { is_open: is_add_board_open }
-    }
-}
-
-#[component]
-fn AddBoard(is_open: Signal<bool>) -> Element {
-    let name = use_signal(|| "".to_string());
-    rsx! {
-        Dialog {
-            is_open: is_open,
-            DialogContent {
-                id: "add-board-area",
-                class: "sm:max-w-[425px]",
-                DialogHeader {
-                    DialogTitle { "Add Board" }
-                }
-                Input {
-                    width: "w-full",
-                    placeholder: "Enter board name",
-                    value: name,
-                }
-                DialogFooter {
-                    DialogClose {}
-                    Button {
-                        onclick: move |_| {
-                            use_future(move || async move {
-                                match add_board(NewBoard {
-                                    name: name(),
-                                    position: None
-                                }).await {
-                                    Ok(_) => (),
-                                    Err(err) => tracing::error!("{err}"),
-
-                                }
-                            });
-                            navigator().push(Route::Home {});
-                            is_open.set(false);
-                        },
-                        r#type:"submit",
-                        variant: "outline",
-                        class: "font-semibold px-2 text-sm",
-                        "Save"
-                    }
-                }
-            }
-        }
+        modals::AddBoard { is_open: is_add_board_open }
     }
 }

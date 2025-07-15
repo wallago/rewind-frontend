@@ -15,12 +15,17 @@
         rust = pkgs.rust-bin.nightly.latest.complete.override {
           targets = [ "wasm32-unknown-unknown" ];
         };
+        commonNativeBuildInputs = with pkgs; [ pkg-config openssl ];
+        commonBuildInputs = with pkgs; [
+          binaryen
+          wasm-bindgen-cli
+          tailwindcss
+        ];
       in {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ pkg-config openssl ];
+          nativeBuildInputs = commonNativeBuildInputs;
           buildInputs = with pkgs;
-            [ dioxus-cli binaryen wasm-bindgen-cli tailwindcss watchman ]
-            ++ [ rust ];
+            [ dioxus-cli watchman ] ++ [ rust ] ++ commonBuildInputs;
           shellHook = ''
             echo "
             🐚 Rust dev shell ready!

@@ -27,7 +27,10 @@ pub fn HoverCardContent(children: Element, class: Option<String>) -> Element {
     }
     rsx!(
         div {
-            class: format!("shadow-lg fixed z-50 mt-3 bg-primary border-2 border-secondary p-1 text-secondary {}", class.unwrap_or_default()),
+            class: format!(
+                "shadow-lg fixed z-50 mt-3 bg-primary border-2 border-secondary p-1 text-secondary {}",
+                class.unwrap_or_default(),
+            ),
             {children}
         }
     )

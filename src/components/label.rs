@@ -33,7 +33,7 @@ pub fn Label(props: LabelProps) -> Element {
                 base_class,
                 variant_class,
                 props.class.clone().unwrap_or_default(),
-                props.width.clone().unwrap_or("w-fit".to_string())
+                props.width.clone().unwrap_or("w-fit".to_string()),
             ),
             r#for: props.r#for.clone().unwrap_or_default(),
             {props.children}

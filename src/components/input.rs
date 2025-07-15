@@ -40,15 +40,16 @@ pub fn Input(mut props: InputProps) -> Element {
         }
     };
     let base_class = "px-2 flex items-center focus:outline-none focus:ring-0";
-    rsx!(input {
+    rsx!(
+        input {
             class: format!(
                 "{} {} {} {}",
                 variant_class,
                 base_class,
                 props.class.unwrap_or_default(),
-                props.width.clone().unwrap_or("w-fit".to_string())
+                props.width.clone().unwrap_or("w-fit".to_string()),
             ),
-            type: props.r#type,
+            r#type: props.r#type,
             name: props.name,
             id: props.id,
             placeholder: props.placeholder.unwrap_or("Enter".to_string()),
@@ -61,7 +62,7 @@ pub fn Input(mut props: InputProps) -> Element {
                 props.value.set(e.value());
             },
             onkeydown: move |e: KeyboardEvent| {
-                if e.key() == Key::Enter &&  !(props.value)().is_empty() {
+                if e.key() == Key::Enter && !(props.value)().is_empty() {
                     if let Some(handler) = &props.onenter {
                         handler.call(e);
                     }
@@ -81,5 +82,6 @@ pub fn Input(mut props: InputProps) -> Element {
                     }
                 }
             },
-    })
+        }
+    )
 }

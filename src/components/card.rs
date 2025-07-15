@@ -21,7 +21,7 @@ pub fn Card(props: CardProps) -> Element {
                 "{} {} {}",
                 base_class,
                 props.class.clone().unwrap_or_default(),
-                props.width.clone().unwrap_or("w-fit".to_string())
+                props.width.clone().unwrap_or("w-fit".to_string()),
             ),
             {props.children}
         }

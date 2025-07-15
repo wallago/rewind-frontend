@@ -47,31 +47,18 @@ fn App() -> Element {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
         document::Link { rel: "stylesheet", href: GLOBAL_CSS }
-        div {
-            Router::<Route> {}
-        }
+        div { Router::<Route> {} }
     }
 }
 
 #[component]
 pub fn MainLayout() -> Element {
     rsx! {
-        div {
-            class: "h-screen overflow-hidden bg-primary-2",
-            div {
-                class: "fixed bottom-0 left-0 right-0 z-10",
-                Footer {}
-            }
-            div {
-                class: "fixed top-0 left-0 right-0 z-10",
-                Navbar {}
-            }
-            div {
-                class: "flex py-16 px-4 h-full",
-                div {
-                    class: "flex-grow overflow-auto p-4",
-                    Outlet::<Route> {}
-                }
+        div { class: "h-screen overflow-hidden bg-primary-2",
+            div { class: "fixed bottom-0 left-0 right-0 z-10", Footer {} }
+            div { class: "fixed top-0 left-0 right-0 z-10", Navbar {} }
+            div { class: "flex py-16 px-4 h-full",
+                div { class: "flex-grow overflow-auto p-4", Outlet::<Route> {} }
             }
         }
     }

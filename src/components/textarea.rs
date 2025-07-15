@@ -36,21 +36,23 @@ pub fn Textarea(mut props: TextareaProps) -> Element {
         }
     };
     let base_class = "px-2 flex items-center focus:outline-none focus:ring-0";
-    rsx!(textarea {
-        class: format!(
-            "{} {} {} {}",
-            variant_class,
-            base_class,
-            props.class.unwrap_or_default(),
-            props.width.clone().unwrap_or("w-fit".to_string())
-        ),
-        id: props.id,
-        placeholder: props.placeholder.unwrap_or("Enter".to_string()),
-        name: props.name.unwrap_or_default(),
-        rows: props.rows.unwrap_or("4".to_string()),
-        cols: props.cols.unwrap_or("33".to_string()),
-        value: (props.value)(),
-        disabled: props.disabled.unwrap_or(false),
-        oninput: move |e| { props.value.set(e.value()) }
-    })
+    rsx!(
+        textarea {
+            class: format!(
+                "{} {} {} {}",
+                variant_class,
+                base_class,
+                props.class.unwrap_or_default(),
+                props.width.clone().unwrap_or("w-fit".to_string()),
+            ),
+            id: props.id,
+            placeholder: props.placeholder.unwrap_or("Enter".to_string()),
+            name: props.name.unwrap_or_default(),
+            rows: props.rows.unwrap_or("4".to_string()),
+            cols: props.cols.unwrap_or("33".to_string()),
+            value: (props.value)(),
+            disabled: props.disabled.unwrap_or(false),
+            oninput: move |e| { props.value.set(e.value()) },
+        }
+    )
 }

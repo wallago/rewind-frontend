@@ -51,7 +51,7 @@ pub fn Button(props: ButtonProps) -> Element {
                 variant_class,
                 props.class.clone().unwrap_or_default(),
                 props.width.clone().unwrap_or("w-fit".to_string()),
-                disabled_class
+                disabled_class,
             ),
             r#type: props.r#type.clone().unwrap_or("button".into()),
             disabled: props.disabled.unwrap_or(false),

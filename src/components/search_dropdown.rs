@@ -50,7 +50,7 @@ pub fn SearchDropdown(props: SearchDropdownProps) -> Element {
     let base_class = "relative w-full";
     rsx!(
         div {
-            class: format!("{} {}",base_class, props.class.unwrap_or_default()),
+            class: format!("{} {}", base_class, props.class.unwrap_or_default()),
             id: props.id,
             {props.children}
         }
@@ -72,14 +72,16 @@ pub struct SearchDropdownInputProps {
 #[component]
 pub fn SearchDropdownInput(props: SearchDropdownInputProps) -> Element {
     let mut ctx = use_context::<SearchDropdownContext>();
-    rsx!(Input {
-        id: props.id,
-        class: props.class,
-        placeholder: props.placeholder,
-        value: ctx.input,
-        width: props.width,
-        is_focus: ctx.is_focus
-    })
+    rsx!(
+        Input {
+            id: props.id,
+            class: props.class,
+            placeholder: props.placeholder,
+            value: ctx.input,
+            width: props.width,
+            is_focus: ctx.is_focus,
+        }
+    )
 }
 
 #[derive(PartialEq, Clone, Props)]
@@ -101,24 +103,32 @@ pub fn SearchDropdownContent(props: SearchDropdownContentProps) -> Element {
         rsx!(
             div {
                 id: props.id,
-                class: format!("
-                    absolute z-50 mt-1 max-h-60 overflow-y-auto
-                    border-2 border-secondary shadow-lg
-                    bg-primary text-secondary
-                    {} {}", props.class.unwrap_or_default(), props.width.unwrap_or("w-full".to_string())),
-                {ctx.filtered_results.iter().map(|filter_result| {
-                    rsx!(
-                        button {
-                            class: "w-full text-left px-1 py-0.5 hover:bg-primary-1 hover:text-secondary-1",
-                            onclick: move |e: MouseEvent| {
-                                if let Some(handler) = props.onclick {
-                                    handler.call(e)
+                class: format!(
+                    "
+                                absolute z-50 mt-1 max-h-60 overflow-y-auto
+                                border-2 border-secondary shadow-lg
+                                bg-primary text-secondary
+                                {} {}",
+                    props.class.unwrap_or_default(),
+                    props.width.unwrap_or("w-full".to_string()),
+                ),
+                {
+                    ctx.filtered_results
+                        .iter()
+                        .map(|filter_result| {
+                            rsx! {
+                                button {
+                                    class: "w-full text-left px-1 py-0.5 hover:bg-primary-1 hover:text-secondary-1",
+                                    onclick: move |e: MouseEvent| {
+                                        if let Some(handler) = props.onclick {
+                                            handler.call(e)
+                                        }
+                                        ctx.input.set("".to_string())
+                                    },
+                                    "{filter_result}"
                                 }
-                                ctx.input.set("".to_string())
-                            },
-                            "{filter_result}"
-                        }
-                    )})
+                            }
+                        })
                 }
             }
         )

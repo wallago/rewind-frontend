@@ -8,12 +8,8 @@ pub struct TableProps {
 #[component]
 pub fn Table(props: TableProps) -> Element {
     rsx!(
-        div {
-            class: "overflow-auto w-full",
-            table {
-                class: "w-full caption-bottom",
-                {props.children}
-            }
+        div { class: "overflow-auto w-full",
+            table { class: "w-full caption-bottom", {props.children} }
         }
     )
 }
@@ -28,8 +24,7 @@ pub struct TableCaptionProps {
 #[component]
 pub fn TableCaption(props: TableCaptionProps) -> Element {
     rsx!(
-        caption {
-            class: format!("mt-2 text-secondary-4 {}", props.class.unwrap_or_default()),
+        caption { class: format!("mt-2 text-secondary-4 {}", props.class.unwrap_or_default()),
             {props.children}
         }
     )
@@ -45,8 +40,7 @@ pub struct TableHeaderProps {
 #[component]
 pub fn TableHeader(props: TableHeaderProps) -> Element {
     rsx!(
-        thead {
-            class: format!("table w-full table-fixed px-4 {}",props.class.unwrap_or_default()),
+        thead { class: format!("table w-full table-fixed px-4 {}", props.class.unwrap_or_default()),
             {props.children}
         }
     )
@@ -72,8 +66,7 @@ pub struct TableRowProps {
 #[component]
 pub fn TableRow(props: TableRowProps) -> Element {
     rsx!(
-        div {
-            class: "mx-3 border-b-2 border-secondary hover:bg-primary-2",
+        div { class: "mx-3 border-b-2 border-secondary hover:bg-primary-2",
             tr {
                 draggable: true,
                 ondragstart: move |e| {
@@ -99,8 +92,7 @@ pub fn TableRow(props: TableRowProps) -> Element {
                     }
                 },
                 class: "table w-full table-fixed",
-                td {
-                    class: format!("w-full px-3 py-1 overflow-hidden {}", props.class.unwrap_or_default()),
+                td { class: format!("w-full px-3 py-1 overflow-hidden {}", props.class.unwrap_or_default()),
                     {props.children}
                 }
             }
@@ -138,8 +130,7 @@ pub struct TableBodyProps {
 #[component]
 pub fn TableBody(props: TableBodyProps) -> Element {
     rsx!(
-        tbody {
-            class: format!("block overflow-y-auto {}", props.class.unwrap_or_default()),
+        tbody { class: format!("block overflow-y-auto {}", props.class.unwrap_or_default()),
             {props.children}
         }
     )
@@ -175,8 +166,7 @@ pub struct TableFooterProps {
 #[component]
 pub fn TableFooter(props: TableFooterProps) -> Element {
     rsx!(
-        tfoot {
-            class: format!("font-medium bg-primary-2 {}", props.class.unwrap_or_default()),
+        tfoot { class: format!("font-medium bg-primary-2 {}", props.class.unwrap_or_default()),
             {props.children}
         }
     )

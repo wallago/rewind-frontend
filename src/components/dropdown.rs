@@ -28,11 +28,13 @@ pub fn Dropdown(props: DropdownProps) -> Element {
     });
 
     let base_class = "relative w-full";
-    rsx!(div {
-        id: props.id,
-        class: format!("{} {}", base_class, props.class.clone().unwrap_or_default()),
-        {props.children}
-    })
+    rsx!(
+        div {
+            id: props.id,
+            class: format!("{} {}", base_class, props.class.clone().unwrap_or_default()),
+            {props.children}
+        }
+    )
 }
 
 #[derive(PartialEq, Clone, Props)]
@@ -51,17 +53,19 @@ pub struct DropdownTriggerProps {
 #[component]
 pub fn DropdownTrigger(props: DropdownTriggerProps) -> Element {
     let mut ctx = use_context::<DropdownContext>();
-    rsx!(Button {
+    rsx!(
+        Button {
             onclick: move |_| {
                 ctx.is_open.toggle();
             },
-            class: format!("px-2 flex gap-2 justify-between items-center {}", props.width.unwrap_or("w-fit".to_string())),
-            span {
-                class: "truncate",
-                {props.name.clone().unwrap_or(String::from("Select an option"))}
-            }
+            class: format!(
+                "px-2 flex gap-2 justify-between items-center {}",
+                props.width.unwrap_or("w-fit".to_string()),
+            ),
+            span { class: "truncate", {props.name.clone().unwrap_or(String::from("Select an option"))} }
             {props.children}
-    })
+        }
+    )
 }
 
 #[derive(PartialEq, Clone, Props)]
@@ -83,23 +87,33 @@ pub fn DropdownContent(props: DropdownContentProps) -> Element {
         rsx!(
             div {
                 id: props.id,
-                class: format!("
-                    absolute z-50 mt-1 max-h-60 overflow-y-auto
-                    border-2 border-secondary shadow-lg
-                    bg-primary text-secondary flex flex-col
-                    {} {}", props.class.unwrap_or_default(), props.width.unwrap_or("w-full".to_string())),
-                    {(ctx.options)().into_iter().map(|(label,handler)| {
-                        rsx!(button {
-                            class: "w-full text-left hover:bg-primary-1 px-1 py-0.5 hover:text-secondary-1",
-                            onclick: move |e: MouseEvent| {
-                                if let Some(handler) = handler {
-                                    handler.call(e)
+                class: format!(
+                    "
+                                absolute z-50 mt-1 max-h-60 overflow-y-auto
+                                border-2 border-secondary shadow-lg
+                                bg-primary text-secondary flex flex-col
+                                {} {}",
+                    props.class.unwrap_or_default(),
+                    props.width.unwrap_or("w-full".to_string()),
+                ),
+                {
+                    (ctx.options)()
+                        .into_iter()
+                        .map(|(label, handler)| {
+                            rsx! {
+                                button {
+                                    class: "w-full text-left hover:bg-primary-1 px-1 py-0.5 hover:text-secondary-1",
+                                    onclick: move |e: MouseEvent| {
+                                        if let Some(handler) = handler {
+                                            handler.call(e)
+                                        }
+                                        ctx.is_open.set(false);
+                                    },
+                                    "{label}"
                                 }
-                                ctx.is_open.set(false);
-                            },
-                            "{label}"
+                            }
                         })
-                    })}
+                }
             }
         )
     } else {
