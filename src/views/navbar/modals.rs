@@ -10,6 +10,25 @@ use crate::models::NewBoard;
 #[component]
 pub fn AddBoard(is_open: Signal<bool>) -> Element {
     let name = use_signal(|| "".to_string());
+
+    let mut add = use_signal(|| false);
+    use_future(move || async move {
+        if !add() {
+            return ();
+        } else {
+            add.set(false);
+        }
+        match add_board(NewBoard {
+            name: name(),
+            position: None,
+        })
+        .await
+        {
+            Ok(_) => {}
+            Err(err) => tracing::error!("{err}"),
+        }
+    });
+
     rsx! {
         Dialog { is_open,
             DialogContent { id: "add-board-area", class: "sm:max-w-[425px]",
@@ -25,17 +44,7 @@ pub fn AddBoard(is_open: Signal<bool>) -> Element {
                     DialogClose {}
                     Button {
                         onclick: move |_| {
-                            use_future(move || async move {
-                                match add_board(NewBoard {
-                                        name: name(),
-                                        position: None,
-                                    })
-                                    .await
-                                {
-                                    Ok(_) => {}
-                                    Err(err) => tracing::error!("{err}"),
-                                }
-                            });
+                            add.set(true);
                             navigator().push(Route::Home {});
                             is_open.set(false);
                         },

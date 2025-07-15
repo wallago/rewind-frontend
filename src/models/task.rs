@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::models::{Priority, Status, Tag};
+use crate::models::{Priority, Status};
 
 #[derive(Clone, PartialEq, Deserialize)]
 pub struct Task {

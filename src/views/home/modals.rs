@@ -1,20 +1,32 @@
 use dioxus::prelude::*;
-use dioxus_free_icons::Icon;
-use dioxus_free_icons::icons::fa_solid_icons::FaXmark;
 
 use crate::{
-    Route,
-    api::{delete_board, get_boards},
+    api::delete_board,
     components::{
-        Button, Card, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter,
-        DialogHeader, DialogTitle, HoverCard, HoverCardContent, Label,
+        Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
+        DialogTitle,
     },
-    hooks::use_click_outside,
     models::Board,
 };
 
 #[component]
 pub fn DeleteBoard(board: Board, is_open: Signal<bool>) -> Element {
+    let mut delete = use_signal(|| false);
+    use_future(move || {
+        let board_uuid = board.uuid.clone();
+        async move {
+            if !delete() {
+                return ();
+            } else {
+                delete.set(false);
+            }
+            match delete_board(board_uuid).await {
+                Ok(_) => {}
+                Err(err) => tracing::error!("{err}"),
+            }
+        }
+    });
+
     rsx! {
         Dialog { is_open,
             DialogContent { id: "delete-board-area", class: "sm:max-w-[425px]",
@@ -26,16 +38,7 @@ pub fn DeleteBoard(board: Board, is_open: Signal<bool>) -> Element {
                     DialogClose {}
                     Button {
                         onclick: move |_| {
-                            let uuid = board.uuid.clone();
-                            use_future(move || {
-                                let board_uuid = uuid.clone();
-                                async move {
-                                    match delete_board(board_uuid).await {
-                                        Ok(_) => {}
-                                        Err(err) => tracing::error!("{err}"),
-                                    }
-                                }
-                            });
+                            delete.set(true);
                             is_open.set(false);
                         },
                         r#type: "submit",

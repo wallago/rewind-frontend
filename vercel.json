@@ -1,19 +1,15 @@
 {
   "version": 2,
-  "alias": "dioxus-demo.wallago.com",
-  "github": {
-    "enabled": false
-  },
   "builds": [
     {
-      "src": "./dist/**",
-      "use": "@now/static"
+      "src": "target/dx/rewind-front/debug/web/public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "dist/$1"
+      "dest": "/target/dx/rewind-front/debug/web/public/$1"
     }
   ]
 }

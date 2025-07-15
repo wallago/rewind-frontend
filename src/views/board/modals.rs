@@ -1,27 +1,46 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
     Icon,
-    icons::fa_solid_icons::{FaCheck, FaChevronDown, FaChevronRight, FaCircle, FaPlus, FaXmark},
+    icons::fa_solid_icons::{FaCheck, FaChevronDown, FaCircle, FaPlus, FaXmark},
 };
 use regex::Regex;
 
 use crate::{
-    Route,
-    api::{add_list, add_task, get_lists_by_board_uuid, get_tags, get_tasks_by_list_uuid},
+    api::add_list,
     components::{
-        Button, Card, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
-        Dropdown, DropdownContent, DropdownTrigger, HoverCard, HoverCardContent, Input, Label,
-        SearchDropdown, SearchDropdownContent, SearchDropdownInput, Table, TableBody, TableCaption,
-        TableHead, TableHeader, TableRow, Textarea,
+        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+        Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown, SearchDropdownContent,
+        SearchDropdownInput, Textarea,
     },
     hooks::use_click_outside,
-    models::{List, NewList, NewTask, Priority, Status, Tag, Task},
+    models::{NewList, Priority, Status, Tag},
 };
 
 #[component]
 pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
     let name = use_signal(|| "".to_string());
-    let uuid = board_uuid.clone();
+
+    let mut add = use_signal(|| false);
+    use_future(move || {
+        let uuid = board_uuid.clone();
+        async move {
+            if !add() {
+                return ();
+            } else {
+                add.set(false);
+            }
+            match add_list(NewList {
+                name: name(),
+                position: None,
+                board_uuid: uuid,
+            })
+            .await
+            {
+                Ok(_) => {}
+                Err(err) => tracing::error!("{err}"),
+            }
+        }
+    });
     rsx! {
         Dialog { is_open,
             DialogContent { id: "add-list-area", class: "sm:max-w-[425px]",
@@ -37,22 +56,7 @@ pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
                     DialogClose {}
                     Button {
                         onclick: move |_| {
-                            let board_uuid = uuid.clone();
-                            use_future(move || {
-                                let uuid = board_uuid.clone();
-                                async move {
-                                    match add_list(NewList {
-                                            name: name(),
-                                            position: None,
-                                            board_uuid: uuid,
-                                        })
-                                        .await
-                                    {
-                                        Ok(_) => {}
-                                        Err(err) => tracing::error!("{err}"),
-                                    }
-                                }
-                            });
+                            add.set(true);
                             is_open.set(false);
                         },
                         r#type: "submit",

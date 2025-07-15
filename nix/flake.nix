@@ -25,7 +25,8 @@
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = commonNativeBuildInputs;
           buildInputs = with pkgs;
-            [ dioxus-cli watchman ] ++ [ rust ] ++ commonBuildInputs;
+            [ nodePackages.vercel dioxus-cli watchman wabt ] ++ [ rust ]
+            ++ commonBuildInputs;
           shellHook = ''
             echo "
             🐚 Rust dev shell ready!

@@ -112,8 +112,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
 
     let mut tasks = use_signal(|| None::<Vec<Task>>);
     let list_uuid = list.uuid.clone();
-    let list_uuid_copy_1 = list.uuid.clone();
-    let list_uuid_copy_2 = list.uuid.clone();
+    let list_uuid_copy = list.uuid.clone();
     use_future(move || {
         let uuid = list_uuid.clone();
         async move {
@@ -130,25 +129,29 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
         EventHandler::new(move |_| adding_task.set(false)),
     );
 
-    let on_submit = move |uuid: String| {
-        use_future(move || {
-            let uuid = uuid.clone();
-            async move {
-                match add_task(NewTask {
-                    name: name(),
-                    list_uuid: uuid.clone(),
-                    position: None,
-                    status: None,
-                    priority: None,
-                })
-                .await
-                {
-                    Ok(_) => (),
-                    Err(err) => tracing::error!("{err}"),
-                }
+    let mut add = use_signal(|| false);
+    use_future(move || {
+        let uuid = list_uuid_copy.clone();
+        async move {
+            if !add() {
+                return ();
+            } else {
+                add.set(false);
             }
-        });
-    };
+            match add_task(NewTask {
+                name: name(),
+                list_uuid: uuid.clone(),
+                position: None,
+                status: None,
+                priority: None,
+            })
+            .await
+            {
+                Ok(_) => (),
+                Err(err) => tracing::error!("{err}"),
+            }
+        }
+    });
 
     rsx! {
         Card { class: "h-fit flex flex-col gap-2", width: "w-96",
@@ -176,17 +179,16 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
                             class: "flex-1 text-base bg-primary-2",
                             value: name,
                             onenter: EventHandler::new(move |_e: KeyboardEvent| {
-                                let uuid = list_uuid_copy_1.clone();
-                                on_submit(uuid);
+                                add.set(true);
+                                adding_task.set(false);
                             }),
 
                         }
                         Button {
                             class: "px-1 h-full",
                             onclick: move |_| {
-                                let uuid = list_uuid_copy_2.clone();
+                                add.set(true);
                                 adding_task.set(false);
-                                on_submit(uuid);
                             },
                             Icon {
                                 class: "text-primary",
@@ -246,53 +248,6 @@ fn Tasks(tasks: Option<Vec<Task>>, is_settings_open: Signal<bool>) -> Element {
                                                         {<Priority as Into<Element>>::into(task.priority.clone())}
                                                         {<Status as Into<Element>>::into(task.status.clone())}
                                                         div { class: "flex-grow flex-shrink inline-block truncate", {task.name.clone()} }
-                                                                // HoverCard {
-                                                    //     div {
-                                                    //         class: "w-8 flex justify-end gap-1 block group-hover:hidden",
-                                                    //         {task.tags.iter().enumerate().map(|(id, tag)| {
-                                                    //             if id < 2 {
-                                                    //                 rsx!(
-                                                    //                     Icon {
-                                                    //                         style: format!("--tag-color: {};", tag.color),
-                                                    //                         class: format!("text-[var(--tag-color)]"),
-                                                    //                         height: 10,
-                                                    //                         width: 10,
-                                                    //                         icon: FaCircle
-                                                    //                     }
-                                                    //                 )
-                                                    //             } else if id == 2 {
-                                                    //                 rsx!(
-                                                    //                     Icon {
-                                                    //                         class: format!("text-secondary"),
-                                                    //                         height: 14,
-                                                    //                         width: 14,
-                                                    //                         icon: FaPlus
-                                                    //                     }
-                                                    //                 )
-                                                    //             } else {
-                                                    //                 rsx!()
-                                                    //             }
-                                                    //         })}
-                                                    //     }
-                                                    //     HoverCardContent {
-                                                    //         {task.tags.iter().map(|tag| {
-                                                    //             rsx!(
-                                                    //                 div {
-                                                    //                     class: "flex items-center gap-1 p-0.5",
-                                                    //                     {tag.name.clone()}
-                                                    //                     Icon {
-                                                    //                         style: format!("--tag-color: {};", tag.color),
-                                                    //                         class: format!("text-[var(--tag-color)]"),
-                                                    //                         height: 10,
-                                                    //                         width: 10,
-                                                    //                         icon: FaCircle
-                                                    //                     },
-
-                                                    //                 }
-                                                    //             )
-                                                    //         })}
-                                                    //     }
-                                                    // }
 
                                                     }
                                                 }

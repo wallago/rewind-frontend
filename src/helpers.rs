@@ -1,5 +1,5 @@
 use wasm_bindgen::JsCast;
-use web_sys::{DomTokenList, HtmlElement, Storage, window};
+use web_sys::{DomTokenList, HtmlElement, window};
 
 pub fn get_dom_token_list() -> Option<DomTokenList> {
     let document = web_sys::window()?.document()?;
