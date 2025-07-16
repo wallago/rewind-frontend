@@ -12,33 +12,41 @@ use crate::{
         Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown, SearchDropdownContent,
         SearchDropdownInput, Textarea,
     },
+    context::ListsContext,
     hooks::use_click_outside,
     models::{NewList, Priority, Status, Tag},
 };
 
 #[component]
 pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
+    let mut ctx_lists = use_context::<ListsContext>();
     let name = use_signal(|| "".to_string());
+    let mut trigger = use_signal(|| false);
+    let mut in_progress = use_signal(|| false);
 
-    let mut add = use_signal(|| false);
-    use_future(move || {
-        let uuid = board_uuid.clone();
+    let _ = use_resource(move || {
+        let board_uuid = board_uuid.clone();
         async move {
-            if !add() {
-                return ();
-            } else {
-                add.set(false);
+            if trigger() {
+                in_progress.set(true);
+                match add_list(NewList {
+                    name: name(),
+                    board_uuid,
+                    position: None,
+                })
+                .await
+                {
+                    Ok(_) => ctx_lists.refresh.set(()),
+                    Err(err) => tracing::error!("{err}"),
+                };
+                in_progress.set(false);
             }
-            match add_list(NewList {
-                name: name(),
-                position: None,
-                board_uuid: uuid,
-            })
-            .await
-            {
-                Ok(_) => {}
-                Err(err) => tracing::error!("{err}"),
-            }
+        }
+    });
+
+    use_effect(move || {
+        if !in_progress() {
+            trigger.set(false);
         }
     });
     rsx! {
@@ -56,7 +64,7 @@ pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
                     DialogClose {}
                     Button {
                         onclick: move |_| {
-                            add.set(true);
+                            trigger.set(true);
                             is_open.set(false);
                         },
                         r#type: "submit",

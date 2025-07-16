@@ -161,6 +161,7 @@ fn BoardCard(board: Board, dragging_from: Signal<Option<String>>) -> Element {
                             }
                         } else {
                             Input {
+                                id: "update-board-area",
                                 width: "w-full",
                                 placeholder: "Enter board name",
                                 value: name,

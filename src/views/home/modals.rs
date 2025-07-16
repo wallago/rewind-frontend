@@ -1,13 +1,13 @@
 use dioxus::prelude::*;
 
 use crate::{
-    api::{delete_board, update_board},
+    api::delete_board,
     components::{
         Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
-        DialogTitle, Input,
+        DialogTitle,
     },
     context::BoardsContext,
-    models::{Board, UpdateBoard as UpdateBoardModel},
+    models::Board,
 };
 
 #[component]
