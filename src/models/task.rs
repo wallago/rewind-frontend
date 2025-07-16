@@ -17,3 +17,11 @@ pub struct NewTask {
     pub status: Option<Status>,
     pub position: Option<i32>,
 }
+
+#[derive(Serialize)]
+pub struct UpdateTask {
+    pub name: Option<String>,
+    pub priority: Option<Priority>,
+    pub status: Option<Status>,
+    pub position: Option<i32>,
+}

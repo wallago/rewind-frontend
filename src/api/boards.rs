@@ -2,7 +2,7 @@ use reqwest::{Error, StatusCode};
 
 use crate::{
     api::BASE_URL,
-    models::{Board, NewBoard},
+    models::{Board, NewBoard, UpdateBoard},
 };
 
 pub async fn get_boards() -> Result<Vec<Board>, Error> {
@@ -23,10 +23,30 @@ pub async fn add_board(board: NewBoard) -> Result<Board, Error> {
     Ok(board)
 }
 
-pub async fn delete_board(board_uuid: String) -> Result<StatusCode, Error> {
+pub async fn delete_board(uuid: String) -> Result<StatusCode, Error> {
     let client = reqwest::Client::new();
     let response = client
-        .delete(format!("{BASE_URL}/boards/{board_uuid}"))
+        .delete(format!("{BASE_URL}/boards/{uuid}"))
+        .send()
+        .await?;
+    Ok(response.status())
+}
+
+pub async fn update_board(uuid: &str, board: UpdateBoard) -> Result<StatusCode, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .put(format!("{BASE_URL}/boards/{uuid}"))
+        .json(&board)
+        .send()
+        .await?;
+    Ok(response.status())
+}
+
+pub async fn switch_boards(uuid_from: &str, uuid_to: &str) -> Result<StatusCode, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .put(format!("{BASE_URL}/boards/switch"))
+        .json(&(uuid_from, uuid_to))
         .send()
         .await?;
     Ok(response.status())

@@ -4,6 +4,8 @@ use dioxus::prelude::*;
 pub struct LabelProps {
     pub children: Element,
     #[props(optional)]
+    pub id: Option<String>,
+    #[props(optional)]
     pub class: Option<String>,
     #[props(optional)]
     pub r#for: Option<String>,
@@ -28,6 +30,7 @@ pub fn Label(props: LabelProps) -> Element {
 
     rsx!(
         label {
+            id: props.id,
             class: format!(
                 "{} {} {} {}",
                 base_class,
@@ -35,7 +38,7 @@ pub fn Label(props: LabelProps) -> Element {
                 props.class.clone().unwrap_or_default(),
                 props.width.clone().unwrap_or("w-fit".to_string()),
             ),
-            r#for: props.r#for.clone().unwrap_or_default(),
+            r#for: props.r#for,
             {props.children}
         }
     )

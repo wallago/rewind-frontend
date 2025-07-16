@@ -172,9 +172,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
             Tasks { tasks: tasks(), is_settings_open: is_task_settings_open }
             div { class: "w-full flex justify-end px-2 pb-2",
                 if adding_task() {
-                    div {
-                        id: "add-task-area",
-                        class: "flex w-full gap-4 items-center",
+                    div { class: "flex w-full gap-4 items-center",
                         Input {
                             class: "flex-1 text-base bg-primary-2",
                             value: name,
@@ -182,7 +180,7 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
                                 add.set(true);
                                 adding_task.set(false);
                             }),
-
+                        
                         }
                         Button {
                             class: "px-1 h-full",
@@ -248,7 +246,7 @@ fn Tasks(tasks: Option<Vec<Task>>, is_settings_open: Signal<bool>) -> Element {
                                                         {<Priority as Into<Element>>::into(task.priority.clone())}
                                                         {<Status as Into<Element>>::into(task.status.clone())}
                                                         div { class: "flex-grow flex-shrink inline-block truncate", {task.name.clone()} }
-
+                                                    
                                                     }
                                                 }
                                             }

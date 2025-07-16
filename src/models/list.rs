@@ -12,3 +12,9 @@ pub struct NewList {
     pub board_uuid: String,
     pub position: Option<i32>,
 }
+
+#[derive(Serialize)]
+pub struct UpdateList {
+    pub name: Option<String>,
+    pub position: Option<i32>,
+}

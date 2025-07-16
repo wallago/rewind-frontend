@@ -224,6 +224,7 @@ pub fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                                         .with_mut(|tag_list| {
                                             tag_list
                                                 .push(Tag {
+                                                    uuid: "WTF".to_string(),
                                                     name: new_tag_name(),
                                                     color: new_tag_color(),
                                                 });

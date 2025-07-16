@@ -4,11 +4,9 @@ use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
 use crate::Route;
-use crate::api::get_boards;
+use crate::context::{BoardsContext, ThemeContext};
 use crate::hooks::use_click_outside;
-use crate::models::Board;
 use crate::{
-    DarkMode,
     components::{
         Button, Dropdown, DropdownContent, DropdownTrigger, SearchDropdown, SearchDropdownContent,
         SearchDropdownInput,
@@ -20,41 +18,39 @@ mod modals;
 
 #[component]
 pub fn Navbar() -> Element {
-    let mut dark_mode = use_context::<DarkMode>();
+    let mut dark_mode = use_context::<ThemeContext>();
+    let ctx_boards = use_context::<BoardsContext>();
+
     let mut search = use_signal(|| "".to_string());
 
     let is_search_active = use_memo(move || !search().is_empty());
     let mut is_add_board_open = use_signal(|| false);
     let mut is_recent_boards_open = use_signal(|| false);
 
-    let mut boards = use_signal(|| None::<Vec<Board>>);
     let mut board_recent_options = use_signal(|| vec![]);
     let mut board_search_options = use_signal(|| vec![]);
-    use_future(move || async move {
-        match get_boards().await {
-            Ok(res) => boards.set(Some(res)),
-            Err(err) => tracing::error!("{err}"),
-        }
-    });
     use_effect(move || {
-        if let Some(boards) = boards() {
-            board_recent_options.set(
-                boards
-                    .iter()
-                    .map(|board| {
-                        let uuid = board.uuid.clone();
-                        (
-                            board.name.clone(),
-                            Some(EventHandler::new(move |_| {
-                                is_recent_boards_open.set(false);
-                                navigator().push(Route::Board { uuid: uuid.clone() });
-                            })),
-                        )
-                    })
-                    .collect(),
-            );
-            board_search_options.set(boards.iter().map(|board| board.name.clone()).collect());
-        }
+        board_recent_options.set(
+            (ctx_boards.boards)()
+                .iter()
+                .map(|board| {
+                    let uuid = board.uuid.clone();
+                    (
+                        board.name.clone(),
+                        Some(EventHandler::new(move |_| {
+                            is_recent_boards_open.set(false);
+                            navigator().push(Route::Board { uuid: uuid.clone() });
+                        })),
+                    )
+                })
+                .collect(),
+        );
+        board_search_options.set(
+            (ctx_boards.boards)()
+                .iter()
+                .map(|board| board.name.clone())
+                .collect(),
+        );
     });
 
     use_click_outside(

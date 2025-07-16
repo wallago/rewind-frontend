@@ -12,3 +12,9 @@ pub struct NewBoard {
     pub name: String,
     pub position: Option<i32>,
 }
+
+#[derive(Serialize, Clone)]
+pub struct UpdateBoard {
+    pub name: Option<String>,
+    pub position: Option<i32>,
+}

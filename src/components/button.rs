@@ -28,6 +28,13 @@ pub fn Button(props: ButtonProps) -> Element {
             border-2 border-secondary
             "
         }
+        Some("ghost") => {
+            "
+            bg-transparent text-secondary
+            hover:text-secondary-1
+            active:text-secondary-2
+            "
+        }
         _ => {
             "
             bg-secondary text-primary

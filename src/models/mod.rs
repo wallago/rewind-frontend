@@ -1,14 +1,11 @@
-mod dark_mode;
-pub use dark_mode::DarkMode;
-
 mod task;
-pub use task::{NewTask, Task};
+pub use task::{NewTask, Task, UpdateTask};
 
 mod list;
-pub use list::{List, NewList};
+pub use list::{List, NewList, UpdateList};
 
 mod board;
-pub use board::{Board, NewBoard};
+pub use board::{Board, NewBoard, UpdateBoard};
 
 mod status;
 pub use status::Status;
@@ -17,4 +14,4 @@ mod priority;
 pub use priority::Priority;
 
 mod tag;
-pub use tag::Tag;
+pub use tag::{NewTag, Tag};

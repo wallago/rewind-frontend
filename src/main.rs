@@ -1,10 +1,15 @@
 use dioxus::prelude::*;
 use views::{Board, Footer, Home, Navbar};
 
-use crate::{helpers::get_dom_token_list, models::DarkMode};
+use crate::{
+    api::get_boards,
+    context::{BoardsContext, ThemeContext},
+    helpers::get_dom_token_list,
+};
 
 mod api;
 mod components;
+mod context;
 mod helpers;
 mod hooks;
 mod models;
@@ -30,19 +35,7 @@ fn main() {
 
 #[component]
 fn App() -> Element {
-    use_context_provider(|| {
-        if let Some(is_dark) = helpers::load_dark_mode_preference() {
-            DarkMode(Signal::new(is_dark))
-        } else {
-            let dom_token_list = get_dom_token_list();
-            if let Some(dom_token_list) = dom_token_list {
-                DarkMode(Signal::new(dom_token_list.contains("dark")))
-            } else {
-                DarkMode(Signal::new(false))
-            }
-        }
-    });
-
+    initialize_context();
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
@@ -62,4 +55,37 @@ pub fn MainLayout() -> Element {
             }
         }
     }
+}
+
+fn initialize_context() {
+    use_context_provider(|| {
+        if let Some(is_dark) = helpers::load_dark_mode_preference() {
+            ThemeContext(Signal::new(is_dark))
+        } else {
+            let dom_token_list = get_dom_token_list();
+            if let Some(dom_token_list) = dom_token_list {
+                ThemeContext(Signal::new(dom_token_list.contains("dark")))
+            } else {
+                ThemeContext(Signal::new(false))
+            }
+        }
+    });
+
+    use_context_provider(|| BoardsContext {
+        boards: Signal::new(Vec::new()),
+        refresh: Signal::new(()),
+    });
+
+    let ctx_boards = use_context::<BoardsContext>();
+    let _ = use_resource({
+        let mut boards = ctx_boards.boards.clone();
+        let refresh = ctx_boards.refresh.clone();
+        move || async move {
+            refresh();
+            match get_boards().await {
+                Ok(fetched) => boards.set(fetched),
+                Err(err) => tracing::error!("{err}"),
+            }
+        }
+    });
 }
