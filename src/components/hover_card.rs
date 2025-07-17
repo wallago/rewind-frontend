@@ -33,7 +33,9 @@ pub fn HoverCardContent(props: HoverCardProps) -> Element {
     let is_hovered = use_context::<HoverCardState>();
 
     if !is_hovered.0() {
-        return rsx!(div { id: props.id });
+        return rsx!(
+            div { id: props.id }
+        );
     }
     rsx!(
         div {

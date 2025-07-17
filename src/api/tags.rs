@@ -5,9 +5,22 @@ use crate::{
     models::{NewTag, Tag},
 };
 
-pub async fn get_tags() -> Result<Vec<Tag>, Error> {
+pub async fn get_tags_by_board_uuid(uuid: &str) -> Result<Vec<Tag>, Error> {
     let client = reqwest::Client::new();
-    let response = client.get(format!("{BASE_URL}/tags")).send().await?;
+    let response = client
+        .get(format!("{BASE_URL}/boards/{uuid}/tags"))
+        .send()
+        .await?;
+    let tags = response.json::<Vec<Tag>>().await?;
+    Ok(tags)
+}
+
+pub async fn get_tags_by_task_uuid(uuid: &str) -> Result<Vec<Tag>, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .get(format!("{BASE_URL}/tasks/{uuid}/tags"))
+        .send()
+        .await?;
     let tags = response.json::<Vec<Tag>>().await?;
     Ok(tags)
 }

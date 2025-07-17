@@ -12,7 +12,7 @@ pub async fn get_boards() -> Result<Vec<Board>, Error> {
     Ok(boards)
 }
 
-pub async fn get_board_by_uuid(uuid: String) -> Result<Board, Error> {
+pub async fn get_board_by_uuid(uuid: &str) -> Result<Board, Error> {
     let client = reqwest::Client::new();
     let response = client
         .get(format!("{BASE_URL}/boards/{uuid}"))
@@ -33,7 +33,7 @@ pub async fn add_board(board: NewBoard) -> Result<Board, Error> {
     Ok(board)
 }
 
-pub async fn delete_board(uuid: String) -> Result<StatusCode, Error> {
+pub async fn delete_board(uuid: &str) -> Result<StatusCode, Error> {
     let client = reqwest::Client::new();
     let response = client
         .delete(format!("{BASE_URL}/boards/{uuid}"))

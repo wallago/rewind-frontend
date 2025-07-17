@@ -72,15 +72,17 @@ pub struct SearchDropdownInputProps {
 #[component]
 pub fn SearchDropdownInput(props: SearchDropdownInputProps) -> Element {
     let ctx = use_context::<SearchDropdownContext>();
-    rsx!(Input {
-        id: props.id,
-        class: props.class,
-        placeholder: props.placeholder,
-        value: ctx.input,
-        width: props.width,
-        is_focus: ctx.is_focus,
-        autofocus: false
-    })
+    rsx!(
+        Input {
+            id: props.id,
+            class: props.class,
+            placeholder: props.placeholder,
+            value: ctx.input,
+            width: props.width,
+            is_focus: ctx.is_focus,
+            autofocus: false,
+        }
+    )
 }
 
 #[derive(PartialEq, Clone, Props)]
@@ -104,10 +106,10 @@ pub fn SearchDropdownContent(props: SearchDropdownContentProps) -> Element {
                 id: props.id,
                 class: format!(
                     "
-                                                        absolute z-50 mt-1 max-h-60 overflow-y-auto
-                                                        border-2 border-secondary shadow-lg
-                                                        bg-primary text-secondary
-                                                        {} {}",
+                                                                    absolute z-50 mt-1 max-h-60 overflow-y-auto
+                                                                    border-2 border-secondary shadow-lg
+                                                                    bg-primary text-secondary
+                                                                    {} {}",
                     props.class.unwrap_or_default(),
                     props.width.unwrap_or("w-full".to_string()),
                 ),

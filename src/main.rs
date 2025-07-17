@@ -2,9 +2,9 @@ use dioxus::prelude::*;
 use views::{Board, Footer, Home, Navbar};
 
 use crate::{
-    api::get_boards,
     context::{BoardsContext, ThemeContext},
     helpers::get_dom_token_list,
+    hooks::{use_boards_get, use_theme_switch},
 };
 
 mod api;
@@ -76,16 +76,6 @@ fn initialize_context() {
         refresh: Signal::new(()),
     });
 
-    let ctx_boards = use_context::<BoardsContext>();
-    let _ = use_resource({
-        let mut boards = ctx_boards.boards.clone();
-        let refresh = ctx_boards.refresh.clone();
-        move || async move {
-            refresh();
-            match get_boards().await {
-                Ok(fetched) => boards.set(fetched),
-                Err(err) => tracing::error!("{err}"),
-            }
-        }
-    });
+    use_boards_get();
+    use_theme_switch();
 }

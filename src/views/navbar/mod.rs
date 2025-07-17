@@ -4,15 +4,12 @@ use dioxus_free_icons::icons::fa_regular_icons::FaNoteSticky;
 use dioxus_free_icons::icons::fa_solid_icons::{FaChevronDown, FaMoon, FaPlus};
 
 use crate::Route;
+use crate::components::{
+    Button, Dropdown, DropdownContent, DropdownTrigger, SearchDropdown, SearchDropdownContent,
+    SearchDropdownInput,
+};
 use crate::context::{BoardsContext, ThemeContext};
 use crate::hooks::use_click_outside;
-use crate::{
-    components::{
-        Button, Dropdown, DropdownContent, DropdownTrigger, SearchDropdown, SearchDropdownContent,
-        SearchDropdownInput,
-    },
-    helpers,
-};
 
 mod modals;
 
@@ -70,20 +67,6 @@ pub fn Navbar() -> Element {
         move || is_search_active(),
         EventHandler::new(move |_| search.set("".to_string())),
     );
-
-    use_effect(move || {
-        let is_dark = dark_mode.0();
-        tracing::info!("Setting dark mode: {:?}", is_dark);
-        helpers::save_dark_mode_preference(is_dark);
-        let dom_token_list = helpers::get_dom_token_list();
-        if let Some(dom_token_list) = dom_token_list {
-            if is_dark {
-                let _ = dom_token_list.add_1("dark");
-            } else {
-                let _ = dom_token_list.remove_1("dark");
-            }
-        }
-    });
 
     let toggle_dark_mode = move |_| {
         dark_mode.0.toggle();

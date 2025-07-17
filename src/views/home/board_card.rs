@@ -1,11 +1,8 @@
-use crate::api::{switch_boards, update_board};
-use crate::hooks::{use_board_drag_switch, use_board_update};
-use crate::models::UpdateBoard;
+use crate::hooks::{use_board_drag_switch, use_board_update, use_click_outside};
 use crate::views::home::modals::DeleteBoard;
 use crate::{
     Route,
     components::{Button, Card, HoverCard, HoverCardContent, Input, Label},
-    context::BoardsContext,
     models::Board,
 };
 use dioxus::prelude::*;
@@ -27,6 +24,18 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
 
     let uuid_from = props.board.uuid.clone();
     let uuid_to = props.board.uuid.clone();
+
+    use_click_outside(
+        "delete-board-area".to_string(),
+        move || is_delete_open(),
+        EventHandler::new(move |_| is_delete_open.set(false)),
+    );
+
+    use_click_outside(
+        "update-board-area".to_string(),
+        move || is_update_open(),
+        EventHandler::new(move |_| is_update_open.set(false)),
+    );
 
     let mut trigger_update = use_signal(|| false);
     use_board_update(name, props.board.uuid.clone(), trigger_update);
@@ -101,21 +110,17 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
                             width: "w-full",
                             div { class: "truncate", "UUID: {props.board.uuid}" }
                         }
-                        HoverCardContent {
-                            {props.board.uuid.clone()}
-                        }
+                        HoverCardContent { {props.board.uuid.clone()} }
                     }
                 }
                 div { class: "flex justify-end",
                     Button {
                         onclick: {
-                           let uuid = props.board.uuid.clone();
+                            let uuid = props.board.uuid.clone();
                             move |_| {
-                            navigator()
-                                .push(Route::Board {
-                                    uuid: uuid.clone(),
-                                });
-                        }},
+                                navigator().push(Route::Board { uuid: uuid.clone() });
+                            }
+                        },
                         class: "px-2 text-base",
                         "Details"
                     }

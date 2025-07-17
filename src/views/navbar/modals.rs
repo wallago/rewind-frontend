@@ -1,41 +1,17 @@
 use dioxus::prelude::*;
 
 use crate::Route;
-use crate::api::add_board;
 use crate::components::{
     Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input,
 };
-use crate::context::BoardsContext;
-use crate::models::NewBoard;
+use crate::hooks::use_board_add;
 
 #[component]
 pub fn AddBoard(is_open: Signal<bool>) -> Element {
-    let mut ctx_boards = use_context::<BoardsContext>();
     let name = use_signal(|| "".to_string());
     let mut trigger = use_signal(|| false);
-    let mut in_progress = use_signal(|| false);
 
-    let _ = use_resource(move || async move {
-        if trigger() {
-            in_progress.set(true);
-            match add_board(NewBoard {
-                name: name(),
-                position: None,
-            })
-            .await
-            {
-                Ok(_) => ctx_boards.refresh.set(()),
-                Err(err) => tracing::error!("{err}"),
-            };
-            in_progress.set(false);
-        }
-    });
-
-    use_effect(move || {
-        if !in_progress() {
-            trigger.set(false);
-        }
-    });
+    use_board_add(name, trigger);
 
     rsx! {
         Dialog { is_open,
