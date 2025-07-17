@@ -6,15 +6,15 @@ use dioxus_free_icons::{
 use regex::Regex;
 
 use crate::{
-    api::add_list,
+    api::{add_list, delete_list},
     components::{
-        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle,
-        Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown, SearchDropdownContent,
-        SearchDropdownInput, Textarea,
+        Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
+        DialogTitle, Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown,
+        SearchDropdownContent, SearchDropdownInput, Textarea,
     },
     context::ListsContext,
     hooks::use_click_outside,
-    models::{NewList, Priority, Status, Tag},
+    models::{List, NewList, Priority, Status, Tag},
 };
 
 #[component]
@@ -59,6 +59,10 @@ pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
                     width: "w-full",
                     placeholder: "Enter list name",
                     value: name,
+                    onenter: EventHandler::new(move |_e: KeyboardEvent| {
+                        trigger.set(true);
+                        is_open.set(false);
+                    }),
                 }
                 DialogFooter {
                     DialogClose {}
@@ -280,6 +284,57 @@ pub fn TaskSettings(is_open: Signal<bool>, tags: Vec<Tag>) -> Element {
                         variant: "outline",
                         class: "font-semibold px-2 text-sm",
                         "Save"
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn DeleteList(list: List, is_open: Signal<bool>) -> Element {
+    let mut ctx_lists = use_context::<ListsContext>();
+    let mut trigger = use_signal(|| false);
+    let mut in_progress = use_signal(|| false);
+
+    let _ = use_resource(move || {
+        let list_uuid = list.uuid.clone();
+        async move {
+            if trigger() {
+                in_progress.set(true);
+                match delete_list(&list_uuid).await {
+                    Ok(_) => ctx_lists.refresh.set(()),
+                    Err(err) => tracing::error!("{err}"),
+                };
+                in_progress.set(false);
+            }
+        }
+    });
+
+    use_effect(move || {
+        if !in_progress() {
+            trigger.set(false);
+        }
+    });
+
+    rsx! {
+        Dialog { is_open,
+            DialogContent { id: "delete-list-area", class: "sm:max-w-[425px]",
+                DialogHeader {
+                    DialogTitle { "Delete {list.name}" }
+                    DialogDescription { "Are you sure ?" }
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        onclick: move |_| {
+                            trigger.set(true);
+                            is_open.set(false);
+                        },
+                        r#type: "submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Delete"
                     }
                 }
             }

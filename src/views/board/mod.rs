@@ -6,7 +6,10 @@ use dioxus_free_icons::{
 
 use crate::{
     Route,
-    api::{add_task, get_lists_by_board_uuid, get_tags, get_tasks_by_list_uuid, update_list},
+    api::{
+        add_task, get_board_by_uuid, get_lists_by_board_uuid, get_tags, get_tasks_by_list_uuid,
+        switch_lists, update_list,
+    },
     components::{
         Button, Card, HoverCard, HoverCardContent, Input, Label, Table, TableBody, TableCaption,
         TableHead, TableHeader, TableRow,
@@ -65,12 +68,14 @@ pub fn Board(uuid: String) -> Element {
         EventHandler::new(move |_| is_task_settings_open.set(false)),
     );
 
+    let dragging_index = use_signal(|| None::<String>);
     let lists: Vec<Element> = (ctx_lists.lists)()
         .iter()
         .map(|list| {
             rsx!(ListCard {
                 list: list.clone(),
-                is_task_settings_open
+                is_task_settings_open,
+                dragging_from: dragging_index
             })
         })
         .collect();
@@ -101,6 +106,19 @@ pub fn Board(uuid: String) -> Element {
 
 #[component]
 fn Header(uuid: String) -> Element {
+    let board = use_resource(move || {
+        let uuid = uuid.clone();
+        async move {
+            match get_board_by_uuid(uuid.clone()).await {
+                Ok(fetched) => Some(fetched),
+                Err(err) => {
+                    tracing::error!("{err}");
+                    None
+                }
+            }
+        }
+    });
+
     rsx! {
         div { class: "flex gap-4 items-center",
             Button {
@@ -111,21 +129,50 @@ fn Header(uuid: String) -> Element {
                 "Boards"
             }
             Icon { class: "text-secondary", height: 20, icon: FaChevronRight }
-            Label { class: "w-fit px-2 truncate text-base py-1.5", {uuid} }
+            {
+                match board() {
+                Some(Some(board)) => rsx!(
+                    Label {
+                        class: "w-fit px-2 truncate text-base py-1.5",
+                        {board.name}
+                    }
+                ),
+                _ => rsx!(
+                    Label {
+                        class: "w-fit px-2 truncate text-base py-1.5",
+                        "Loading"
+                    }
+                )
+            }
+            }
+            // if let Some(board) = board() {
+            //     Label { class: "w-fit px-2 truncate text-base py-1.5", {board.name} }
+            // } else {
+            //     Label { class: "w-fit px-2 truncate text-base py-1.5", "Loading" }
+            // }
         }
     }
 }
 
 #[component]
-fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
+fn ListCard(
+    list: List,
+    is_task_settings_open: Signal<bool>,
+    dragging_from: Signal<Option<String>>,
+) -> Element {
     let mut adding_task = use_signal(|| false);
     let name = use_signal(|| list.name.clone());
 
     let mut tasks = use_signal(|| None::<Vec<Task>>);
+    let list_copy = list.clone();
     let list_uuid = list.uuid.clone();
     let list_uuid_copy = list.uuid.clone();
+    let list_uuid_from = list.uuid.clone();
+    let list_uuid_to = list.uuid.clone();
+    let id = list.uuid.clone();
     let mut is_delete_open = use_signal(|| false);
     let mut is_update = use_signal(|| false);
+    let mut dragging_to = use_signal(|| None::<String>);
 
     // use_future(move || {
     //     let uuid = list_uuid.clone();
@@ -185,6 +232,34 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
         }
     });
 
+    use_effect(move || {
+        if !in_progress_update() {
+            trigger_update.set(false);
+        }
+    });
+
+    let _ = use_resource(move || async move {
+        if trigger_switch()
+            && let Some(uuid_from) = dragging_from()
+            && let Some(uuid_to) = dragging_to()
+        {
+            in_progress_switch.set(true);
+            match switch_lists(&uuid_from, &uuid_to).await {
+                Ok(_) => ctx_lists.refresh.set(()),
+                Err(err) => tracing::error!("{err}"),
+            };
+            in_progress_switch.set(false);
+        }
+    });
+
+    use_effect(move || {
+        if !in_progress_switch() {
+            dragging_from.set(None);
+            dragging_to.set(None);
+            trigger_switch.set(false);
+        }
+    });
+
     // let mut add = use_signal(|| false);
     // use_future(move || {
     //     let uuid = list_uuid_copy.clone();
@@ -210,6 +285,21 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
     // });
 
     rsx! {
+        div {
+        id,
+            draggable: true,
+            ondragstart: move |_| {
+                dragging_from.set(Some(list_uuid_from.clone()));
+            },
+            ondragover: move |evt| {
+                evt.prevent_default();
+            },
+            ondrop: move |_| {
+                if dragging_from().is_some() {
+                    dragging_to.set(Some(list_uuid_to.clone()));
+                    trigger_switch.set(true);
+                }
+            },
         Card { class: "h-fit flex flex-col gap-2 mx-auto", width: "w-96",
             div { class: "flex flex-col justify-center text-sm font-medium gap-2 w-full",
                 div { class: "flex gap-3 justify-between h-full items-center pb-1",
@@ -305,6 +395,8 @@ fn ListCard(list: List, is_task_settings_open: Signal<bool>) -> Element {
                 }
             }
         }
+            modals::DeleteList { list: list_copy, is_open: is_delete_open }
+    }
     }
 }
 
