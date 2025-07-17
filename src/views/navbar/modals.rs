@@ -4,7 +4,7 @@ use crate::Route;
 use crate::components::{
     Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input,
 };
-use crate::hooks::use_board_add;
+use crate::hooks::{use_board_add, use_click_outside};
 
 #[component]
 pub fn AddBoard(is_open: Signal<bool>) -> Element {
@@ -12,6 +12,12 @@ pub fn AddBoard(is_open: Signal<bool>) -> Element {
     let mut trigger = use_signal(|| false);
 
     use_board_add(name, trigger);
+
+    use_click_outside(
+        "add-board-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
 
     rsx! {
         Dialog { is_open,

@@ -12,7 +12,7 @@ struct SearchDropdownContext {
 #[derive(PartialEq, Clone, Props)]
 pub struct SearchDropdownProps {
     pub value: Signal<String>,
-    pub options: Signal<Vec<String>>,
+    pub options: Memo<Vec<String>>,
     #[props(optional)]
     pub id: Option<String>,
     #[props(optional)]
@@ -72,17 +72,15 @@ pub struct SearchDropdownInputProps {
 #[component]
 pub fn SearchDropdownInput(props: SearchDropdownInputProps) -> Element {
     let ctx = use_context::<SearchDropdownContext>();
-    rsx!(
-        Input {
-            id: props.id,
-            class: props.class,
-            placeholder: props.placeholder,
-            value: ctx.input,
-            width: props.width,
-            is_focus: ctx.is_focus,
-            autofocus: false,
-        }
-    )
+    rsx!(Input {
+        id: props.id,
+        class: props.class,
+        placeholder: props.placeholder,
+        value: ctx.input,
+        width: props.width,
+        is_focus: ctx.is_focus,
+        autofocus: false,
+    })
 }
 
 #[derive(PartialEq, Clone, Props)]

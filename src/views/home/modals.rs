@@ -5,7 +5,7 @@ use crate::{
         Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
         DialogTitle,
     },
-    hooks::use_board_delete,
+    hooks::{use_board_delete, use_click_outside},
     models::Board,
 };
 
@@ -14,6 +14,12 @@ pub fn DeleteBoard(board: Board, is_open: Signal<bool>) -> Element {
     let mut trigger = use_signal(|| false);
 
     use_board_delete(board.uuid, trigger);
+
+    use_click_outside(
+        "delete-board-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
 
     rsx! {
         Dialog { is_open,

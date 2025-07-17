@@ -1,7 +1,7 @@
 use crate::{
     components::Button,
-    context::ListsContext,
-    hooks::{use_click_outside, use_lists_get},
+    context::{ListsContext, TagsContext},
+    hooks::{use_lists_get, use_tags_get},
     views::board::{header::Header, list_card::ListCard},
 };
 use dioxus::prelude::*;
@@ -22,15 +22,16 @@ pub fn Board(uuid: String) -> Element {
 
     use_lists_get(uuid.clone());
 
+    use_context_provider(|| TagsContext {
+        tags: Signal::new(Vec::new()),
+        refresh: Signal::new(()),
+    });
+
+    use_tags_get(uuid.clone());
+
     let ctx_lists = use_context::<ListsContext>();
 
     let mut is_add_open = use_signal(|| false);
-
-    use_click_outside(
-        "add-list-area".to_string(),
-        move || is_add_open(),
-        EventHandler::new(move |_| is_add_open.set(false)),
-    );
 
     let dragging_index = use_signal(|| None::<String>);
     let lists: Vec<Element> = (ctx_lists.lists)()

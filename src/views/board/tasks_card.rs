@@ -20,12 +20,6 @@ pub fn TasksCard(uuid: String) -> Element {
 
     let mut is_add_open = use_signal(|| false);
 
-    use_click_outside(
-        "add-task-area".to_string(),
-        move || is_add_open(),
-        EventHandler::new(move |_| is_add_open.set(false)),
-    );
-
     let tasks: Vec<Element> = (ctx_tasks.tasks)()
         .iter()
         .map(|task| rsx!(TaskCard { task: task.clone() }))

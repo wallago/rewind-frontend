@@ -27,12 +27,6 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
     let uuid_to = props.list.uuid.clone();
 
     use_click_outside(
-        "delete-list-area".to_string(),
-        move || is_delete_open(),
-        EventHandler::new(move |_| is_delete_open.set(false)),
-    );
-
-    use_click_outside(
         "update-list-area".to_string(),
         move || is_update_open(),
         EventHandler::new(move |_| is_update_open.set(false)),

@@ -1,19 +1,19 @@
-use dioxus::prelude::*;
-use dioxus_free_icons::{
-    Icon,
-    icons::fa_solid_icons::{FaCheck, FaChevronDown, FaCircle, FaPlus, FaXmark},
-};
-use regex::Regex;
-
 use crate::{
+    Route,
     components::{
         Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
-        DialogTitle, Dropdown, DropdownContent, DropdownTrigger, Input, SearchDropdown,
-        SearchDropdownContent, SearchDropdownInput, Textarea,
+        DialogTitle, Input, Label, SearchDropdown, SearchDropdownContent, SearchDropdownInput,
     },
-    hooks::{use_click_outside, use_list_add, use_list_delete, use_task_add},
-    models::{List, Priority, Status, Tag},
+    context::TagsContext,
+    hooks::{
+        use_click_outside, use_list_add, use_list_delete, use_tag_add, use_task_add,
+        use_task_delete, use_task_update,
+    },
+    models::{List, Task},
 };
+use dioxus::prelude::*;
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaPlus};
+use regex::Regex;
 
 #[component]
 pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
@@ -21,6 +21,12 @@ pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
     let mut trigger = use_signal(|| false);
 
     use_list_add(name, board_uuid, trigger);
+
+    use_click_outside(
+        "delete-list-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
 
     rsx! {
         Dialog { is_open,
@@ -61,6 +67,12 @@ pub fn DeleteList(list: List, is_open: Signal<bool>) -> Element {
 
     use_list_delete(list.uuid, trigger);
 
+    use_click_outside(
+        "delete-list-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
+
     rsx! {
         Dialog { is_open,
             DialogContent { id: "delete-list-area", class: "sm:max-w-[425px]",
@@ -93,15 +105,21 @@ pub fn AddTask(is_open: Signal<bool>, list_uuid: String) -> Element {
 
     use_task_add(name, list_uuid, trigger);
 
+    use_click_outside(
+        "add-task-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
+
     rsx! {
         Dialog { is_open,
-            DialogContent { id: "add-list-area", class: "sm:max-w-[425px]",
+            DialogContent { id: "add-task-area", class: "sm:max-w-[425px]",
                 DialogHeader {
-                    DialogTitle { "Add List" }
+                    DialogTitle { "Add Task" }
                 }
                 Input {
                     width: "w-full",
-                    placeholder: "Enter list name",
+                    placeholder: "Enter task name",
                     value: name,
                     onenter: EventHandler::new(move |_e: KeyboardEvent| {
                         trigger.set(true);
@@ -111,6 +129,207 @@ pub fn AddTask(is_open: Signal<bool>, list_uuid: String) -> Element {
                 DialogFooter {
                     DialogClose {}
                     Button {
+                        onclick: move |_| {
+                            trigger.set(true);
+                            is_open.set(false);
+                        },
+                        r#type: "submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Save"
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
+    let name = use_signal(|| task.name.clone());
+    let tag_search = use_signal(|| "".to_string());
+
+    let mut is_delete_open = use_signal(|| false);
+    let mut is_add_tag_open = use_signal(|| false);
+
+    let mut trigger_update = use_signal(|| false);
+    use_task_update(name, task.uuid.clone(), trigger_update);
+
+    let ctx_tags = use_context::<TagsContext>();
+
+    use_click_outside(
+        "update-task-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| {
+            if !is_add_tag_open() && !is_delete_open() {
+                is_open.set(false)
+            }
+        }),
+    );
+
+    let tags_name = use_memo(move || ctx_tags.tags.iter().map(|tag| tag.name.clone()).collect());
+
+    rsx! {
+        Dialog { is_open,
+            DialogContent { id: "update-task-area", class: "sm:max-w-[425px]",
+                DialogHeader {
+                    div {
+                        class: "flex justify-between items-center",
+                        DialogTitle { "Update {task.name}" }
+                        Button {
+                            onclick: move |_| {
+                                is_delete_open.set(true);
+                            },
+                            class: "px-2 text-xs h-6",
+                            "Delete"
+                        }
+                    }
+                }
+                Input {
+                    width: "w-full",
+                    placeholder: "Enter list name",
+                    value: name,
+                    onenter: EventHandler::new(move |_e: KeyboardEvent| {
+                        trigger_update.set(true);
+                        is_open.set(false);
+                    }),
+                }
+                Label {
+                    variant: "title",
+                    class: "p-2 bg-primary",
+                    width: "w-full",
+                    "Tags"
+                }
+                div {
+                    class: "flex justify-between gap-2",
+                    SearchDropdown {
+                        id: "search-tags-area",
+                        options: tags_name,
+                        value: tag_search,
+                        class: "text-base",
+                        SearchDropdownInput {
+                            width: "w-full",
+                            placeholder: " Search tags",
+                        }
+                        SearchDropdownContent {}
+                    }
+                    Button {
+                        class: "px-2 justify-between gap-2 font-semibold text-base",
+                        onclick: move |_| is_add_tag_open.set(true),
+                        Icon { height: 14, width: 14, icon: FaPlus }
+                    }
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        onclick: move |_| {
+                            trigger_update.set(true);
+                            is_open.set(false);
+                        },
+                        r#type: "submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Save"
+                    }
+                }
+            }
+        }
+        DeleteTask { is_open: is_delete_open, task: task.clone(), parent_open: is_open }
+        AddTag { is_open: is_add_tag_open }
+    }
+}
+
+#[component]
+pub fn DeleteTask(task: Task, is_open: Signal<bool>, parent_open: Signal<bool>) -> Element {
+    let mut trigger = use_signal(|| false);
+
+    use_task_delete(task.uuid, trigger);
+
+    use_click_outside(
+        "delete-task-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
+
+    rsx! {
+        Dialog { is_open,
+            DialogContent { id: "delete-task-area", class: "sm:max-w-[425px]",
+                DialogHeader {
+                    DialogTitle { "Delete {task.name}" }
+                    DialogDescription { "Are you sure ?" }
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        onclick: move |_| {
+                            trigger.set(true);
+                            is_open.set(false);
+                            parent_open.set(false);
+                        },
+                        r#type: "submit",
+                        variant: "outline",
+                        class: "font-semibold px-2 text-sm",
+                        "Delete"
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn AddTag(is_open: Signal<bool>) -> Element {
+    let route = use_route::<Route>();
+    let board_uuid = match route {
+        Route::Board { uuid } => uuid.clone(),
+        _ => return rsx!("Invalid route"),
+    };
+    let re = Regex::new(r"^#[0-9a-fA-F]{6}$")?;
+    let name = use_signal(|| "".to_string());
+    let color = use_signal(|| "".to_string());
+    let mut is_valid_hex = use_signal(|| false);
+    let mut trigger = use_signal(|| false);
+
+    use_tag_add(name, color, board_uuid, trigger);
+
+    use_click_outside(
+        "add-tag-area".to_string(),
+        move || is_open(),
+        EventHandler::new(move |_| is_open.set(false)),
+    );
+
+    use_effect(move || {
+        if !re.is_match(&color().trim()) {
+            is_valid_hex.set(false)
+        } else {
+            is_valid_hex.set(true)
+        }
+    });
+
+    rsx! {
+        Dialog { is_open,
+            DialogContent { id: "add-tag-area", class: "sm:max-w-[425px]",
+                DialogHeader {
+                    DialogTitle { "Add Tag" }
+                }
+                Input {
+                    width: "w-full",
+                    placeholder: "Enter tag name",
+                    value: name,
+                    onenter: EventHandler::new(move |_e: KeyboardEvent| {
+                        trigger.set(true);
+                        is_open.set(false);
+                    }),
+                }
+                Input {
+                    width: "w-full",
+                    placeholder: "Enter tag color",
+                    value: color,
+                }
+                DialogFooter {
+                    DialogClose {}
+                    Button {
+                        disabled: !is_valid_hex(),
                         onclick: move |_| {
                             trigger.set(true);
                             is_open.set(false);

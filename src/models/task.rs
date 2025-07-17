@@ -4,6 +4,7 @@ use crate::models::{Priority, Status};
 
 #[derive(Clone, PartialEq, Deserialize)]
 pub struct Task {
+    pub uuid: String,
     pub name: String,
     pub priority: Priority,
     pub status: Status,

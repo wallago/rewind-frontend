@@ -26,12 +26,6 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
     let uuid_to = props.board.uuid.clone();
 
     use_click_outside(
-        "delete-board-area".to_string(),
-        move || is_delete_open(),
-        EventHandler::new(move |_| is_delete_open.set(false)),
-    );
-
-    use_click_outside(
         "update-board-area".to_string(),
         move || is_update_open(),
         EventHandler::new(move |_| is_update_open.set(false)),

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{api::get_tags_by_task_uuid, context::TagsContext};
+use crate::{api::get_tags_by_board_uuid, context::TagsContext};
 
 pub fn use_tags_get(board_uuid: String) {
     let ctx_tags = use_context::<TagsContext>();
@@ -12,7 +12,7 @@ pub fn use_tags_get(board_uuid: String) {
             let board_uuid = board_uuid.clone();
             async move {
                 refresh();
-                match get_tags_by_task_uuid(&board_uuid).await {
+                match get_tags_by_board_uuid(&board_uuid).await {
                     Ok(fetched) => tags.set(fetched),
                     Err(err) => tracing::error!("{err}"),
                 }

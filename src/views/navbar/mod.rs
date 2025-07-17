@@ -25,7 +25,7 @@ pub fn Navbar() -> Element {
     let mut is_recent_boards_open = use_signal(|| false);
 
     let mut board_recent_options = use_signal(|| vec![]);
-    let mut board_search_options = use_signal(|| vec![]);
+
     use_effect(move || {
         board_recent_options.set(
             (ctx_boards.boards)()
@@ -42,19 +42,14 @@ pub fn Navbar() -> Element {
                 })
                 .collect(),
         );
-        board_search_options.set(
-            (ctx_boards.boards)()
-                .iter()
-                .map(|board| board.name.clone())
-                .collect(),
-        );
     });
 
-    use_click_outside(
-        "add-board-area".to_string(),
-        move || is_add_board_open(),
-        EventHandler::new(move |_| is_add_board_open.set(false)),
-    );
+    let boards_name = use_memo(move || {
+        (ctx_boards.boards)()
+            .iter()
+            .map(|board| board.name.clone())
+            .collect()
+    });
 
     use_click_outside(
         "recent-boards-area".to_string(),
@@ -102,7 +97,7 @@ pub fn Navbar() -> Element {
             div { class: "ml-auto flex gap-12 items-center",
                 SearchDropdown {
                     id: "search-boards-area",
-                    options: board_search_options,
+                    options: boards_name,
                     value: search,
                     class: "text-base w-72",
                     SearchDropdownInput { placeholder: " Search boards" }
