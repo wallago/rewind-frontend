@@ -72,16 +72,15 @@ pub struct SearchDropdownInputProps {
 #[component]
 pub fn SearchDropdownInput(props: SearchDropdownInputProps) -> Element {
     let ctx = use_context::<SearchDropdownContext>();
-    rsx!(
-        Input {
-            id: props.id,
-            class: props.class,
-            placeholder: props.placeholder,
-            value: ctx.input,
-            width: props.width,
-            is_focus: ctx.is_focus,
-        }
-    )
+    rsx!(Input {
+        id: props.id,
+        class: props.class,
+        placeholder: props.placeholder,
+        value: ctx.input,
+        width: props.width,
+        is_focus: ctx.is_focus,
+        autofocus: false
+    })
 }
 
 #[derive(PartialEq, Clone, Props)]
