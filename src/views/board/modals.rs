@@ -2,14 +2,15 @@ use crate::{
     Route,
     components::{
         Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
-        DialogTitle, Input, Label, SearchDropdown, SearchDropdownContent, SearchDropdownInput,
+        DialogTitle, Input, Label, RadioGroup, RadioGroupItem, SearchDropdown,
+        SearchDropdownContent, SearchDropdownInput,
     },
     context::{TagsContext, TaskTagsContext},
     hooks::{
         use_click_outside, use_list_add, use_list_delete, use_tag_add, use_task_add,
         use_task_delete, use_task_tag_link, use_task_tag_unlink, use_task_update,
     },
-    models::{List, Tag, Task},
+    models::{List, Priority, Status, Tag, Task},
 };
 use dioxus::prelude::*;
 use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaPlus};
@@ -147,6 +148,9 @@ pub fn AddTask(is_open: Signal<bool>, list_uuid: String) -> Element {
 #[component]
 pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
     let name = use_signal(|| task.name.clone());
+    let status = use_signal(|| None::<Status>);
+    let priority = use_signal(|| None::<Priority>);
+
     let tag_search = use_signal(|| "".to_string());
 
     let mut is_delete_open = use_signal(|| false);
@@ -157,9 +161,10 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
     use_task_update(name, task.uuid.clone(), trigger_update);
 
     let ctx_tags = use_context::<TagsContext>();
-    let tags = ctx_tags.tags.peek().clone();
     let ctx_task_tags = use_context::<TaskTagsContext>();
     let task_tags = ctx_task_tags.task_tags.peek().clone();
+    let tags = use_memo(move || (ctx_tags.tags)().clone());
+    let selected_tags = use_memo(move || (ctx_task_tags.task_tags)().clone());
 
     use_click_outside(
         "update-task-area".to_string(),
@@ -227,6 +232,22 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                         is_open.set(false);
                     }),
                 }
+                RadioGroup::<Status> {
+                    class: "pt-2",
+                    selected: status,
+                    RadioGroupItem::<Status> {
+                        value: Status::Todo,
+                        label: Status::Todo.to_string()
+                    }
+                    RadioGroupItem::<Status> {
+                        value: Status::InProgress,
+                        label: Status::InProgress.to_string()
+                    }
+                    RadioGroupItem::<Status> {
+                        value: Status::Done,
+                        label: Status::Done.to_string()
+                    }
+                }
                 Label {
                     variant: "title",
                     class: "p-2 bg-primary",
@@ -236,11 +257,11 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                 div { class: "flex justify-between gap-2",
                     SearchDropdown::<Tag> {
                         id: "search-tags-area",
-                        options: use_memo(move || (ctx_tags.tags)().clone()),
+                        options: tags,
                         is_open: is_search_tags_open,
                         value: tag_search,
                         class: "text-base",
-                        selected_options: use_memo(move || (ctx_task_tags.task_tags)().clone()),
+                        selected_options: selected_tags,
                         selected_option: selected_tag,
                         get_label: |tag: &Tag| tag.name.clone(),
                         SearchDropdownInput::<Tag> { width: "w-full", placeholder: " Search tags" }
@@ -319,7 +340,7 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
     let route = use_route::<Route>();
     let board_uuid = match route {
         Route::Board { uuid } => uuid.clone(),
-        _ => return rsx!( "Invalid route" ),
+        _ => return rsx!("Invalid route"),
     };
     let re = Regex::new(r"^#[0-9a-fA-F]{6}$")?;
     let name = use_signal(|| "".to_string());

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{components::Input, hooks::use_click_outside};
 use dioxus::prelude::*;
 use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaCheck};
@@ -50,16 +48,6 @@ where
                     .to_lowercase()
                     .contains(&(props.value)().to_lowercase())
             })
-            // .filter(|result| {
-            //     if result
-            //         .to_lowercase()
-            //         .contains(&(props.value)().to_lowercase())
-            //     {
-            //         true
-            //     } else {
-            //         false
-            //     }
-            // })
             .collect()
     });
 
@@ -110,17 +98,15 @@ where
     T: Clone + PartialEq + 'static,
 {
     let mut ctx = use_context::<SearchDropdownContext<T>>();
-    rsx!(
-        Input {
-            id: props.id,
-            class: props.class,
-            placeholder: props.placeholder,
-            value: ctx.input,
-            width: props.width,
-            autofocus: false,
-            onclick: move |_| { ctx.is_open.set(true) },
-        }
-    )
+    rsx!(Input {
+        id: props.id,
+        class: props.class,
+        placeholder: props.placeholder,
+        value: ctx.input,
+        width: props.width,
+        autofocus: false,
+        onclick: move |_| { ctx.is_open.set(true) },
+    })
 }
 
 #[derive(PartialEq, Clone, Props)]
