@@ -62,8 +62,14 @@ pub use use_tag_add::use_tag_add;
 
 // ---
 
-// mod use_task_tag_link;
-// pub use use_task_tag_link::use_task_tag_link;
+mod use_task_tags_get;
+pub use use_task_tags_get::use_task_tags_get;
+
+mod use_task_tag_link;
+pub use use_task_tag_link::use_task_tag_link;
+
+mod use_task_tag_unlink;
+pub use use_task_tag_unlink::use_task_tag_unlink;
 
 // ---
 

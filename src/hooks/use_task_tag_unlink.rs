@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 
-use crate::{api::link_task_tag, context::TaskTagsContext, models::TaskTag};
+use crate::{api::unlink_task_tag, context::TaskTagsContext, models::TaskTag};
 
-pub fn use_task_tag_link(task_uuid: String, tag_uuid: String, mut trigger: Signal<bool>) {
+pub fn use_task_tag_unlink(task_uuid: String, tag_uuid: String, mut trigger: Signal<bool>) {
     let mut ctx_task_tags = use_context::<TaskTagsContext>();
 
     let mut in_progress = use_signal(|| false);
@@ -13,7 +13,7 @@ pub fn use_task_tag_link(task_uuid: String, tag_uuid: String, mut trigger: Signa
         async move {
             if trigger() {
                 in_progress.set(true);
-                match link_task_tag(TaskTag {
+                match unlink_task_tag(TaskTag {
                     task_uuid,
                     tag_uuid,
                 })

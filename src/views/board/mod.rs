@@ -37,10 +37,9 @@ pub fn Board(uuid: String) -> Element {
     let lists: Vec<Element> = (ctx_lists.lists)()
         .iter()
         .map(|list| {
-            rsx!(ListCard {
-                list: list.clone(),
-                dragging_from: dragging_index,
-            })
+            rsx!(
+                ListCard { list: list.clone(), dragging_from: dragging_index }
+            )
         })
         .collect();
 

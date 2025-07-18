@@ -10,7 +10,10 @@ mod lists;
 pub use lists::{add_list, delete_list, get_lists_by_board_uuid, switch_lists, update_list};
 
 mod tasks;
-pub use tasks::{add_task, delete_task, get_tasks_by_list_uuid, switch_tasks, update_task};
+pub use tasks::{
+    add_task, delete_task, get_tasks_by_list_uuid, link_task_tag, switch_tasks, unlink_task_tag,
+    update_task,
+};
 
 mod tags;
 pub use tags::{add_tag, get_tags_by_board_uuid, get_tags_by_task_uuid};

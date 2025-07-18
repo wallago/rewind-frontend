@@ -107,55 +107,55 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
                     }
                 }
                 TasksCard { uuid: props.list.uuid.clone() }
-                // TasksCard { tasks: tasks(), is_settings_open: is_task_settings_open }
-                // div { class: "w-full flex justify-end px-2 pb-2",
-                //     if adding_task() {
-                //         div { class: "flex w-full gap-4 items-center",
-                //             Input {
-                //                 class: "flex-1 text-base bg-primary-2",
-                //                 value: name,
-                //                 onenter: EventHandler::new(move |_e: KeyboardEvent| {
-                //                     trigger_add_task.set(true);
-                //                     adding_task.set(false);
-                //                 }),
+                        // TasksCard { tasks: tasks(), is_settings_open: is_task_settings_open }
+            // div { class: "w-full flex justify-end px-2 pb-2",
+            //     if adding_task() {
+            //         div { class: "flex w-full gap-4 items-center",
+            //             Input {
+            //                 class: "flex-1 text-base bg-primary-2",
+            //                 value: name,
+            //                 onenter: EventHandler::new(move |_e: KeyboardEvent| {
+            //                     trigger_add_task.set(true);
+            //                     adding_task.set(false);
+            //                 }),
 
-                //             }
-                //             Button {
-                //                 class: "px-1 h-full",
-                //                 onclick: move |_| {
-                //                     trigger_add_task.set(true);
-                //                     adding_task.set(false);
-                //                 },
-                //                 Icon {
-                //                     class: "text-primary",
-                //                     height: 12,
-                //                     icon: FaCheck,
-                //                 }
-                //             }
-                //             Button {
-                //                 class: "px-1 h-full",
-                //                 onclick: move |_| adding_task.set(false),
-                //                 Icon {
-                //                     class: "text-primary",
-                //                     height: 12,
-                //                     icon: FaXmark,
-                //                 }
-                //             }
-                //         }
-                //     } else {
-                //         Button {
-                //             onclick: move |_| adding_task.set(true),
-                //             class: "text-base justify-between pl-2 pr-1",
-                //             width: "w-20",
-                //             "Task"
-                //             Icon {
-                //                 class: "text-primary",
-                //                 height: 12,
-                //                 icon: FaPlus,
-                //             }
-                //         }
-                //     }
-                // }
+            //             }
+            //             Button {
+            //                 class: "px-1 h-full",
+            //                 onclick: move |_| {
+            //                     trigger_add_task.set(true);
+            //                     adding_task.set(false);
+            //                 },
+            //                 Icon {
+            //                     class: "text-primary",
+            //                     height: 12,
+            //                     icon: FaCheck,
+            //                 }
+            //             }
+            //             Button {
+            //                 class: "px-1 h-full",
+            //                 onclick: move |_| adding_task.set(false),
+            //                 Icon {
+            //                     class: "text-primary",
+            //                     height: 12,
+            //                     icon: FaXmark,
+            //                 }
+            //             }
+            //         }
+            //     } else {
+            //         Button {
+            //             onclick: move |_| adding_task.set(true),
+            //             class: "text-base justify-between pl-2 pr-1",
+            //             width: "w-20",
+            //             "Task"
+            //             Icon {
+            //                 class: "text-primary",
+            //                 height: 12,
+            //                 icon: FaPlus,
+            //             }
+            //         }
+            //     }
+            // }
             }
             DeleteList { list: props.list.clone(), is_open: is_delete_open }
         }

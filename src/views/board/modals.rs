@@ -4,12 +4,12 @@ use crate::{
         Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader,
         DialogTitle, Input, Label, SearchDropdown, SearchDropdownContent, SearchDropdownInput,
     },
-    context::TagsContext,
+    context::{TagsContext, TaskTagsContext},
     hooks::{
         use_click_outside, use_list_add, use_list_delete, use_tag_add, use_task_add,
-        use_task_delete, use_task_update,
+        use_task_delete, use_task_tag_link, use_task_tag_unlink, use_task_update,
     },
-    models::{List, Task},
+    models::{List, Tag, Task},
 };
 use dioxus::prelude::*;
 use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaPlus};
@@ -151,30 +151,63 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
 
     let mut is_delete_open = use_signal(|| false);
     let mut is_add_tag_open = use_signal(|| false);
+    let is_search_tags_open = use_signal(|| false);
 
     let mut trigger_update = use_signal(|| false);
     use_task_update(name, task.uuid.clone(), trigger_update);
 
     let ctx_tags = use_context::<TagsContext>();
+    let tags = ctx_tags.tags.peek().clone();
+    let ctx_task_tags = use_context::<TaskTagsContext>();
+    let task_tags = ctx_task_tags.task_tags.peek().clone();
 
     use_click_outside(
         "update-task-area".to_string(),
         move || is_open(),
         EventHandler::new(move |_| {
-            if !is_add_tag_open() && !is_delete_open() {
+            if !is_add_tag_open() && !is_delete_open() && !is_search_tags_open() {
                 is_open.set(false)
             }
         }),
     );
 
-    let tags_name = use_memo(move || ctx_tags.tags.iter().map(|tag| tag.name.clone()).collect());
+    let selected_tag = use_signal(|| None::<Tag>);
+
+    let mut trigger_link = use_signal(|| false);
+    let mut trigger_unlink = use_signal(|| false);
+    let task_tags_copy = task_tags.clone();
+    use_effect(move || {
+        if let Some(tag) = selected_tag() {
+            if task_tags_copy.contains(&tag) {
+                trigger_unlink.set(true);
+            } else {
+                trigger_link.set(true);
+            }
+        }
+    });
+
+    use_task_tag_link(
+        task.uuid.clone(),
+        match selected_tag() {
+            Some(tag) => tag.uuid,
+            _ => Default::default(),
+        },
+        trigger_link,
+    );
+    use_task_tag_unlink(
+        task.uuid.clone(),
+        match selected_tag() {
+            Some(tag) => tag.uuid,
+            _ => Default::default(),
+        },
+        trigger_unlink,
+    );
 
     rsx! {
         Dialog { is_open,
             DialogContent { id: "update-task-area", class: "sm:max-w-[425px]",
                 DialogHeader {
-                    div {
-                        class: "flex justify-between items-center",
+                    div { class: "flex justify-between items-center",
                         DialogTitle { "Update {task.name}" }
                         Button {
                             onclick: move |_| {
@@ -200,18 +233,18 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                     width: "w-full",
                     "Tags"
                 }
-                div {
-                    class: "flex justify-between gap-2",
-                    SearchDropdown {
+                div { class: "flex justify-between gap-2",
+                    SearchDropdown::<Tag> {
                         id: "search-tags-area",
-                        options: tags_name,
+                        options: use_memo(move || (ctx_tags.tags)().clone()),
+                        is_open: is_search_tags_open,
                         value: tag_search,
                         class: "text-base",
-                        SearchDropdownInput {
-                            width: "w-full",
-                            placeholder: " Search tags",
-                        }
-                        SearchDropdownContent {}
+                        selected_options: use_memo(move || (ctx_task_tags.task_tags)().clone()),
+                        selected_option: selected_tag,
+                        get_label: |tag: &Tag| tag.name.clone(),
+                        SearchDropdownInput::<Tag> { width: "w-full", placeholder: " Search tags" }
+                        SearchDropdownContent::<Tag> {}
                     }
                     Button {
                         class: "px-2 justify-between gap-2 font-semibold text-base",
@@ -234,7 +267,11 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                 }
             }
         }
-        DeleteTask { is_open: is_delete_open, task: task.clone(), parent_open: is_open }
+        DeleteTask {
+            is_open: is_delete_open,
+            task: task.clone(),
+            parent_open: is_open,
+        }
         AddTag { is_open: is_add_tag_open }
     }
 }
@@ -282,7 +319,7 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
     let route = use_route::<Route>();
     let board_uuid = match route {
         Route::Board { uuid } => uuid.clone(),
-        _ => return rsx!("Invalid route"),
+        _ => return rsx!( "Invalid route" ),
     };
     let re = Regex::new(r"^#[0-9a-fA-F]{6}$")?;
     let name = use_signal(|| "".to_string());

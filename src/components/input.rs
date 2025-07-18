@@ -24,6 +24,8 @@ pub struct InputProps {
     #[props(optional)]
     pub onenter: Option<EventHandler<KeyboardEvent>>,
     #[props(optional)]
+    pub onclick: Option<EventHandler<MouseEvent>>,
+    #[props(optional)]
     pub is_focus: Option<Signal<bool>>,
     #[props(optional)]
     pub autofocus: Option<bool>,
@@ -69,6 +71,11 @@ pub fn Input(mut props: InputProps) -> Element {
                     if let Some(handler) = &props.onenter {
                         handler.call(e);
                     }
+                }
+            },
+            onclick: move |e: MouseEvent| {
+                if let Some(handler) = props.onclick {
+                    handler.call(e.clone())
                 }
             },
             onfocus: move |_| {

@@ -18,10 +18,10 @@ pub fn Navbar() -> Element {
     let mut dark_mode = use_context::<ThemeContext>();
     let ctx_boards = use_context::<BoardsContext>();
 
-    let mut search = use_signal(|| "".to_string());
+    let search = use_signal(|| "".to_string());
 
-    let is_search_active = use_memo(move || !search().is_empty());
     let mut is_add_board_open = use_signal(|| false);
+    let mut is_search_boards_open = use_signal(|| false);
     let mut is_recent_boards_open = use_signal(|| false);
 
     let mut board_recent_options = use_signal(|| vec![]);
@@ -57,12 +57,6 @@ pub fn Navbar() -> Element {
         EventHandler::new(move |_| is_recent_boards_open.set(false)),
     );
 
-    use_click_outside(
-        "search-boards-area".to_string(),
-        move || is_search_active(),
-        EventHandler::new(move |_| search.set("".to_string())),
-    );
-
     let toggle_dark_mode = move |_| {
         dark_mode.0.toggle();
     };
@@ -95,13 +89,15 @@ pub fn Navbar() -> Element {
                 }
             }
             div { class: "ml-auto flex gap-12 items-center",
-                SearchDropdown {
+                SearchDropdown::<String> {
                     id: "search-boards-area",
+                    is_open: is_search_boards_open,
                     options: boards_name,
                     value: search,
                     class: "text-base w-72",
-                    SearchDropdownInput { placeholder: " Search boards" }
-                    SearchDropdownContent {}
+                    get_label: |board: &String| board.clone(),
+                    SearchDropdownInput::<String> { placeholder: " Search boards" }
+                    SearchDropdownContent::<String> { onclick: move |_| { is_search_boards_open.set(false) } }
                 }
                 button {
                     class: "px-2 py-1 text-secondary hover:text-secondary-2",

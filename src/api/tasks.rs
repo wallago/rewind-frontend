@@ -2,7 +2,7 @@ use reqwest::{Error, StatusCode};
 
 use crate::{
     api::BASE_URL,
-    models::{NewTask, Task, UpdateTask},
+    models::{NewTask, Task, TaskTag, UpdateTask},
 };
 
 pub async fn get_tasks_by_list_uuid(list_uuid: String) -> Result<Vec<Task>, Error> {
@@ -50,6 +50,28 @@ pub async fn switch_tasks(uuid_from: &str, uuid_to: &str) -> Result<StatusCode, 
     let response = client
         .put(format!("{BASE_URL}/tasks/switch"))
         .json(&(uuid_from, uuid_to))
+        .send()
+        .await?;
+    Ok(response.status())
+}
+
+pub async fn link_task_tag(task_tag: TaskTag) -> Result<StatusCode, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .post(format!("{BASE_URL}/tasks/tags"))
+        .json(&task_tag)
+        .send()
+        .await?;
+    Ok(response.status())
+}
+
+pub async fn unlink_task_tag(task_tag: TaskTag) -> Result<StatusCode, Error> {
+    let client = reqwest::Client::new();
+    let response = client
+        .delete(format!(
+            "{BASE_URL}/tasks/{}/tags/{}",
+            task_tag.task_uuid, task_tag.tag_uuid
+        ))
         .send()
         .await?;
     Ok(response.status())
