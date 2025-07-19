@@ -29,7 +29,7 @@ pub fn TasksCard(uuid: String) -> Element {
         div {
             Table {
                 TableCaption { class: "text-sm", "Tasks" }
-                TableHeader { class: "font-semibold text-base text-secondary",
+                TableHeader { class: "font-medium text-sm text-secondary",
                     TableRow { draggable: false,
                         TableHead { "Tasks" }
                     }
@@ -39,7 +39,7 @@ pub fn TasksCard(uuid: String) -> Element {
                 }
             }
             Button {
-                class: "px-2 justify-between gap-0 font-semibold text-sm ml-auto",
+                class: "px-2 justify-between gap-0 font-normal text-sm ml-auto",
                 width: "w-20",
                 onclick: move |_| is_add_open.set(true),
                 "Task"

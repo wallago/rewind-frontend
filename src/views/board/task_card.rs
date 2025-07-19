@@ -42,13 +42,13 @@ pub fn TaskCard(props: TaskCardProps) -> Element {
                     div { class: "w-full flex items-center h-full gap-4",
                     div { class: "flex-none", {<Priority as Into<Element>>::into(props.task.priority.clone())} }
                     div { class: "flex-none", {<Status as Into<Element>>::into(props.task.status.clone())} }
-                        div { class: "flex-grow flex-shrink inline-block truncate",
+                        div { class: "flex-grow flex-shrink inline-block text-sm font-normal items-center truncate",
                             {props.task.name.clone()}
                         }
                     }
                 }
-                div { class: "flex py-0.5 gap-0.5",
-                    if !tags.is_empty() {
+                if !tags.is_empty() {
+                    div { class: "flex py-0.5 gap-0.5",
                         {tags.iter().map(|tag| rsx! {
                             div {
                                 style: format!("--tag-color: {};", tag.color),

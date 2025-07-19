@@ -101,6 +101,7 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                         }
                     }
                 }
+                div { class: "pb-0.5" }
                 Input {
                     label: "name:",
                     width: "w-full",
@@ -112,7 +113,7 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                     }),
                 }
                 div {
-                    class: "flex items-stretch gap-2 justify-between",
+                    class: "flex items-stretch gap-2 justify-between pt-2",
                     RadioGroup::<Status> {
                         class: "pt-2 w-1/3",
                         selected: status,
