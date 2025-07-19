@@ -60,6 +60,12 @@ pub use use_tags_get::use_tags_get;
 mod use_tag_add;
 pub use use_tag_add::use_tag_add;
 
+mod use_tag_delete;
+pub use use_tag_delete::use_tag_delete;
+
+mod use_tag_update;
+pub use use_tag_update::use_tag_update;
+
 // ---
 
 mod use_task_tags_get;

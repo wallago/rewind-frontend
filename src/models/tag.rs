@@ -14,3 +14,9 @@ pub struct NewTag {
     pub name: String,
     pub color: String,
 }
+
+#[derive(Serialize)]
+pub struct UpdateTag {
+    pub name: Option<String>,
+    pub color: Option<String>,
+}

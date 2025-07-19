@@ -1,19 +1,14 @@
 use dioxus::prelude::*;
 
-use crate::{
-    api::update_task,
-    context::TasksContext,
-    models::{Priority, Status, UpdateTask},
-};
+use crate::{api::update_tag, context::TagsContext, models::UpdateTag};
 
-pub fn use_task_update(
+pub fn use_tag_update(
     name: Signal<String>,
-    status: Signal<Option<Status>>,
-    priority: Signal<Option<Priority>>,
+    color: Signal<String>,
     uuid: String,
     mut trigger: Signal<bool>,
 ) {
-    let mut ctx_tasks = use_context::<TasksContext>();
+    let mut ctx_tags = use_context::<TagsContext>();
 
     let mut in_progress = use_signal(|| false);
 
@@ -22,18 +17,16 @@ pub fn use_task_update(
         async move {
             if trigger() {
                 in_progress.set(true);
-                match update_task(
+                match update_tag(
                     &uuid,
-                    UpdateTask {
+                    UpdateTag {
                         name: Some(name()),
-                        position: None,
-                        priority: priority(),
-                        status: status(),
+                        color: Some(color()),
                     },
                 )
                 .await
                 {
-                    Ok(_) => ctx_tasks.refresh.set(()),
+                    Ok(_) => ctx_tags.refresh.set(()),
                     Err(err) => tracing::error!("{err}"),
                 };
                 in_progress.set(false);

@@ -11,7 +11,7 @@ use crate::components::{
 use crate::context::{BoardsContext, ThemeContext};
 use crate::hooks::use_click_outside;
 
-mod modals;
+mod add_board_modal;
 
 #[component]
 pub fn Navbar() -> Element {
@@ -106,6 +106,6 @@ pub fn Navbar() -> Element {
                 }
             }
         }
-        modals::AddBoard { is_open: is_add_board_open }
+        add_board_modal::AddBoard { is_open: is_add_board_open }
     }
 }

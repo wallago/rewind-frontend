@@ -2,16 +2,24 @@ use crate::{
     components::Button,
     context::{ListsContext, TagsContext},
     hooks::{use_lists_get, use_tags_get},
-    views::board::{header::Header, list_card::ListCard},
+    views::board::{add_list_modal::AddList, header::Header, list_card::ListCard},
 };
 use dioxus::prelude::*;
 use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaPlus};
 
+mod add_list_modal;
+mod add_tag_modal;
+mod add_task_modal;
+mod delete_list_modal;
+mod delete_tag_modal;
+mod delete_task_modal;
 mod header;
 mod list_card;
-mod modals;
 mod task_card;
 mod tasks_card;
+mod update_tag_modal;
+mod update_tags_modal;
+mod update_task_modal;
 
 #[component]
 pub fn Board(uuid: String) -> Element {
@@ -37,9 +45,10 @@ pub fn Board(uuid: String) -> Element {
     let lists: Vec<Element> = (ctx_lists.lists)()
         .iter()
         .map(|list| {
-            rsx!(
-                ListCard { list: list.clone(), dragging_from: dragging_index }
-            )
+            rsx!(ListCard {
+                list: list.clone(),
+                dragging_from: dragging_index
+            })
         })
         .collect();
 
@@ -59,6 +68,6 @@ pub fn Board(uuid: String) -> Element {
                 {lists.iter()}
             }
         }
-        modals::AddList { is_open: is_add_open, board_uuid: uuid.clone() }
+        AddList { is_open: is_add_open, board_uuid: uuid.clone() }
     }
 }

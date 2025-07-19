@@ -14,7 +14,7 @@ mod priority;
 pub use priority::Priority;
 
 mod tag;
-pub use tag::{NewTag, Tag};
+pub use tag::{NewTag, Tag, UpdateTag};
 
 mod task_tag;
 pub use task_tag::TaskTag;

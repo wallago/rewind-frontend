@@ -1,9 +1,9 @@
 use crate::{
     components::TableRow,
-    context::TaskTagsContext,
+    context::{TagsContext, TaskTagsContext},
     hooks::use_task_tags_get,
     models::{Priority, Status, Task},
-    views::board::modals::UpdateTask,
+    views::board::update_task_modal::UpdateTask,
 };
 use dioxus::prelude::*;
 
@@ -23,8 +23,15 @@ pub fn TaskCard(props: TaskCardProps) -> Element {
 
     let mut is_update_open = use_signal(|| false);
 
-    let ctx_task_tags = use_context::<TaskTagsContext>();
+    let mut ctx_task_tags = use_context::<TaskTagsContext>();
     let tags = ctx_task_tags.task_tags;
+
+    let ctx_tags = use_context::<TagsContext>();
+
+    use_effect(move || {
+        (ctx_tags.refresh)();
+        ctx_task_tags.refresh.set(());
+    });
 
     rsx! {
         div {
@@ -33,8 +40,8 @@ pub fn TaskCard(props: TaskCardProps) -> Element {
                 onclick: move |_| { is_update_open.set(true) },
                 div { class: "flex items-center gap-2",
                     div { class: "w-full flex items-center h-full gap-4",
-                        {<Priority as Into<Element>>::into(props.task.priority.clone())}
-                        {<Status as Into<Element>>::into(props.task.status.clone())}
+                    div { class: "flex-none", {<Priority as Into<Element>>::into(props.task.priority.clone())} }
+                    div { class: "flex-none", {<Status as Into<Element>>::into(props.task.status.clone())} }
                         div { class: "flex-grow flex-shrink inline-block truncate",
                             {props.task.name.clone()}
                         }

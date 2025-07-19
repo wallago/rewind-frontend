@@ -210,7 +210,7 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
 
     rsx! {
         Dialog { is_open,
-            DialogContent { id: "update-task-area", class: "sm:max-w-[425px]",
+            DialogContent { id: "update-task-area", class: "sm:max-w-[425px] h-fit",
                 DialogHeader {
                     div { class: "flex justify-between items-center",
                         DialogTitle { "Update {task.name}" }
@@ -232,20 +232,40 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                         is_open.set(false);
                     }),
                 }
-                RadioGroup::<Status> {
-                    class: "pt-2",
-                    selected: status,
-                    RadioGroupItem::<Status> {
-                        value: Status::Todo,
-                        label: Status::Todo.to_string()
+                div {
+                    class: "flex items-stretch gap-2 justify-between",
+                    RadioGroup::<Status> {
+                        class: "pt-2 w-1/3",
+                        selected: status,
+                        RadioGroupItem::<Status> {
+                            value: Status::Todo,
+                            label: Status::Todo.to_string()
+                        }
+                        RadioGroupItem::<Status> {
+                            value: Status::InProgress,
+                            label: Status::InProgress.to_string()
+                        }
+                        RadioGroupItem::<Status> {
+                            value: Status::Done,
+                            label: Status::Done.to_string()
+                        }
                     }
-                    RadioGroupItem::<Status> {
-                        value: Status::InProgress,
-                        label: Status::InProgress.to_string()
-                    }
-                    RadioGroupItem::<Status> {
-                        value: Status::Done,
-                        label: Status::Done.to_string()
+                    div { class: "w-1 my-1 bg-secondary" }
+                    RadioGroup::<Priority> {
+                        class: "pt-2 w-1/3",
+                        selected: priority,
+                        RadioGroupItem::<Priority> {
+                            value: Priority::Low,
+                            label: Priority::Low.to_string()
+                        }
+                        RadioGroupItem::<Priority> {
+                            value: Priority::Medium,
+                            label: Priority::Medium.to_string()
+                        }
+                        RadioGroupItem::<Priority> {
+                            value: Priority::High,
+                            label: Priority::High.to_string()
+                        }
                     }
                 }
                 Label {
@@ -371,6 +391,7 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
                     DialogTitle { "Add Tag" }
                 }
                 Input {
+                    label: "name:\u{00A0}",
                     width: "w-full",
                     placeholder: "Enter tag name",
                     value: name,
@@ -380,6 +401,7 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
                     }),
                 }
                 Input {
+                    label: "color:",
                     width: "w-full",
                     placeholder: "Enter tag color",
                     value: color,

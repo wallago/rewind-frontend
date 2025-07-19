@@ -5,8 +5,8 @@ use crate::{
 use dioxus::prelude::*;
 
 mod board_card;
+mod delete_board_modal;
 mod header;
-mod modals;
 
 #[component]
 pub fn Home() -> Element {
@@ -15,9 +15,10 @@ pub fn Home() -> Element {
     let boards: Vec<Element> = (ctx_boards.boards)()
         .iter()
         .map(|board| {
-            rsx!(
-                BoardCard { board: board.clone(), dragging_from: dragging_index }
-            )
+            rsx!(BoardCard {
+                board: board.clone(),
+                dragging_from: dragging_index
+            })
         })
         .collect();
 

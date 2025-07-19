@@ -2,7 +2,7 @@ use crate::{
     components::{Button, Table, TableBody, TableCaption, TableHead, TableHeader, TableRow},
     context::TasksContext,
     hooks::use_tasks_get,
-    views::board::{modals::AddTask, task_card::TaskCard},
+    views::board::{add_task_modal::AddTask, task_card::TaskCard},
 };
 use dioxus::prelude::*;
 use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaPlus};
@@ -22,9 +22,7 @@ pub fn TasksCard(uuid: String) -> Element {
 
     let tasks: Vec<Element> = (ctx_tasks.tasks)()
         .iter()
-        .map(|task| rsx!(
-            TaskCard { task: task.clone() }
-        ))
+        .map(|task| rsx!(TaskCard { task: task.clone() }))
         .collect();
 
     rsx! {

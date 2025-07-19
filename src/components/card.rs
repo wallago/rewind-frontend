@@ -13,7 +13,7 @@ pub struct CardProps {
 
 #[component]
 pub fn Card(props: CardProps) -> Element {
-    let base_class = "bg-primary-1 border-2 border-secondary p-3";
+    let base_class = "bg-primary-1 border-2 border-secondary";
     rsx!(
         div {
             id: props.id,

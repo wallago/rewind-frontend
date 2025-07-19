@@ -1,37 +1,37 @@
+use crate::{
+    components::{
+        Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input,
+    },
+    hooks::{use_click_outside, use_list_add},
+};
 use dioxus::prelude::*;
 
-use crate::Route;
-use crate::components::{
-    Button, Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, Input,
-};
-use crate::hooks::{use_board_add, use_click_outside};
-
 #[component]
-pub fn AddBoard(is_open: Signal<bool>) -> Element {
+pub fn AddList(is_open: Signal<bool>, board_uuid: String) -> Element {
     let name = use_signal(|| "".to_string());
     let mut trigger = use_signal(|| false);
 
-    use_board_add(name, trigger);
+    use_list_add(name, board_uuid, trigger);
 
     use_click_outside(
-        "add-board-area".to_string(),
+        "delete-list-area".to_string(),
         move || is_open(),
         EventHandler::new(move |_| is_open.set(false)),
     );
 
     rsx! {
         Dialog { is_open,
-            DialogContent { id: "add-board-area", class: "sm:max-w-[425px]",
+            DialogContent { id: "delete-list-area", class: "sm:max-w-[425px]",
                 DialogHeader {
-                    DialogTitle { "Add Board" }
+                    DialogTitle { "Add List" }
                 }
                 Input {
+                    label: "name:",
                     width: "w-full",
-                    placeholder: "Enter board name",
+                    placeholder: "Enter list name",
                     value: name,
                     onenter: EventHandler::new(move |_e: KeyboardEvent| {
                         trigger.set(true);
-                        navigator().push(Route::Home {});
                         is_open.set(false);
                     }),
                 }
@@ -40,7 +40,6 @@ pub fn AddBoard(is_open: Signal<bool>) -> Element {
                     Button {
                         onclick: move |_| {
                             trigger.set(true);
-                            navigator().push(Route::Home {});
                             is_open.set(false);
                         },
                         r#type: "submit",

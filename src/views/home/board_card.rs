@@ -1,8 +1,8 @@
 use crate::hooks::{use_board_drag_switch, use_board_update, use_click_outside};
-use crate::views::home::modals::DeleteBoard;
+use crate::views::home::delete_board_modal::DeleteBoard;
 use crate::{
     Route,
-    components::{Button, Card, HoverCard, HoverCardContent, Input, Label},
+    components::{Accordion, AccordionContent, AccordionTrigger, Button, Card, Input},
     models::Board,
 };
 use dioxus::prelude::*;
@@ -20,6 +20,7 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
     let name = use_signal(|| props.board.name.clone());
     let mut is_update_open = use_signal(|| false);
     let mut is_delete_open = use_signal(|| false);
+    let mut is_desc_open = use_signal(|| false);
     let mut dragging_to = use_signal(|| None::<String>);
 
     let uuid_from = props.board.uuid.clone();
@@ -54,10 +55,10 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
                 }
             },
             Card {
-                class: "h-fit p-2 flex flex-col gap-4 mx-auto drag:scale-60",
+                class: "h-fit flex flex-col gap-2 mx-auto pt-2 px-2",
                 width: "w-72",
-                div { class: "flex flex-col justify-center text-sm font-medium gap-2 w-full",
-                    div { class: "flex gap-3 justify-between h-full items-center pb-1",
+                div { class: "flex flex-col justify-center text-sm font-medium  w-full",
+                    div { class: "flex gap-1 justify-between h-full items-center pb-1",
                         if !is_update_open() {
                             Button {
                                 variant: "ghost",
@@ -67,9 +68,9 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
                                 div { class: "break-all", "{props.board.name}" }
                             }
                             Button {
-                                class: "px-1 h-fit py-1 my-1",
+                                class: "h-fit p-0.5",
                                 onclick: move |_| is_delete_open.set(true),
-                                Icon { height: 16, width: 16, icon: FaXmark }
+                                Icon { height: 14, width: 14, icon: FaXmark }
                             }
                         } else {
                             Input {
@@ -82,29 +83,35 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
                                     is_update_open.set(false);
                                 }),
                             }
-                            Button {
-                                class: "px-1 h-fit py-1 my-1",
-                                onclick: move |_| {
-                                    trigger_update.set(true);
-                                    is_update_open.set(false)
-                                },
-                                Icon { height: 16, width: 16, icon: FaCheck }
-                            }
-                            Button {
-                                class: "px-1 h-fit py-1 my-1",
-                                onclick: move |_| is_update_open.set(false),
-                                Icon { height: 16, width: 16, icon: FaXmark }
+                            div {
+                                class: "flex gap-2",
+                                Button {
+                                    class: "h-fit p-0.5",
+                                    onclick: move |_| {
+                                        trigger_update.set(true);
+                                        is_update_open.set(false)
+                                    },
+                                    Icon { height: 14, width: 14, icon: FaCheck }
+                                }
+                                Button {
+                                    class: "h-fit p-0.5",
+                                    onclick: move |_| is_update_open.set(false),
+                                    Icon { height: 14, width: 14, icon: FaXmark }
+                                }
                             }
                         }
                     }
-                    HoverCard {
-                        Label {
-                            variant: "outline",
-                            class: "p-2 text-sm",
-                            width: "w-full",
-                            div { class: "truncate", "UUID: {props.board.uuid}" }
+                    Accordion {
+                        class: "py-1",
+                        is_open: is_desc_open.clone(),
+                        AccordionTrigger {
+                            class: "text-sm",
+                            label: "description"
                         }
-                        HoverCardContent { {props.board.uuid.clone()} }
+                        AccordionContent {
+                            class: "text-sm",
+                            "la tu coco faudrais une desc sdlfjsdlkfjsd"
+                        }
                     }
                 }
                 div { class: "flex justify-end",
@@ -115,7 +122,7 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
                                 navigator().push(Route::Board { uuid: uuid.clone() });
                             }
                         },
-                        class: "px-2 text-base",
+                        class: "px-2 text-sm",
                         "Details"
                     }
                 }

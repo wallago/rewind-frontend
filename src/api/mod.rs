@@ -16,4 +16,4 @@ pub use tasks::{
 };
 
 mod tags;
-pub use tags::{add_tag, get_tags_by_board_uuid, get_tags_by_task_uuid};
+pub use tags::{add_tag, delete_tag, get_tags_by_board_uuid, get_tags_by_task_uuid, update_tag};

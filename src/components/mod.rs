@@ -22,3 +22,5 @@ mod textarea;
 pub use textarea::Textarea;
 mod radio_group;
 pub use radio_group::{RadioGroup, RadioGroupItem};
+mod accordion;
+pub use accordion::{Accordion, AccordionContent, AccordionTrigger};

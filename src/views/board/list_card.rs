@@ -1,8 +1,8 @@
 use crate::{
-    components::{Button, Card, HoverCard, HoverCardContent, Input, Label},
+    components::{Accordion, AccordionContent, AccordionTrigger, Button, Card, Input},
     hooks::{use_click_outside, use_list_drag_switch, use_list_update},
     models::List,
-    views::board::{modals::DeleteList, tasks_card::TasksCard},
+    views::board::{delete_list_modal::DeleteList, tasks_card::TasksCard},
 };
 use dioxus::prelude::*;
 use dioxus_free_icons::{
@@ -20,6 +20,7 @@ pub struct ListCardProps {
 pub fn ListCard(mut props: ListCardProps) -> Element {
     let mut is_delete_open = use_signal(|| false);
     let mut is_update_open = use_signal(|| false);
+    let mut is_desc_open = use_signal(|| false);
     let mut dragging_to = use_signal(|| None::<String>);
     let name = use_signal(|| props.list.name.clone());
 
@@ -54,9 +55,11 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
                     trigger_switch.set(true);
                 }
             },
-            Card { class: "h-fit flex flex-col gap-2 mx-auto", width: "w-96",
-                div { class: "flex flex-col justify-center text-sm font-medium gap-2 w-full",
-                    div { class: "flex gap-3 justify-between h-full items-center pb-1",
+            Card {
+                class: "h-fit flex flex-col gap-2 mx-auto p-2",
+                width: "w-96",
+                div { class: "flex flex-col justify-center text-sm font-medium gap-1 w-full",
+                    div { class: "flex gap-1 justify-between h-full items-center pb-1",
                         if !is_update_open() {
                             Button {
                                 variant: "ghost",
@@ -66,9 +69,9 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
                                 div { class: "break-all", "{props.list.name}" }
                             }
                             Button {
-                                class: "px-1 h-fit py-1 my-1",
+                                class: "h-fit p-0.5",
                                 onclick: move |_| is_delete_open.set(true),
-                                Icon { height: 16, width: 16, icon: FaXmark }
+                                Icon { height: 14, width: 14, icon: FaXmark }
                             }
                         } else {
                             Input {
@@ -81,29 +84,35 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
                                     is_update_open.set(false);
                                 }),
                             }
-                            Button {
-                                class: "px-1 h-fit py-1 my-1",
-                                onclick: move |_| {
-                                    trigger_update.set(true);
-                                    is_update_open.set(false)
-                                },
-                                Icon { height: 16, width: 16, icon: FaCheck }
-                            }
-                            Button {
-                                class: "px-1 h-fit py-1 my-1",
-                                onclick: move |_| is_update_open.set(false),
-                                Icon { height: 16, width: 16, icon: FaXmark }
+                            div {
+                                class: "flex gap-2",
+                                Button {
+                                    class: "h-fit p-0.5",
+                                    onclick: move |_| {
+                                        trigger_update.set(true);
+                                        is_update_open.set(false)
+                                    },
+                                    Icon { height: 14, width: 14, icon: FaCheck }
+                                }
+                                Button {
+                                    class: "h-fit p-0.5",
+                                    onclick: move |_| is_update_open.set(false),
+                                    Icon { height: 14, width: 14, icon: FaXmark }
+                                }
                             }
                         }
                     }
-                    HoverCard {
-                        Label {
-                            variant: "outline",
-                            class: "p-2",
-                            width: "w-full",
-                            div { class: "truncate", "UUID: {props.list.uuid}" }
+                    Accordion {
+                        class: "pt-1",
+                        is_open: is_desc_open.clone(),
+                        AccordionTrigger {
+                            class: "text-sm",
+                            label: "description"
                         }
-                        HoverCardContent { {props.list.uuid.clone()} }
+                        AccordionContent {
+                            class: "text-sm",
+                            "la tu coco faudrais une desc sdlfjsdlkfjsd"
+                        }
                     }
                 }
                 TasksCard { uuid: props.list.uuid.clone() }

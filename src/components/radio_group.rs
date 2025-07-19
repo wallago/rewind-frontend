@@ -33,7 +33,7 @@ where
         items: Vec::<T>::new(),
     });
 
-    let base_class = "w-full flex flex-col gap-2";
+    let base_class = "flex flex-col gap-2";
     let class = format!("{} {}", base_class, props.class.unwrap_or_default());
     rsx!(
         div {
