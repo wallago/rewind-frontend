@@ -15,7 +15,7 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
     let route = use_route::<Route>();
     let board_uuid = match route {
         Route::Board { uuid } => uuid.clone(),
-        _ => return rsx!("Invalid route"),
+        _ => return rsx!( "Invalid route" ),
     };
     let re = Regex::new(r"^#[0-9a-fA-F]{6}$")?;
     let name = use_signal(|| "".to_string());
@@ -61,17 +61,15 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
                     placeholder: "Enter tag color",
                     value: color,
                 }
-                div {
-                    class: "flex gap-2 items-center pt-1",
+                div { class: "flex gap-2 items-center pt-1",
                     Label { variant: "title", "preview color:" }
                     if is_valid_hex() {
                         div {
-                            style:  format!("--tag-color: {};", color),
+                            style: format!("--tag-color: {};", color),
                             class: "w-6 h-6 bg-[var(--tag-color)] border-2 border-secondary",
                         }
                     } else {
-                        div {
-                            class: "w-6 h-6 bg-primary border-2 border-secondary",
+                        div { class: "w-6 h-6 bg-primary border-2 border-secondary",
                             Icon { height: 20, width: 20, icon: FaXmark }
                         }
                     }

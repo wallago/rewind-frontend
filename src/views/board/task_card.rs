@@ -40,8 +40,12 @@ pub fn TaskCard(props: TaskCardProps) -> Element {
                 onclick: move |_| { is_update_open.set(true) },
                 div { class: "flex items-center gap-2",
                     div { class: "w-full flex items-center h-full gap-4",
-                    div { class: "flex-none", {<Priority as Into<Element>>::into(props.task.priority.clone())} }
-                    div { class: "flex-none", {<Status as Into<Element>>::into(props.task.status.clone())} }
+                        div { class: "flex-none",
+                            {<Priority as Into<Element>>::into(props.task.priority.clone())}
+                        }
+                        div { class: "flex-none",
+                            {<Status as Into<Element>>::into(props.task.status.clone())}
+                        }
                         div { class: "flex-grow flex-shrink inline-block text-sm font-normal items-center truncate",
                             {props.task.name.clone()}
                         }

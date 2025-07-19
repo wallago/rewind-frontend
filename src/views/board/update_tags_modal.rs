@@ -25,18 +25,15 @@ pub fn UpdateTags(is_open: Signal<bool>) -> Element {
             let tag_update = tag.clone();
             let tag_delete = tag.clone();
             rsx! {
-                div {
-                    class: "flex justify-between",
-                    div {
-                        class: "flex items-center gap-2",
+                div { class: "flex justify-between",
+                    div { class: "flex items-center gap-2",
                         div {
-                            style:  format!("--tag-color: {};", tag.color),
+                            style: format!("--tag-color: {};", tag.color),
                             class: "w-4 h-4 bg-[var(--tag-color)] border-2 border-secondary",
                         }
                         Label { variant: "title", "{tag.name}" }
                     }
-                    div {
-                        class: "flex items-center gap-2",
+                    div { class: "flex items-center gap-2",
                         Button {
                             class: "px-1 h-fit py-1 my-1",
                             onclick: move |_| {
@@ -89,14 +86,8 @@ pub fn UpdateTags(is_open: Signal<bool>) -> Element {
             }
         }
         if let Some(tag) = selected_tag() {
-            UpdateTag {
-                tag: tag.clone(),
-                is_open: is_update_open,
-            }
-            DeleteTag {
-                tag: tag.clone(),
-                is_open: is_delete_open,
-            }
+            UpdateTag { tag: tag.clone(), is_open: is_update_open }
+            DeleteTag { tag: tag.clone(), is_open: is_delete_open }
         }
     }
 }

@@ -98,15 +98,17 @@ where
     T: Clone + PartialEq + 'static,
 {
     let mut ctx = use_context::<SearchDropdownContext<T>>();
-    rsx!(Input {
-        id: props.id,
-        class: props.class,
-        placeholder: props.placeholder,
-        value: ctx.input,
-        width: props.width,
-        autofocus: false,
-        onclick: move |_| { ctx.is_open.set(true) },
-    })
+    rsx!(
+        Input {
+            id: props.id,
+            class: props.class,
+            placeholder: props.placeholder,
+            value: ctx.input,
+            width: props.width,
+            autofocus: false,
+            onclick: move |_| { ctx.is_open.set(true) },
+        }
+    )
 }
 
 #[derive(PartialEq, Clone, Props)]

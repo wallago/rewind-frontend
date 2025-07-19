@@ -36,10 +36,7 @@ where
     let base_class = "flex flex-col gap-2";
     let class = format!("{} {}", base_class, props.class.unwrap_or_default());
     rsx!(
-        div {
-            class,
-            {props.children}
-        }
+        div { class, {props.children} }
     )
 }
 
@@ -73,8 +70,7 @@ where
     let class = format!("{} {}", base_class, props.class.unwrap_or_default());
 
     rsx!(
-        div {
-            class,
+        div { class,
             Button {
                 variant: "outline",
                 onclick: move |_| {
@@ -83,7 +79,11 @@ where
                 if is_selected {
                     Icon { height: 16, icon: FaCheck }
                 } else {
-                    Icon { height: 16, icon: FaCheck , class: "text-transparent" }
+                    Icon {
+                        height: 16,
+                        icon: FaCheck,
+                        class: "text-transparent",
+                    }
                 }
             }
             span { "{props.label}" }

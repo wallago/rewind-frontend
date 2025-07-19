@@ -18,24 +18,30 @@ pub enum Status {
 impl Into<Element> for Status {
     fn into(self) -> Element {
         match self {
-            Status::Todo => rsx!(Icon {
-                class: "text-secondary",
-                height: 16,
-                width: 16,
-                icon: FaCircleEmpty,
-            }),
-            Status::InProgress => rsx!(Icon {
-                class: "text-secondary",
-                height: 16,
-                width: 16,
-                icon: FaCircleHalfStroke,
-            }),
-            Status::Done => rsx!(Icon {
-                class: "text-secondary",
-                height: 16,
-                width: 16,
-                icon: FaCircle
-            }),
+            Status::Todo => rsx!(
+                Icon {
+                    class: "text-secondary",
+                    height: 16,
+                    width: 16,
+                    icon: FaCircleEmpty,
+                }
+            ),
+            Status::InProgress => rsx!(
+                Icon {
+                    class: "text-secondary",
+                    height: 16,
+                    width: 16,
+                    icon: FaCircleHalfStroke,
+                }
+            ),
+            Status::Done => rsx!(
+                Icon {
+                    class: "text-secondary",
+                    height: 16,
+                    width: 16,
+                    icon: FaCircle,
+                }
+            ),
         }
     }
 }

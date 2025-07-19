@@ -15,10 +15,9 @@ pub fn Home() -> Element {
     let boards: Vec<Element> = (ctx_boards.boards)()
         .iter()
         .map(|board| {
-            rsx!(BoardCard {
-                board: board.clone(),
-                dragging_from: dragging_index
-            })
+            rsx!(
+                BoardCard { board: board.clone(), dragging_from: dragging_index }
+            )
         })
         .collect();
 

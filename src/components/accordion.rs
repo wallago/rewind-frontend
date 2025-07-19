@@ -24,10 +24,7 @@ pub fn Accordion(props: AccordionProps) -> Element {
     let base_class = "relative text-base text-secondary w-full flex flex-col gap-2";
     let class = format!("{} {}", base_class, props.class.unwrap_or_default());
     rsx! {
-        div {
-            class,
-            {props.children}
-        }
+        div { class, {props.children} }
     }
 }
 
@@ -47,10 +44,7 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
     rsx! {
         if (ctx.is_open)() {
             div { class: "w-full mx-auto h-0.5 bg-secondary" }
-            div {
-                class,
-                {props.children}
-            }
+            div { class, {props.children} }
         }
     }
 }
@@ -74,13 +68,10 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
         "transform rotate-0 transition-transform duration-200"
     };
     rsx! {
-        button {
-            class,
-            onclick: move |_| ctx.is_open.toggle(),
-            div {
-                class: "flex justify-between items-center",
+        button { class, onclick: move |_| ctx.is_open.toggle(),
+            div { class: "flex justify-between items-center",
                 "{props.label}"
-                Icon { height: 14, icon: FaChevronDown, class: icon_class, }
+                Icon { height: 14, icon: FaChevronDown, class: icon_class }
             }
         }
     }

@@ -55,13 +55,12 @@ pub fn Input(mut props: InputProps) -> Element {
         props.width.clone().unwrap_or("w-fit".to_string()),
     );
     rsx! {
-        div {
-            class: "flex gap-1",
+        div { class: "flex gap-1",
             if let Some(label) = props.label {
                 Label { variant: "title", "{label}" }
             }
             input {
-                class ,
+                class,
                 autofocus: props.autofocus.unwrap_or(true),
                 r#type: props.r#type,
                 name: props.name,

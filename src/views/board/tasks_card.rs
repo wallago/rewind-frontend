@@ -22,7 +22,9 @@ pub fn TasksCard(uuid: String) -> Element {
 
     let tasks: Vec<Element> = (ctx_tasks.tasks)()
         .iter()
-        .map(|task| rsx!(TaskCard { task: task.clone() }))
+        .map(|task| rsx!(
+            TaskCard { task: task.clone() }
+        ))
         .collect();
 
     rsx! {

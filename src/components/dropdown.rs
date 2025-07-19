@@ -89,10 +89,10 @@ pub fn DropdownContent(props: DropdownContentProps) -> Element {
                 id: props.id,
                 class: format!(
                     "
-                                                                                            absolute z-50 mt-1 max-h-60 overflow-y-auto
-                                                                                            border-2 border-secondary shadow-lg
-                                                                                            bg-primary text-secondary flex flex-col
-                                                                                            {} {}",
+                                                                                                        absolute z-50 mt-1 max-h-60 overflow-y-auto
+                                                                                                        border-2 border-secondary shadow-lg
+                                                                                                        bg-primary text-secondary flex flex-col
+                                                                                                        {} {}",
                     props.class.unwrap_or_default(),
                     props.width.unwrap_or("w-full".to_string()),
                 ),

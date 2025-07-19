@@ -112,54 +112,43 @@ pub fn UpdateTask(is_open: Signal<bool>, task: Task) -> Element {
                         is_open.set(false);
                     }),
                 }
-                div {
-                    class: "flex items-stretch gap-2 justify-between pt-2",
-                    RadioGroup::<Status> {
-                        class: "pt-2 w-1/3",
-                        selected: status,
+                div { class: "flex items-stretch gap-2 justify-between pt-2",
+                    RadioGroup::<Status> { class: "pt-2 w-1/3", selected: status,
                         RadioGroupItem::<Status> {
                             value: Status::Todo,
-                            label: Status::Todo.to_string()
+                            label: Status::Todo.to_string(),
                         }
                         RadioGroupItem::<Status> {
                             value: Status::InProgress,
-                            label: Status::InProgress.to_string()
+                            label: Status::InProgress.to_string(),
                         }
                         RadioGroupItem::<Status> {
                             value: Status::Done,
-                            label: Status::Done.to_string()
+                            label: Status::Done.to_string(),
                         }
                     }
                     div { class: "w-1 my-1 bg-secondary" }
-                    RadioGroup::<Priority> {
-                        class: "pt-2 w-1/3",
-                        selected: priority,
+                    RadioGroup::<Priority> { class: "pt-2 w-1/3", selected: priority,
                         RadioGroupItem::<Priority> {
                             value: Priority::Low,
-                            label: Priority::Low.to_string()
+                            label: Priority::Low.to_string(),
                         }
                         RadioGroupItem::<Priority> {
                             value: Priority::Medium,
-                            label: Priority::Medium.to_string()
+                            label: Priority::Medium.to_string(),
                         }
                         RadioGroupItem::<Priority> {
                             value: Priority::High,
-                            label: Priority::High.to_string()
+                            label: Priority::High.to_string(),
                         }
                     }
                 }
-                Accordion {
-                    class: "pt-2",
-                    is_open: is_desc_open.clone(),
-                    AccordionTrigger {
-                        class: "text-sm",
-                        label: "description"
-                    }
-                    AccordionContent {
-                        class: "text-sm",
+                Accordion { class: "pt-2", is_open: is_desc_open.clone(),
+                    AccordionTrigger { class: "text-sm", label: "description" }
+                    AccordionContent { class: "text-sm",
                         Textarea {
                             width: "w-full",
-                            value: use_signal(|| "lsdkfjlsdf".to_string())
+                            value: use_signal(|| "lsdkfjlsdf".to_string()),
                         }
                     }
                 }

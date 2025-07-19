@@ -83,35 +83,34 @@ pub fn BoardCard(mut props: BoardCardProps) -> Element {
                                     is_update_open.set(false);
                                 }),
                             }
-                            div {
-                                class: "flex gap-2",
+                            div { class: "flex gap-2",
                                 Button {
                                     class: "h-fit p-0.5",
                                     onclick: move |_| {
                                         trigger_update.set(true);
                                         is_update_open.set(false)
                                     },
-                                    Icon { height: 14, width: 14, icon: FaCheck }
+                                    Icon {
+                                        height: 14,
+                                        width: 14,
+                                        icon: FaCheck,
+                                    }
                                 }
                                 Button {
                                     class: "h-fit p-0.5",
                                     onclick: move |_| is_update_open.set(false),
-                                    Icon { height: 14, width: 14, icon: FaXmark }
+                                    Icon {
+                                        height: 14,
+                                        width: 14,
+                                        icon: FaXmark,
+                                    }
                                 }
                             }
                         }
                     }
-                    Accordion {
-                        class: "py-1",
-                        is_open: is_desc_open.clone(),
-                        AccordionTrigger {
-                            class: "text-sm",
-                            label: "description"
-                        }
-                        AccordionContent {
-                            class: "text-sm",
-                            "la tu coco faudrais une desc sdlfjsdlkfjsd"
-                        }
+                    Accordion { class: "py-1", is_open: is_desc_open.clone(),
+                        AccordionTrigger { class: "text-sm", label: "description" }
+                        AccordionContent { class: "text-sm", "la tu coco faudrais une desc sdlfjsdlkfjsd" }
                     }
                 }
                 div { class: "flex justify-end",

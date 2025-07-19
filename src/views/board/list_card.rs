@@ -55,9 +55,7 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
                     trigger_switch.set(true);
                 }
             },
-            Card {
-                class: "h-fit flex flex-col gap-2 mx-auto p-2",
-                width: "w-96",
+            Card { class: "h-fit flex flex-col gap-2 mx-auto p-2", width: "w-96",
                 div { class: "flex flex-col justify-center text-sm font-medium gap-1 w-full",
                     div { class: "flex gap-1 justify-between h-full items-center pb-1",
                         if !is_update_open() {
@@ -84,35 +82,34 @@ pub fn ListCard(mut props: ListCardProps) -> Element {
                                     is_update_open.set(false);
                                 }),
                             }
-                            div {
-                                class: "flex gap-2",
+                            div { class: "flex gap-2",
                                 Button {
                                     class: "h-fit p-0.5",
                                     onclick: move |_| {
                                         trigger_update.set(true);
                                         is_update_open.set(false)
                                     },
-                                    Icon { height: 14, width: 14, icon: FaCheck }
+                                    Icon {
+                                        height: 14,
+                                        width: 14,
+                                        icon: FaCheck,
+                                    }
                                 }
                                 Button {
                                     class: "h-fit p-0.5",
                                     onclick: move |_| is_update_open.set(false),
-                                    Icon { height: 14, width: 14, icon: FaXmark }
+                                    Icon {
+                                        height: 14,
+                                        width: 14,
+                                        icon: FaXmark,
+                                    }
                                 }
                             }
                         }
                     }
-                    Accordion {
-                        class: "pt-1",
-                        is_open: is_desc_open.clone(),
-                        AccordionTrigger {
-                            class: "text-sm",
-                            label: "description"
-                        }
-                        AccordionContent {
-                            class: "text-sm",
-                            "la tu coco faudrais une desc sdlfjsdlkfjsd"
-                        }
+                    Accordion { class: "pt-1", is_open: is_desc_open.clone(),
+                        AccordionTrigger { class: "text-sm", label: "description" }
+                        AccordionContent { class: "text-sm", "la tu coco faudrais une desc sdlfjsdlkfjsd" }
                     }
                 }
                 TasksCard { uuid: props.list.uuid.clone() }

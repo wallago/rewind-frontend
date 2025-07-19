@@ -12,24 +12,30 @@ pub enum Priority {
 impl Into<Element> for Priority {
     fn into(self) -> Element {
         match self {
-            Priority::Low => rsx!(Icon {
-                class: "text-priority-low",
-                height: 16,
-                width: 16,
-                icon: FaTag
-            }),
-            Priority::Medium => rsx!(Icon {
-                class: "text-priority-medium",
-                height: 16,
-                width: 16,
-                icon: FaTag
-            }),
-            Priority::High => rsx!(Icon {
-                class: "text-priority-high",
-                height: 16,
-                width: 16,
-                icon: FaTag
-            }),
+            Priority::Low => rsx!(
+                Icon {
+                    class: "text-priority-low",
+                    height: 16,
+                    width: 16,
+                    icon: FaTag,
+                }
+            ),
+            Priority::Medium => rsx!(
+                Icon {
+                    class: "text-priority-medium",
+                    height: 16,
+                    width: 16,
+                    icon: FaTag,
+                }
+            ),
+            Priority::High => rsx!(
+                Icon {
+                    class: "text-priority-high",
+                    height: 16,
+                    width: 16,
+                    icon: FaTag,
+                }
+            ),
         }
     }
 }
