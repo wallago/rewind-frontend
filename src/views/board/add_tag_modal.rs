@@ -64,17 +64,17 @@ pub fn AddTag(is_open: Signal<bool>) -> Element {
                 div {
                     class: "flex gap-2 items-center pt-1",
                     Label { variant: "title", "preview color:" }
-                        if is_valid_hex() {
-                            div {
-                                style:  format!("--tag-color: {};", color),
-                                class: "w-6 h-6 bg-[var(--tag-color)] border-2 border-secondary",
-                            }
-                        } else {
-                            div {
-                                class: "w-6 h-6 bg-primary border-2 border-secondary",
-                                Icon { height: 20, width: 20, icon: FaXmark }
-                            }
+                    if is_valid_hex() {
+                        div {
+                            style:  format!("--tag-color: {};", color),
+                            class: "w-6 h-6 bg-[var(--tag-color)] border-2 border-secondary",
                         }
+                    } else {
+                        div {
+                            class: "w-6 h-6 bg-primary border-2 border-secondary",
+                            Icon { height: 20, width: 20, icon: FaXmark }
+                        }
+                    }
                 }
                 DialogFooter {
                     DialogClose {}
